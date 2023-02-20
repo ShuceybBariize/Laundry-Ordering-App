@@ -1,0 +1,12 @@
+export 'constans/colors.dart';
+export 'pages/onboarding_page.dart';
+export 'pages/chat.dart';
+export 'pages/history.dart';
+export 'pages/home.dart';
+export 'pages/login.dart';
+export 'pages/profile.dart';
+export 'pages/registoration.dart';
+export 'utility/customButton.dart';
+export 'pages/home_page.dart';
+export 'utility/customtxt.dart';
+export 'utility/title_subtitle.dart';
