@@ -1,9 +1,3 @@
-import 'dart:ffi';
-
-import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../exports.dart';
 
 class CustomTitles extends StatelessWidget {
@@ -19,14 +13,16 @@ class CustomTitles extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 12, right: 12),
+      padding: const EdgeInsets.only(
+        left: 5,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
             style: GoogleFonts.inter(
-                fontWeight: FontWeight.bold, color: Colors.black, fontSize: 34),
+                fontWeight: FontWeight.bold, color: Colors.black, fontSize: 32),
           ),
           const SizedBox(height: 10),
           Padding(
@@ -40,7 +36,7 @@ class CustomTitles extends StatelessWidget {
             ),
           ),
           const SizedBox(
-            height: 25,
+            height: 16,
           )
         ],
       ),

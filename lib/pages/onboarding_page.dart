@@ -1,12 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:introduction_screen/introduction_screen.dart';
-import 'package:laundry_management_system/constans/colors.dart';
-import 'package:laundry_management_system/exports.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:laundry_management_system/exports.dart';
 
 class OnboardingPage extends StatelessWidget {
-  OnboardingPage({
+  const OnboardingPage({
     super.key,
   });
 
@@ -28,7 +23,7 @@ class OnboardingPage extends StatelessWidget {
                       width: double.infinity,
                     ),
                   ),
-                  const SizedBox(height: 60),
+                  const SizedBox(height: 30),
                   Padding(
                     padding: const EdgeInsets.only(left: 20, right: 50),
                     child: Text(
@@ -40,7 +35,7 @@ class OnboardingPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(
-                    height: 30,
+                    height: 20,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 20, right: 35),
@@ -52,11 +47,13 @@ class OnboardingPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 70),
+                  const SizedBox(height: 45),
                   custombtn(
                     colorbtn: Colors.white,
-                    onpress: () => Navigator.push(context,
-                        MaterialPageRoute(builder: (builder) => LoginPage())),
+                    onpress: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (builder) => const LoginPage())),
                     txtbtn: "Get Started",
                     colortxt: Kactivecolor,
                   )

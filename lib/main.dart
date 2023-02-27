@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:laundry_management_system/pages/home.dart';
-import 'pages/onboarding_page.dart';
+import 'package:laundry_management_system/exports.dart';
 
 void main() {
   runApp(const LaundryApp());
@@ -13,7 +11,14 @@ class LaundryApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: OnboardingPage(),
+      theme: ThemeData(
+          textTheme: const TextTheme(
+              displayLarge: TextStyle(
+                  fontSize: 22,
+                  color: Kactivecolor,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Inter'))),
+      home: const LoginPage(),
     );
   }
 }

@@ -1,7 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:laundry_management_system/constans/colors.dart';
-import 'package:laundry_management_system/pages/login.dart';
+import 'package:laundry_management_system/exports.dart';
 
 class custombtn extends StatelessWidget {
   final Color colorbtn;
@@ -9,7 +6,7 @@ class custombtn extends StatelessWidget {
   final String txtbtn;
   final Function() onpress;
 
-  custombtn(
+  const custombtn(
       {super.key,
       required this.txtbtn,
       required this.onpress,
@@ -18,36 +15,29 @@ class custombtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const SizedBox(
-          height: 100,
-        ),
-        Center(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              minimumSize: Size(375, 60),
-              elevation: 0,
-              primary: colorbtn,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(10),
-                ),
-              ),
-            ),
-            onPressed: onpress,
-            child: Text(
-              txtbtn,
-              style: GoogleFonts.inter(
-                color: colortxt,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+    return Center(
+      heightFactor: 1.6,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          minimumSize: const Size(365, 60),
+          backgroundColor: colorbtn,
+          elevation: 0,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(10),
             ),
           ),
         ),
-      ],
+        onPressed: onpress,
+        child: Text(
+          txtbtn,
+          style: GoogleFonts.inter(
+            color: colortxt,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
     );
   }
 }

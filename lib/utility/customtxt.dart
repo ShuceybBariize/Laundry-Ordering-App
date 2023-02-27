@@ -1,52 +1,52 @@
-import 'dart:ffi';
-
-import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:laundry_management_system/exports.dart';
 
 class Customtxt extends StatelessWidget {
   final String txtfieldname;
   final String hinttxt;
+  final IconData? sufficon;
+  final Color? suffclor;
 
   const Customtxt({
     super.key,
+    this.suffclor,
+    this.sufficon,
     required this.hinttxt,
     required this.txtfieldname,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 13, right: 13),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(
-            height: 14,
-          ),
-          Text(txtfieldname,
-              style: GoogleFonts.inter(
-                  color: Kactivetextcolor,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600)),
-          const SizedBox(
-            height: 12,
-          ),
-          TextField(
-              decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Kinactivetextcolor, width: 1),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(
+          height: 12,
+        ),
+        Text(txtfieldname,
+            style: GoogleFonts.inter(
+                color: Kactivetextcolor,
+                fontSize: 16,
+                fontWeight: FontWeight.w500)),
+        const SizedBox(
+          height: 9,
+        ),
+        TextField(
+            decoration: InputDecoration(
+                contentPadding: const EdgeInsets.all(18),
+                fillColor: Colors.black,
+                enabledBorder: OutlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: Kinactivetextcolor, width: 1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide:
-                          BorderSide(color: Kinactivetextcolor, width: 1)),
-                  hintText: hinttxt)),
-        ],
-      ),
+                    borderSide:
+                        const BorderSide(color: Kinactivetextcolor, width: 1)),
+                hintText: hinttxt,
+                suffixIcon: Icon(sufficon),
+                suffixIconColor: suffclor)),
+      ],
     );
   }
 }
