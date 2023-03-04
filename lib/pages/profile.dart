@@ -2,74 +2,69 @@ import '../exports.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
+  static const IconData person_3_inlined =
+      IconData(0xf08af, fontFamily: 'MaterialIcons');
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-          appBar: AppBar(
-            // backgroundColor: Color.fromARGB(26, 136, 134, 134),
-            backgroundColor: Colors.grey.withOpacity(0.1),
-            elevation: 0,
-          ),
-          backgroundColor: Colors.grey.withOpacity(0.1),
-          body: SingleChildScrollView(
-            child: Column(children: [
-              const SizedBox(
-                height: 13,
-              ),
-              SizedBox(
-                height: 130,
-                width: 130,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(100),
-                  child: const Image(
-                    image: AssetImage("assets/shuceyb.jpg"),
-                    fit: BoxFit.cover,
-                  ),
+    return Center(
+      child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(children: [
+            const SizedBox(
+              height: 13,
+            ),
+            SizedBox(
+              height: 130,
+              width: 130,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(100),
+                child: const Image(
+                  image: AssetImage("assets/shuceyb.jpg"),
+                  fit: BoxFit.cover,
                 ),
               ),
-              const SizedBox(
-                height: 6,
-              ),
-              Text(
-                "Shuceyb Bariize",
+            ),
+            const SizedBox(
+              height: 6,
+            ),
+            Text(
+              "Shuceyb Bariize",
+              style:
+                  GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(
+              height: 8,
+            ),
+            Text("shuceybbariize@Gmail.com",
                 style: GoogleFonts.inter(
-                    fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(
-                height: 8,
-              ),
-              Text("shuceybbariize@Gmail.com",
-                  style: GoogleFonts.inter(
-                      fontSize: 16, fontWeight: FontWeight.w500)),
-              const SizedBox(
-                height: 30,
-              ),
-              const menu_Profile(
-                  profilename: "Account", profileicon: MdiIcons.account),
-              const SizedBox(
-                height: 14,
-              ),
-              const menu_Profile(
-                  profilename: "Language", profileicon: MdiIcons.web),
-              const SizedBox(
-                height: 14,
-              ),
-              const menu_Profile(
-                  profilename: "Notification", profileicon: MdiIcons.bell),
-              const SizedBox(
-                height: 14,
-              ),
-              const menu_Profile(
-                  profilename: "Preference", profileicon: MdiIcons.cog),
-              const SizedBox(
-                height: 14,
-              ),
-              const menu_Profile(
-                  profilename: "Help/Center", profileicon: MdiIcons.help),
-            ]),
-          )),
+                    fontSize: 16, fontWeight: FontWeight.w500)),
+            const SizedBox(
+              height: 30,
+            ),
+            const menu_Profile(
+                profilename: "Account", profileicon: MdiIcons.account),
+            const SizedBox(
+              height: 14,
+            ),
+            const menu_Profile(
+                profilename: "Language", profileicon: MdiIcons.web),
+            const SizedBox(
+              height: 14,
+            ),
+            const menu_Profile(
+                profilename: "Notification", profileicon: MdiIcons.bell),
+            const SizedBox(
+              height: 14,
+            ),
+            const menu_Profile(
+                profilename: "Preference", profileicon: MdiIcons.cog),
+            const SizedBox(
+              height: 14,
+            ),
+            const menu_Profile(
+                profilename: "Help/Center", profileicon: MdiIcons.help),
+          ])),
     );
   }
 }

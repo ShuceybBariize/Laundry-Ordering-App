@@ -11,6 +11,7 @@ class RegistorPage extends StatelessWidget {
             backgroundColor: Colors.grey.withOpacity(0.0),
             elevation: 0,
           ),
+          backgroundColor: Colors.white,
           body: ListView(
             children: [
               Padding(

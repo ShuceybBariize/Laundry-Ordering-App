@@ -19,7 +19,7 @@ class custombtn extends StatelessWidget {
       heightFactor: 1.6,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          minimumSize: const Size(365, 60),
+          minimumSize: const Size(365, 53),
           backgroundColor: colorbtn,
           elevation: 0,
           shape: const RoundedRectangleBorder(

@@ -18,7 +18,7 @@ class LaundryApp extends StatelessWidget {
                   color: Kactivecolor,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Inter'))),
-      home: const LoginPage(),
+      home: const OnboardingPage(),
     );
   }
 }

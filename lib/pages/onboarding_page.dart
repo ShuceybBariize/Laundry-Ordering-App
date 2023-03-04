@@ -20,10 +20,11 @@ class OnboardingPage extends StatelessWidget {
                     child: Image.asset(
                       "assets/onbording.png",
                       fit: BoxFit.cover,
+                      height: 350,
                       width: double.infinity,
                     ),
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.only(left: 20, right: 50),
                     child: Text(
@@ -42,12 +43,12 @@ class OnboardingPage extends StatelessWidget {
                     child: Text(
                       "Find the best and closest laundry place to you cleaned with the best washing machine so its doesn't reduce the quality of your clothes",
                       style: GoogleFonts.interTight(
-                        fontSize: 20,
+                        fontSize: 23,
                         color: Colors.white70,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 45),
+                  const SizedBox(height: 43),
                   custombtn(
                     colorbtn: Colors.white,
                     onpress: () => Navigator.push(
