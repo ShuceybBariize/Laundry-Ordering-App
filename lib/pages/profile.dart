@@ -7,64 +7,72 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Column(children: [
-            const SizedBox(
-              height: 13,
-            ),
-            SizedBox(
-              height: 130,
-              width: 130,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(100),
-                child: const Image(
-                  image: AssetImage("assets/shuceyb.jpg"),
-                  fit: BoxFit.cover,
-                ),
+    return ListView(
+      padding: const EdgeInsets.only(top: 65, left: 8, right: 8),
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text("Profile",
+                style: GoogleFonts.inter(
+                    fontSize: 27, fontWeight: FontWeight.bold)),
+          ],
+        ),
+        Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+          const SizedBox(
+            height: 13,
+          ),
+          SizedBox(
+            height: 130,
+            width: 130,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(100),
+              child: const Image(
+                image: AssetImage("assets/shuceyb.jpg"),
+                fit: BoxFit.cover,
               ),
             ),
-            const SizedBox(
-              height: 6,
-            ),
-            Text(
-              "Shuceyb Bariize",
+          ),
+          const SizedBox(
+            height: 6,
+          ),
+          Text(
+            "Shuceyb Bariize",
+            style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          Text("shuceybbariize@Gmail.com",
               style:
-                  GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-            Text("shuceybbariize@Gmail.com",
-                style: GoogleFonts.inter(
-                    fontSize: 16, fontWeight: FontWeight.w500)),
-            const SizedBox(
-              height: 30,
-            ),
-            const menu_Profile(
-                profilename: "Account", profileicon: MdiIcons.account),
-            const SizedBox(
-              height: 14,
-            ),
-            const menu_Profile(
-                profilename: "Language", profileicon: MdiIcons.web),
-            const SizedBox(
-              height: 14,
-            ),
-            const menu_Profile(
-                profilename: "Notification", profileicon: MdiIcons.bell),
-            const SizedBox(
-              height: 14,
-            ),
-            const menu_Profile(
-                profilename: "Preference", profileicon: MdiIcons.cog),
-            const SizedBox(
-              height: 14,
-            ),
-            const menu_Profile(
-                profilename: "Help/Center", profileicon: MdiIcons.help),
-          ])),
+                  GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w500)),
+          const SizedBox(
+            height: 30,
+          ),
+          const menu_Profile(
+              profilename: "Account", profileicon: MdiIcons.account),
+          const SizedBox(
+            height: 14,
+          ),
+          const menu_Profile(
+              profilename: "Language", profileicon: MdiIcons.web),
+          const SizedBox(
+            height: 14,
+          ),
+          const menu_Profile(
+              profilename: "Notification", profileicon: MdiIcons.bell),
+          const SizedBox(
+            height: 14,
+          ),
+          const menu_Profile(
+              profilename: "Preference", profileicon: MdiIcons.cog),
+          const SizedBox(
+            height: 14,
+          ),
+          const menu_Profile(
+              profilename: "Help/Center", profileicon: MdiIcons.help),
+        ]),
+      ],
     );
   }
 }
@@ -83,7 +91,7 @@ class menu_Profile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 60,
-      margin: const EdgeInsets.only(left: 14, right: 14),
+      // margin: const EdgeInsets.only(left: 14, right: 14),
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(18)),
       child: ListTile(

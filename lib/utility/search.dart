@@ -13,7 +13,7 @@ class Search extends StatelessWidget {
         fontSize: 18,
       ),
       decoration: InputDecoration(
-        contentPadding: const EdgeInsets.all(14),
+        contentPadding: const EdgeInsets.all(18),
         enabledBorder: OutlineInputBorder(
           borderSide: const BorderSide(color: Colors.white, width: 1),
           borderRadius: BorderRadius.circular(10),
@@ -27,7 +27,7 @@ class Search extends StatelessWidget {
         prefixIconColor: Kinactivetextcolor,
         prefixIcon: const Icon(
           FontAwesomeIcons.search,
-          size: 18,
+          size: 20,
         ),
       ),
     );

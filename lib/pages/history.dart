@@ -5,57 +5,75 @@ class HistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return ListView(
+      padding: const EdgeInsets.only(top: 65, left: 8, right: 8),
       children: [
-        const Text(
-          "History",
-          style: TextStyle(
-              color: Kactivetextcolor,
-              fontWeight: FontWeight.bold,
-              fontSize: 26),
+        Text("History",
+            style:
+                GoogleFonts.inter(fontSize: 27, fontWeight: FontWeight.bold)),
+        const SizedBox(
+          height: 18,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              margin: const EdgeInsets.only(top: 20),
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(14)),
-              height: 170,
-              width: 370,
-              child:
-                  Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(
-                  "Roumah Laundry",
-                  style: GoogleFonts.inter(fontSize: 23),
-                ),
-                const Text("20.11.2020/06:34"),
-              ]),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: const [
+            Histrory_Laundry(),
+            SizedBox(
+              height: 10,
             ),
+            Histrory_Laundry(),
+            SizedBox(
+              height: 10,
+            ),
+            Histrory_Laundry(),
+            SizedBox(
+              height: 10,
+            ),
+            Histrory_Laundry(),
+            SizedBox(
+              height: 10,
+            ),
+            Histrory_Laundry(),
+            SizedBox(
+              height: 10,
+            ),
+            Histrory_Laundry(),
           ],
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              // margin: EdgeInsets.only(top: 20),
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(14)),
-              height: 170,
-              width: 370,
-              child:
-                  Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(
-                  "Roumah Laundry",
-                  style: GoogleFonts.inter(fontSize: 23),
-                ),
-                const Text("20.11.2020/06:34"),
-              ]),
-            ),
-          ],
-        )
       ],
+    );
+  }
+}
+
+class Histrory_Laundry extends StatelessWidget {
+  const Histrory_Laundry({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 9),
+      decoration: BoxDecoration(
+          color: Colors.black, borderRadius: BorderRadius.circular(14)),
+      height: 210,
+      width: double.maxFinite,
+      child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Roumah Laundry",
+              style: GoogleFonts.inter(fontSize: 16, color: Colors.white),
+            ),
+            const SizedBox(
+              width: 12,
+            ),
+            Text(
+              "20.11.2020/06:34",
+              style: GoogleFonts.inter(fontSize: 16, color: Colors.white),
+            ),
+          ]),
     );
   }
 }
