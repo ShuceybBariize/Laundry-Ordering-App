@@ -16,10 +16,10 @@ class custombtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      heightFactor: 1.6,
+      heightFactor: 1.4,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          minimumSize: const Size(365, 53),
+          minimumSize: const Size(390, 62),
           backgroundColor: colorbtn,
           elevation: 0,
           shape: const RoundedRectangleBorder(

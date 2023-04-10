@@ -49,14 +49,17 @@ class OnboardingPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 43),
-                  custombtn(
-                    colorbtn: Colors.white,
-                    onpress: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (builder) => const LoginPage())),
-                    txtbtn: "Get Started",
-                    colortxt: Kactivecolor,
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0, right: 8),
+                    child: custombtn(
+                      colorbtn: Colors.white,
+                      onpress: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (builder) => const LoginPage())),
+                      txtbtn: "Get Started",
+                      colortxt: Kactivecolor,
+                    ),
                   )
                 ],
               ),

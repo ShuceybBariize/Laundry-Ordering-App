@@ -1,4 +1,6 @@
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:laundry_management_system/exports.dart';
+import 'package:laundry_management_system/pages/order_list.dart';
 
 class HomePageSreen extends StatelessWidget {
   const HomePageSreen({super.key});
@@ -51,12 +53,12 @@ class HomePageSreen extends StatelessWidget {
                 width: 33,
               ),
               Container(
-                height: 42,
-                width: 42,
+                height: 45,
+                width: 45,
                 decoration: BoxDecoration(
-                    color: Kinactivetextcolor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: Colors.grey.shade300)),
+                    // color: Kinactivetextcolor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.grey)),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
@@ -98,7 +100,7 @@ class HomePageSreen extends StatelessWidget {
                       Text("Roman Laundry",
                           style: GoogleFonts.inter(
                               color: Colors.white60,
-                              fontSize: 15,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold)),
                       const SizedBox(
                         height: 10,
@@ -110,7 +112,7 @@ class HomePageSreen extends StatelessWidget {
                               fontSize: 21,
                               fontWeight: FontWeight.bold)),
                       const SizedBox(
-                        height: 40,
+                        height: 30,
                       ),
                       Text(
                         "View Details",
@@ -168,7 +170,7 @@ class HomePageSreen extends StatelessWidget {
                   onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const LoginPage())),
+                          builder: (context) => const OrderList())),
                   child: const CardItems(
                     imgpath: "assets/laundry.jpeg",
                     laundryname: "Happy Laundry",
@@ -179,11 +181,17 @@ class HomePageSreen extends StatelessWidget {
                 const SizedBox(
                   width: 6,
                 ),
-                const CardItems(
-                  imgpath: "assets/happylaundry.jpeg",
-                  laundryname: "Rouman Laundry",
-                  location: "400 m",
-                  price: "99",
+                GestureDetector(
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const OrderList())),
+                  child: const CardItems(
+                    imgpath: "assets/happylaundry.jpeg",
+                    laundryname: "Rouman Laundry",
+                    location: "400 m",
+                    price: "99",
+                  ),
                 ),
               ],
             ),
@@ -213,11 +221,10 @@ class CardItems extends StatelessWidget {
       alignment: Alignment.center,
       height: 290,
       width: 255,
-      margin: const EdgeInsets.only(bottom: 100, right: 10),
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
           border: Border.all(color: Colors.white, width: 6),
-          color: Colors.white10,
+          color: Colors.white60,
           borderRadius: BorderRadius.circular(18)),
       child: Column(children: [
         Container(
@@ -239,69 +246,127 @@ class CardItems extends StatelessWidget {
                 alignment: Alignment.topCenter,
                 fit: BoxFit.fitWidth),
           ),
+          child: const RatingBuilder(),
         ),
         const SizedBox(
           height: 12,
         ),
         Padding(
           padding: const EdgeInsets.only(top: 8, left: 12, right: 12),
-          child: Expanded(
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      laundryname,
-                      style: GoogleFonts.inter(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          wordSpacing: 0.5,
-                          fontSize: 24),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 35,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(FontAwesomeIcons.locationDot,
-                            color: Kactivecolor, size: 18),
-                        const SizedBox(
-                          width: 6,
-                        ),
-                        Text(location,
-                            style: GoogleFonts.inter(
-                                color: Kinactivetextcolor,
-                                fontSize: 18,
-                                wordSpacing: 1)),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Text(price,
-                            style: GoogleFonts.inter(
-                                color: Colors.black,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                wordSpacing: 1)),
-                        Text("/PCS",
-                            style: GoogleFonts.inter(
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Text(
+                    laundryname,
+                    style: GoogleFonts.inter(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        wordSpacing: 0.5,
+                        fontSize: 24),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 35,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(FontAwesomeIcons.locationDot,
+                          color: Kactivecolor, size: 18),
+                      const SizedBox(
+                        width: 4,
+                      ),
+                      Text(location,
+                          style: GoogleFonts.inter(
                               color: Kinactivetextcolor,
-                              fontSize: 15,
-                            ))
-                      ],
-                    )
-                  ],
-                )
-              ],
-            ),
+                              fontSize: 18,
+                              wordSpacing: 0.5)),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Text(
+                        "\$",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(price,
+                          style: GoogleFonts.inter(
+                              color: Colors.black,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              wordSpacing: 1)),
+                      Text("SHILIN",
+                          style: GoogleFonts.inter(
+                            color: Kinactivetextcolor,
+                            fontSize: 15,
+                          ))
+                    ],
+                  )
+                ],
+              )
+            ],
           ),
         ),
       ]),
+    );
+  }
+}
+
+class RatingBuilder extends StatefulWidget {
+  const RatingBuilder({super.key});
+
+  @override
+  State<RatingBuilder> createState() => _RatingBuilderState();
+}
+
+class _RatingBuilderState extends State<RatingBuilder> {
+  double rating = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          margin: const EdgeInsets.all(5),
+          height: 40,
+          width: 90,
+          decoration: BoxDecoration(
+              color: Colors.white70, borderRadius: BorderRadius.circular(30)),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              RatingBar.builder(
+                itemCount: 1,
+                itemSize: 25,
+                onRatingUpdate: (rating) => setState(() {
+                  this.rating = rating;
+                }),
+                unratedColor: Colors.black,
+                itemBuilder: (context, _) => const Icon(
+                  MdiIcons.star,
+                  color: Colors.amber,
+                ),
+              ),
+              const SizedBox(
+                width: 8,
+              ),
+              Text(
+                "($rating )",
+                style: const TextStyle(color: Colors.black),
+              )
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

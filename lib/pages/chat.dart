@@ -58,8 +58,7 @@ class ChatPage extends StatelessWidget {
             height: 16,
           ),
           const Chat(
-            img: NetworkImage(
-                "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg"),
+            img: AssetImage("assets/shuceyb.jpg"),
             personalName: "Bariize",
             send_message:
                 "Asc Iwrma asxabta Appkan sidee waye ! Asc Iwrma asxabta Appkan sidee waye Asc Iwrma asxabta Appkan sidee waye",
@@ -194,7 +193,6 @@ class Chat extends StatelessWidget {
                   ),
                   child: CircleAvatar(
                     radius: 30,
-                    // backgroundColor: Colors.grey.shade400,
                     backgroundImage: img,
                     child: img == null
                         ? Text(

@@ -9,16 +9,9 @@ class LaundryApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          textTheme: const TextTheme(
-              displayLarge: TextStyle(
-                  fontSize: 22,
-                  color: Kactivecolor,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Inter'))),
-      home: const OnboardingPage(),
+      home: OnboardingPage(),
     );
   }
 }
