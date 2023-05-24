@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:laundry_management_system/exports.dart';
 
 class LoginPage extends StatefulWidget {
@@ -8,6 +11,27 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _email = TextEditingController();
+
+  final _password = TextEditingController();
+
+  bool isloading = false;
+
+  Future SignIn() async {
+    try {
+      isloading = true;
+      setState(() {});
+      var respose = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _email.text, password: _password.text);
+
+      print("Seccess");
+    } catch (e) {
+      log(e.toString());
+    }
+    isloading = false;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -27,14 +51,62 @@ class _LoginPageState extends State<LoginPage> {
                   const CustomTitles(
                       subtitle: "Login into your account",
                       title: "Lets get started"),
-                  const Customtxt(
-                      hinttxt: "Enter Your email", txtfieldname: "Email"),
-                  const Customtxt(
-                    sufficon: MdiIcons.eyeOffOutline,
-                    suffclor: Colors.black,
-                    hinttxt: "Enter Password",
-                    txtfieldname: "Password",
+                  Text("Email",
+                      style: GoogleFonts.inter(
+                          color: Kactivetextcolor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500)),
+                  const SizedBox(
+                    height: 9,
                   ),
+                  TextField(
+                      controller: _email,
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(
+                          MdiIcons.email,
+                          color: Kactivecolor,
+                          size: 22,
+                        ),
+                        contentPadding: const EdgeInsets.all(18),
+                        fillColor: Colors.black,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: Kinactivetextcolor, width: 1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                                color: Kinactivetextcolor, width: 1)),
+                        hintText: "Enter Your Email",
+                      )),
+                  Text("Password",
+                      style: GoogleFonts.inter(
+                          color: Kactivetextcolor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500)),
+                  const SizedBox(
+                    height: 9,
+                  ),
+                  TextField(
+                      controller: _password,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(MdiIcons.lock,
+                            color: Kactivecolor, size: 22),
+                        contentPadding: const EdgeInsets.all(18),
+                        fillColor: Colors.black,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: Kinactivetextcolor, width: 1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                                color: Kinactivetextcolor, width: 1)),
+                        hintText: "Enter Your Password",
+                      )),
                   const SizedBox(
                     height: 12,
                   ),
@@ -45,14 +117,40 @@ class _LoginPageState extends State<LoginPage> {
                             fontWeight: FontWeight.bold,
                             fontSize: 15))
                   ]),
-                  custombtn(
-                      txtbtn: "Login",
-                      onpress: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const HomePage())),
-                      colorbtn: Kactivecolor,
-                      colortxt: Colors.white),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(390, 62),
+                      backgroundColor: Kactivecolor,
+                      elevation: 0,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                      ),
+                    ),
+                    onPressed: () {
+                      SignIn();
+                    },
+                    child: isloading
+                        ? const CircularProgressIndicator(
+                            backgroundColor: Kactivecolor,
+                            color: Colors.white,
+                          )
+                        : Text(
+                            "Login",
+                            style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [
@@ -70,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                     ],
                   ),
                   SizedBox(
-                    height: 20,
+                    height: 40,
                     child: Row(
                       // crossAxisAlignment: CrossAxisAlignment.end,
                       mainAxisAlignment: MainAxisAlignment.center,

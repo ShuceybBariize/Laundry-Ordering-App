@@ -18,7 +18,7 @@ class _HomePageState extends State<HomePage> {
       IconData(0xf107, fontFamily: 'MaterialIcons');
   int currentIndex = 0;
   final screens = [
-    const HomePageSreen(),
+    const Home(),
     const ChatPage(),
     const HistoryPage(),
     const ProfilePage()

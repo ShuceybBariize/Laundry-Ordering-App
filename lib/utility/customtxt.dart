@@ -12,6 +12,7 @@ class Customtxt extends StatelessWidget {
     this.sufficon,
     required this.hinttxt,
     required this.txtfieldname,
+    required TextEditingController controller,
   });
 
   @override

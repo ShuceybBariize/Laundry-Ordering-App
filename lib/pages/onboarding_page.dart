@@ -42,7 +42,7 @@ class OnboardingPage extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 20, right: 35),
                     child: Text(
                       "Find the best and closest laundry place to you cleaned with the best washing machine so its doesn't reduce the quality of your clothes",
-                      style: GoogleFonts.interTight(
+                      style: GoogleFonts.inter(
                         fontSize: 23,
                         color: Colors.white70,
                       ),

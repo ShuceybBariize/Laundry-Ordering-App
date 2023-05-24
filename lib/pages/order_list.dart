@@ -12,7 +12,29 @@ class OrderList extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const Back_Screen(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                    height: 45,
+                    width: 45,
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 1,
+                          strokeAlign: 0.8,
+                          color: Colors.grey,
+                        ),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(
+                        FontAwesomeIcons.arrowLeft,
+                        size: 21,
+                      ),
+                      // FontAwesomeIcons.arrowLeft,
+                    )),
+              ],
+            ),
             const SizedBox(
               height: 8,
             ),
@@ -26,33 +48,6 @@ class OrderList extends StatelessWidget {
             ),
             const SizedBox(
               height: 10,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  width: 80,
-                  height: 40,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey, width: 1)),
-                  child: const Text("fasds"),
-                ),
-                Container(
-                  width: 80,
-                  height: 40,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey, width: 1)),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    // mainAxisAlignment: MainAxisAlignment.start,
-                    children: const [
-                      Text("dfbdfvbdf"),
-                    ],
-                  ),
-                ),
-              ],
             ),
             Container(
               margin: const EdgeInsets.all(14),
@@ -110,7 +105,7 @@ class OrderList extends StatelessWidget {
                   Column(
                     children: [
                       SizedBox(
-                        height: 160,
+                        height: 233,
                         child: ListView(shrinkWrap: true, children: [
                           const SizedBox(
                             height: 20,
@@ -148,11 +143,14 @@ class OrderList extends StatelessWidget {
                 ],
               ),
             ),
+            // const SizedBox(
+            //   height: 66,
+            // ),
             Expanded(
               child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                ),
+                decoration: const BoxDecoration(
+                    // color: Colors.black,
+                    ),
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: const BoxDecoration(
@@ -203,7 +201,7 @@ class OrderList extends StatelessWidget {
                                 ],
                               ),
                               const SizedBox(
-                                width: 120,
+                                width: 110,
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,

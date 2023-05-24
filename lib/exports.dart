@@ -11,7 +11,7 @@ export 'pages/home.dart';
 export 'pages/home_page.dart';
 export 'pages/login.dart';
 export 'pages/onboarding_page.dart';
-export 'pages/order_details.dart';
+// export 'pages/order_details.dart';
 export 'pages/profile.dart';
 export 'pages/registoration.dart';
 export 'utility/customButton.dart';

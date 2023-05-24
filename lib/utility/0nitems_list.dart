@@ -16,7 +16,7 @@ class OnItems extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(7),
-      height: 80,
+      height: 84,
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
@@ -28,8 +28,8 @@ class OnItems extends StatelessWidget {
           children: [
             Container(
               margin: const EdgeInsets.only(right: 8),
-              height: 60,
-              width: 60,
+              height: 62,
+              width: 62,
               decoration: BoxDecoration(
                   image: DecorationImage(image: imgcloth, fit: BoxFit.cover),
                   color: Colors.grey[300],
