@@ -1,4 +1,4 @@
-# laundry_management_system
+# Laundry Ordering App
 
 A new Flutter project.
 
