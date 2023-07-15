@@ -56,8 +56,12 @@ class _AdminProductViewState extends State<AdminProductView> {
                   isExpanded: false,
                   isDense: false,
                   value: collectionName.isEmpty ? collectionName : null,
-                  items: <String>['laundry', 'ironOrders']
-                      .map<DropdownMenuItem<String>>((String value) {
+                  items: <String>[
+                    'laundry',
+                    'ironOrders',
+                    'suitorder',
+                    'wash_iron_Oders'
+                  ].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(

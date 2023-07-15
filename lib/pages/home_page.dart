@@ -1,18 +1,14 @@
 // ignore_for_file: use_build_context_synchronously
-
+import 'package:url_launcher/url_launcher.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:badges/badges.dart' as badges;
 
 import 'package:provider/provider.dart';
-
 import '../exports.dart';
 import '../provider.dart';
 import '../utility/menu_par.dart';
-import 'cart.dart';
-import 'ironclothes.dart';
-import 'login.dart';
-import 'order_list.dart';
-import 'slider_model.dart';
+import 'contact_page.dart';
 
 class Home extends StatefulWidget {
   static String id = 'homepage';
@@ -33,6 +29,8 @@ class MymodalList {
 
 class _HomeState extends State<Home> {
   int selectedIndex = 0;
+  final currentUser = FirebaseAuth.instance.currentUser!;
+  final custCollection = FirebaseFirestore.instance.collection("customers");
 
   List<MymodalList> items = [
     MymodalList(
@@ -65,8 +63,15 @@ class _HomeState extends State<Home> {
           appBar: AppBar(
             actions: [
               IconButton(
-                onPressed: () => Navigator.push(
-                    context, MaterialPageRoute(builder: (_) => CartScreen())),
+                onPressed: () =>
+                    // Navigator.push(
+                    //     context, MaterialPageRoute(builder: (_) => CartScreen())),
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (ctx) => CartScreen(),
+                        ),
+                        (route) => false),
                 icon: badges.Badge(
                   badgeContent: Text(
                     value.items.length.toString(),
@@ -82,7 +87,9 @@ class _HomeState extends State<Home> {
                     } catch (e) {
                       print('Signout Erro$e');
                     }
-
+                    //   Navigator.push(context,
+                    //       MaterialPageRoute(builder: (_) => const LoginPage()));
+                    // },
                     Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
@@ -97,7 +104,102 @@ class _HomeState extends State<Home> {
                 GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 22),
             centerTitle: true,
           ),
-          drawer: const Menu(),
+          drawer: Drawer(
+            width: 250,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                bottomRight: Radius.circular(40),
+              ),
+            ),
+            child: Column(
+              children: [
+                Container(
+                  width: double.infinity,
+                  height: 200,
+                  decoration: const BoxDecoration(color: Kactivecolor),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        height: 70,
+                        decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                                image: AssetImage('assets/shuceyb.jpg'))),
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      Text(
+                        currentUser.email!,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.white,
+                            letterSpacing: 2),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 22),
+                drawerList(
+                    icon: Icons.history,
+                    text: 'History',
+                    ontap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const HistoryPage()));
+                    }),
+                const SizedBox(
+                  height: 30,
+                ),
+                drawerList(
+                    icon: Icons.support_agent_sharp,
+                    text: 'Help center',
+                    ontap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const ContactPage()));
+                    }),
+                const SizedBox(
+                  height: 30,
+                ),
+                drawerList(
+                    icon: FontAwesomeIcons.whatsapp,
+                    text: 'Contact Us',
+                    ontap: () {
+                      openWhatsapp();
+                    }),
+                const SizedBox(
+                  height: 30,
+                ),
+                drawerList(
+                    icon: Icons.logout,
+                    text: 'Logout',
+                    ontap: () async {
+                      try {
+                        await FirebaseAuth.instance.signOut();
+                      } catch (e) {
+                        print('Signout Erro$e');
+                      }
+                      //   Navigator.push(context,
+                      //       MaterialPageRoute(builder: (_) => const LoginPage()));
+                      // },
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (ctx) => const LoginPage(),
+                          ),
+                          (route) => false);
+                    }),
+                const SizedBox(
+                  height: 30,
+                ),
+              ],
+            ),
+          ),
           body: Column(
             children: [
               // const SizedBox(height: 10),
@@ -162,16 +264,16 @@ class _HomeState extends State<Home> {
                           GestureDetector(
                             onTap: () {
                               setState(() {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => const OrderList()));
-                                // Navigator.pushAndRemoveUntil(
+                                // Navigator.push(
                                 //     context,
                                 //     MaterialPageRoute(
-                                //       builder: (ctx) => const OrderList(),
-                                //     ),
-                                //     (route) => false);
+                                //         builder: (_) => const OrderList()));
+                                Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (ctx) => const OrderList(),
+                                    ),
+                                    (route) => false);
                               });
                             },
                             child: Container(
@@ -193,16 +295,16 @@ class _HomeState extends State<Home> {
                           GestureDetector(
                             onTap: () {
                               setState(() {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => const IronClothes()));
-                                // Navigator.pushAndRemoveUntil(
+                                // Navigator.push(
                                 //     context,
                                 //     MaterialPageRoute(
-                                //       builder: (ctx) => const IronClothes(),
-                                //     ),
-                                //     (route) => false);
+                                //         builder: (_) => const IronClothes()));
+                                Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (ctx) => const IronClothes(),
+                                    ),
+                                    (route) => false);
                               });
                             },
                             child: Container(
@@ -373,4 +475,26 @@ class HeroCrouselCard extends StatelessWidget {
       ),
     );
   }
+}
+
+void openWhatsapp() async {
+  String Number = '78889786';
+  var urlNumber = 'https://wa.me/252615470677';
+  await launch(urlNumber);
+}
+
+void openGmail() {
+  Uri uri = Uri(
+    scheme: 'mailto',
+    path: 'dalkey8955@gmail.com',
+  );
+  launchUrl(uri);
+}
+
+void openCall() {
+  Uri uri = Uri(
+    scheme: 'tel',
+    path: '+252618098110',
+  );
+  launchUrl(uri);
 }

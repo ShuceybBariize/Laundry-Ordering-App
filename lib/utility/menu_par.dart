@@ -1,24 +1,47 @@
 import '../exports.dart';
 
-class Menu extends StatefulWidget {
-  const Menu({super.key});
+class drawerList extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  final VoidCallback ontap;
+  const drawerList({
+    super.key,
+    required this.icon,
+    required this.text,
+    required this.ontap,
+  });
 
-  @override
-  State<Menu> createState() => _MenuState();
-}
-
-class _MenuState extends State<Menu> {
   @override
   Widget build(BuildContext context) {
-    return const Drawer(
-      width: 250,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            bottomRight: Radius.circular(40),
-            topRight: Radius.circular(40),
+    return MaterialButton(
+      onPressed: ontap,
+      child: Container(
+        height: 60,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Kactivecolor,
+          borderRadius: BorderRadius.circular(50),
+        ),
+        child: Expanded(
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                size: 35,
+                color: Colors.grey,
+              ),
+              const SizedBox(
+                width: 20,
+              ),
+              Text(
+                text,
+                style: const TextStyle(
+                    color: Color.fromARGB(255, 71, 95, 106), fontSize: 20),
+              )
+            ],
           ),
-          side: BorderSide(color: Kactivecolor, width: 2.5)),
-      child: Text("fddf"),
+        ),
+      ),
     );
   }
 }

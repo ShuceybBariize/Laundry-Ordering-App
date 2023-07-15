@@ -3,10 +3,6 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:laundry_management_system/admin/admin_dashboard.dart';
-import 'package:laundry_management_system/pages/login.dart';
-import 'package:laundry_management_system/pages/onboarding_page.dart';
-import 'package:laundry_management_system/pages/profile.dart';
-import 'package:laundry_management_system/satff/screens/staff_dashboard.dart';
 
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
@@ -28,8 +24,9 @@ void main() async {
         ChangeNotifierProvider.value(value: ImageProfile()),
         ChangeNotifierProvider.value(value: UserProfile()),
         ChangeNotifierProvider.value(value: UploadImages()),
-        ChangeNotifierProvider.value(value: TotalPending()),
+        ChangeNotifierProvider.value(value: AdminUser()),
         ChangeNotifierProvider.value(value: StaffUser()),
+        // ChangeNotifierProvider.value(value: CustomerProvider()),
       ],
       child: const LaundryApp(),
     ),
@@ -38,7 +35,6 @@ void main() async {
 
 class LaundryApp extends StatefulWidget {
   const LaundryApp({super.key});
-
   @override
   State<LaundryApp> createState() => _LaundryAppState();
 }
@@ -69,7 +65,6 @@ class _LaundryAppState extends State<LaundryApp> {
     return Sizer(builder: (context, orientation, deviceType) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
-       
         initialRoute: FirebaseAuth.instance.currentUser == null
             ? OnboardingPage.id
             : LoginPage.id,

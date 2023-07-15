@@ -53,6 +53,16 @@ class CartProvider extends ChangeNotifier {
     } else {}
   }
 
+  // calculateTotalPrice() {
+  //   double totalPrice = 0;
+  //   for (var item in items) {
+  //     if (item.containsKey('clothPrice')) {
+  //       totalPrice += item['clothPrice'];
+  //       total = totalPrice;
+  //     }
+  //   }
+  //   return totalPrice.toStringAsFixed(2);
+  // }
   calculateTotalPrice() {
     double totalPrice = 0;
     for (var item in items) {
@@ -61,8 +71,18 @@ class CartProvider extends ChangeNotifier {
         total = totalPrice;
       }
     }
-    return totalPrice.toStringAsFixed(2);
+    return totalPrice;
   }
+
+  // double calculateTotalPrice() {
+  //   double totalPrice = 0;
+  //   for (var item in items) {
+  //     if (item.containsKey('clothPrice')) {
+  //       totalPrice += item['clothPrice'];
+  //     }
+  //   }
+  //   return totalPrice;
+  // }
 
   void decreaseQuantity(int index) {
     if (index >= 0 && index < items.length && items[index]['quantity'] > 1) {

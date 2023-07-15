@@ -4,107 +4,104 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:laundry_management_system/admin/screens/addproduct.dart';
 import 'package:laundry_management_system/admin/screens/create_users.dart';
-import 'package:laundry_management_system/admin/screens/delivered_view.dart';
-import 'package:laundry_management_system/admin/screens/ongoing_view.dart';
-import 'package:laundry_management_system/admin/screens/pending_view.dart';
-import 'package:laundry_management_system/admin/screens/productview.dart';
 import 'package:laundry_management_system/admin/screens/users.dart';
-import 'package:laundry_management_system/admin/widgets/custom_button.dart';
 
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
+import '../addproduct.dart';
 import '../exports.dart';
-import '../pages/login.dart';
-import '../satff/screens/completeorder.dart';
-import '../satff/screens/staff_dashboard.dart';
+import 'screens/delivered_view.dart';
+import 'screens/ongoing_view.dart';
+import 'screens/pending_view.dart';
+import 'screens/productview.dart';
+import 'widgets/custom_button.dart';
 
-class TotalPending extends ChangeNotifier {
+class AdminUser extends ChangeNotifier {
   int _totolUsersAdmins = 0;
   int _totolcustomers = 0;
   int allusers = 0;
   int _totalProducts = 0;
-  int totalproductdb = 0;
-  int totalironclothes = 0;
+  final int _totalproductdb = 0;
+  int _totalironclothes = 0;
   int _totalpendingOrders = 0;
   int _deliveredOrder = 0;
   int _completeOrders = 0;
   int _ongoingOrders = 0;
-  bool isloading = false;
+
+  int get totolUsersAdmins => _totolUsersAdmins;
+  int get totolcustomers => _totolcustomers;
+  // int get allusers => _allusers;
+  int get totalProducts => _totalProducts;
+  int get totalproductdb => _totalproductdb;
+  int get totalironclothes => _totalironclothes;
+  int get totalpendingOrders => _totalpendingOrders;
+  int get deliveredOrder => _deliveredOrder;
+  int get completeOrders => _completeOrders;
+  int get ongoingOrders => _ongoingOrders;
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
-  Future<int> _totalCustomerUsers() async {
+  Future<void> _stafftotalCustomers() async {
     QuerySnapshot querySnapshot = await firestore.collection('customers').get();
-    int totalusers = querySnapshot.docs.length;
-    _totolcustomers = totalusers;
-
+    _totolcustomers = querySnapshot.docs.length;
     notifyListeners();
-    return totalusers;
   }
 
-  Future<int> _totalUsersStaffs() async {
+  Future<void> _totalUsersStaffs() async {
     QuerySnapshot querySnapshot = await firestore.collection('users').get();
-    int totalusers = querySnapshot.docs.length;
 
-    _totolUsersAdmins = totalusers;
-
+    _totolUsersAdmins = querySnapshot.docs.length;
     notifyListeners();
-    return totalusers;
   }
 
-  Future<int> _totalProdcuts() async {
+  Future<void> _totalProdcuts() async {
     QuerySnapshot querySnapshot1 =
+        await firestore.collection('suitorder').get();
+    int totalsuitclothdb = querySnapshot1.docs.length;
+    _totalironclothes = totalsuitclothdb;
+    QuerySnapshot querySnapshot2 =
+        await firestore.collection('wash_iron_Oders').get();
+    int totalwashironclothdb = querySnapshot1.docs.length;
+    _totalironclothes = totalwashironclothdb;
+    QuerySnapshot querySnapshot3 =
         await firestore.collection('ironOrders').get();
     int totalironclothdb = querySnapshot1.docs.length;
-    // print('The total Customers users:  $totalusers');
-    totalironclothes = totalironclothdb;
+    _totalironclothes = totalironclothdb;
     QuerySnapshot querySnapshot = await firestore.collection('laundry').get();
     int totalproductdb = querySnapshot.docs.length;
-    // print('The total Customers users:  $totalusers');
-    totalproductdb = totalproductdb;
     _totalProducts = totalproductdb + totalironclothdb;
-
-    //print('the total products of collections are:  $totalProducts');
-
     notifyListeners();
-    return _totalProducts;
   }
 
-  Future<int> _totalPendingOrders() async {
+  Future<void> _totalPendingOrders() async {
     QuerySnapshot querySnapshot = await firestore
         .collection('cart_orders')
         .where('orderstatus', isEqualTo: '')
         .get();
-    int totalpending = querySnapshot.docs.length;
-    _totalpendingOrders = totalpending;
-    //print('The total of  pending orders:  $_totalpendingOrders');
-
+    _totalpendingOrders = querySnapshot.docs.length;
     notifyListeners();
-    return totalpending;
   }
 
-  Future<int> _deliveredOrders() async {
+  Future<void> _deliveredOrders() async {
     QuerySnapshot querySnapshot = await firestore
         .collection('cart_orders')
         .where('orderstatus', whereIn: [
       'delivered',
       'Delivered',
       'deliver',
-      'Deliver',
       'del',
       'Del',
-      'd',
       'D',
+      'd',
+      'Deliver',
     ]).get();
-    int totaldelivered = querySnapshot.docs.length;
-    _deliveredOrder = totaldelivered;
+    _deliveredOrder = querySnapshot.docs.length;
     notifyListeners();
-    return totaldelivered;
   }
 
-  Future<int> _ongoingOrder() async {
+//Ongoing order
+  Future<void> _ongoingOrder() async {
     QuerySnapshot querySnapshot = await firestore
         .collection('cart_orders')
         .where('orderstatus', whereIn: [
@@ -117,106 +114,85 @@ class TotalPending extends ChangeNotifier {
       'ongo',
       'Ongo',
     ]).get();
-    int totalongoing = querySnapshot.docs.length;
-    _ongoingOrders = totalongoing;
-
+    _ongoingOrders = querySnapshot.docs.length;
     notifyListeners();
-    return totalongoing;
   }
 
-  Future<int> _completeOrder() async {
+  Future<void> _CompleteOrder() async {
     QuerySnapshot querySnapshot = await firestore
         .collection('cart_orders')
         .where('orderstatus', whereIn: [
       'Com',
       'com',
-      'complete',
-      'Complete',
       'completed',
       'Completed',
+      'complete',
+      'Complete',
       'c',
       'C',
       'Comp',
       'comp'
     ]).get();
-    int totalcomplete = querySnapshot.docs.length;
-
-    _completeOrders = totalcomplete;
-    // print('The total of  pending orders:  $completeOrder');
-
+    _completeOrders = querySnapshot.docs.length;
     notifyListeners();
-    return totalcomplete;
   }
 
-  double totalmoney = 0.0;
-  Future<double> _getearnedMoney() async {
+  Future<void> _getearnedMoney() async {
     QuerySnapshot querySnapshot = await firestore
         .collection('cart_orders')
         .where('orderstatus', whereIn: [
       'delivered',
       'Delivered',
       'deliver',
-      'Deliver',
       'del',
       'Del',
-      'd',
       'D',
+      'd',
+      'Deliver',
     ]).get();
-    //int totalcomplete = querySnapshot.docs.length;
-
-    //  _completeOrders = totalcomplete;
-    // print('The total of  pending orders:  $completeOrder');
-
-    List<double> totalvalue = [];
-
-    if (querySnapshot.docs.isNotEmpty) {
-      for (DocumentSnapshot documentSnapshot in querySnapshot.docs) {
-        dynamic fieldValue = documentSnapshot.get('Total');
-        totalvalue.add(fieldValue);
-        totalmoney = totalmoney + fieldValue;
-      }
-    }
-    print('total money of completed delivery are:  $totalmoney');
-    return totalmoney;
+    _deliveredOrder = querySnapshot.docs.length;
+    notifyListeners();
   }
 
+  Future<void> fetchData() async {
+    // await _totalCustomerUsers();
+    await _totalUsersStaffs();
+    await _totalProdcuts();
+    await _totalPendingOrders();
+    await _deliveredOrders();
+    await _ongoingOrder();
+    await _CompleteOrder();
+  }
+}
+
+class AdminDashboard extends StatefulWidget {
+  const AdminDashboard({super.key});
+
+  @override
+  State<AdminDashboard> createState() => _AdminDashboardState();
+}
+
+class _AdminDashboardState extends State<AdminDashboard> {
   // Future waiting() async {
   //   await Future.delayed(const Duration(seconds: 3));
   // }
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _totalCustomerUsers();
-  //   _totalUsersStaffs();
-  //   _totalProdcuts();
-  //   _totalPendingOrders();
-  //   _deliveredOrders();
-  //   _ongoingOrder();
-  //   _completeOrder();
+  bool isloading = false;
+  @override
+  void initState() {
+    super.initState();
 
-  //   notifyListeners();
-  //   //Future.delayed(Duration(seconds: 5));
-  // }
-}
-
-class AdminDashboard extends StatelessWidget {
-  const AdminDashboard({super.key});
+    Provider.of<AdminUser>(context, listen: false).fetchData();
+    //Future.delayed(Duration(seconds: 5));
+  }
 
   @override
   Widget build(BuildContext context) {
     final ImgProfile = Provider.of<UserProfile>(context);
-    final totalPending = Provider.of<TotalPending>(context);
-    totalPending._totalCustomerUsers();
-    totalPending._totalUsersStaffs();
-    totalPending._totalProdcuts();
-    totalPending._totalPendingOrders();
-    totalPending._deliveredOrders();
-    totalPending._ongoingOrder();
-    totalPending._completeOrder();
+    final adminAccess = Provider.of<AdminUser>(context);
 
     final currentUser = FirebaseAuth.instance.currentUser;
-    totalPending.allusers =
-        totalPending._totolUsersAdmins + totalPending._totolcustomers;
+    adminAccess.allusers =
+        adminAccess.totolUsersAdmins + adminAccess.totolcustomers;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -275,8 +251,8 @@ class AdminDashboard extends StatelessWidget {
                                               children: [
                                                 Expanded(
                                                   child: InkWell(
-                                                    child: Column(
-                                                      children: const [
+                                                    child: const Column(
+                                                      children: [
                                                         Icon(
                                                           Icons
                                                               .camera_alt_outlined,
@@ -308,8 +284,8 @@ class AdminDashboard extends StatelessWidget {
                                                 ),
                                                 Expanded(
                                                   child: InkWell(
-                                                    child: Column(
-                                                      children: const [
+                                                    child: const Column(
+                                                      children: [
                                                         Icon(
                                                           Icons.image,
                                                           size: 60,
@@ -352,6 +328,8 @@ class AdminDashboard extends StatelessWidget {
                                       height: 170,
                                       width: 170,
                                       decoration: BoxDecoration(
+                                          border: Border.all(
+                                              width: 4, color: Kactivecolor),
                                           shape: BoxShape.circle,
                                           image: DecorationImage(
                                               fit: BoxFit.cover,
@@ -385,8 +363,8 @@ class AdminDashboard extends StatelessWidget {
                                               children: [
                                                 Expanded(
                                                   child: InkWell(
-                                                    child: Column(
-                                                      children: const [
+                                                    child: const Column(
+                                                      children: [
                                                         Icon(
                                                           Icons
                                                               .camera_alt_outlined,
@@ -424,8 +402,8 @@ class AdminDashboard extends StatelessWidget {
                                                 ),
                                                 Expanded(
                                                   child: InkWell(
-                                                    child: Column(
-                                                      children: const [
+                                                    child: const Column(
+                                                      children: [
                                                         Icon(
                                                           Icons.image,
                                                           size: 60,
@@ -467,25 +445,26 @@ class AdminDashboard extends StatelessWidget {
                                       });
                                 },
                                 child: Container(
+                                  height: 170,
+                                  width: 170,
                                   margin: const EdgeInsets.only(top: 10),
                                   decoration: BoxDecoration(
                                     border:
                                         Border.all(color: Colors.red, width: 1),
                                     borderRadius: BorderRadius.circular(360),
                                   ),
-                                  child: CircleAvatar(
+                                  child: const CircleAvatar(
                                     radius: 60,
-                                    backgroundColor: Colors.black,
+                                    backgroundColor: Kactivecolor,
                                     child: CircleAvatar(
-                                      radius: 60,
+                                      radius: 80,
                                       backgroundColor: Colors.grey,
-                                      backgroundImage: NetworkImage(
-                                          userData['image'].toString(),
-                                          scale: 1.2),
+                                      backgroundImage:
+                                          AssetImage("assets/profile.png"),
                                       child: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.end,
-                                        children: const [
+                                        children: [
                                           Icon(
                                             Icons.add,
                                             color: Colors.black,
@@ -529,11 +508,10 @@ class AdminDashboard extends StatelessWidget {
                           builder: (ctx) => const UsersButton(),
                         ));
 
-                    print(
-                        'the tolal users are: $totalPending._totalpendingOrders');
+                    print(adminAccess._totalpendingOrders.toString());
                   },
                   title: 'Users',
-                  no: '$totalPending.allusers',
+                  no: adminAccess.allusers.toString(),
                 ),
                 const SizedBox(width: 10),
                 Admin_controlers(
@@ -553,10 +531,8 @@ class AdminDashboard extends StatelessWidget {
               children: [
                 Admin_controlers(
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const AddProductForm()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => const AddProduct()));
 
                     // totalProdcuts();
                   },
@@ -567,9 +543,7 @@ class AdminDashboard extends StatelessWidget {
                 Admin_controlers(
                   no: '\$140',
                   onPressed: () {
-                    // setState(() {
-                    totalPending._getearnedMoney();
-                    // });
+                    adminAccess._getearnedMoney();
                   },
                   title: 'Earning',
                 ),
@@ -588,7 +562,7 @@ class AdminDashboard extends StatelessWidget {
                     // totalProdcuts();
                   },
                   title: 'products',
-                  no: '$totalPending._totalProducts',
+                  no: adminAccess.totalProducts.toString(),
                 ),
                 const SizedBox(width: 10),
                 Admin_controlers(
@@ -597,7 +571,7 @@ class AdminDashboard extends StatelessWidget {
                         MaterialPageRoute(builder: (_) => const PendingView()));
                   },
                   title: 'Pending order',
-                  no: '$totalPending._totalpendingOrders',
+                  no: adminAccess.totalpendingOrders.toString(),
                 ),
               ],
             ),
@@ -612,7 +586,7 @@ class AdminDashboard extends StatelessWidget {
                     // totalProdcuts();
                   },
                   title: 'Ongoing order',
-                  no: ' $totalPending._ongoingOrders',
+                  no: adminAccess.ongoingOrders.toString(),
                 ),
                 const SizedBox(width: 10),
                 Admin_controlers(
@@ -623,7 +597,7 @@ class AdminDashboard extends StatelessWidget {
                             builder: (_) => const CompleteOrders()));
                   },
                   title: 'Completed order',
-                  no: '$totalPending._completeOrders',
+                  no: adminAccess.completeOrders.toString(),
                 ),
               ],
             ),
@@ -646,7 +620,7 @@ class AdminDashboard extends StatelessWidget {
                     ],
                   ),
                   child: Admin_controlers(
-                    no: '$totalPending._deliveredOrder',
+                    no: adminAccess.deliveredOrder.toString(),
                     onPressed: () {
                       Navigator.push(
                           context,

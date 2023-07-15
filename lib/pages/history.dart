@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'dart:math';
 
 import '../exports.dart';
 
@@ -38,25 +37,26 @@ class _HistoryPageState extends State<HistoryPage> {
 
     // String email = 'your_email@example.com';
 
-    // String? email = FirebaseAuth.instance.currentUser!.email;
-    // String? user = FirebaseAuth.instance.currentUser!.email;
-    // String value;
-    // Future<String> displayStatusOrder() async {
-    //   await Future.delayed(const Duration(seconds: 2));
-    //   List<String> fieldValues = await getFieldValuesByEmail(user!);
-    //   if (fieldValues.isNotEmpty) {
-    //     print('Field Values:');
-    //     for (String fieldValue in fieldValues) {
-    //       print('the fieldvalue:  $fieldValue');
-    //       value = fieldValue;
-    //       print('the value: ' + value);
-    //       return fieldValue;
-    //     }
-    //   } else {
-    //     print('No matching documents found.');
-    //   }
-    //   return value;
-    // }
+    // ignore: unused_local_variable
+    String? email = FirebaseAuth.instance.currentUser!.email;
+    String? user = FirebaseAuth.instance.currentUser!.email;
+    String value = '';
+    Future<String> displayStatusOrder() async {
+      await Future.delayed(const Duration(seconds: 2));
+      List<String> fieldValues = await getFieldValuesByEmail(user!);
+      if (fieldValues.isNotEmpty) {
+        print('Field Values:');
+        for (String fieldValue in fieldValues) {
+          print('the fieldvalue:  $fieldValue');
+          value = fieldValue;
+          print('the value: $value');
+          return fieldValue;
+        }
+      } else {
+        print('No matching documents found.');
+      }
+      return value;
+    }
 
     var today = DateTime.now();
 
@@ -70,7 +70,7 @@ class _HistoryPageState extends State<HistoryPage> {
       ),
       body: Center(
         child: FutureBuilder<String>(
-          // future: displayStatusOrder(),
+          future: displayStatusOrder(),
           builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicator();
@@ -78,14 +78,13 @@ class _HistoryPageState extends State<HistoryPage> {
               return Text('Error: ${snapshot.error}');
             } else {
               return snapshot.data!.isEmpty
-                  ? Container()
+                  ? Container() // here this container will retain if orderstatus is empty
                   : Column(
                       children: [
                         Histrory_Laundry(
                           orderStatus: snapshot.data,
                           time: currentDate.toString(),
                         ),
-                        const Text("the filed is: ")
                       ],
                     );
 
@@ -160,8 +159,8 @@ class Histrory_Laundry extends StatelessWidget {
                   Column(
                     children: [
                       Container(
-                        height: 40,
-                        width: 100,
+                        height: 70,
+                        width: 200,
                         decoration: BoxDecoration(
                             color: Colors.green,
                             borderRadius: BorderRadius.circular(30)),

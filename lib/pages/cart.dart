@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:laundry_management_system/pages/payment.dart';
 
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
@@ -11,8 +12,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../exports.dart';
 import '../provider.dart';
 import '../utility/cart_item.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class CartScreen extends StatelessWidget {
   static const String id = 'CartScreen';
@@ -172,43 +171,23 @@ class CartScreen extends StatelessWidget {
                     ),
                     const SizedBox(width: 15),
                     Expanded(
-                      child: OrderNowButton(onTap: () async {
-                        String? accountNo = await getAccountNo();
-                        String totalAmount = value.calculateTotalPrice();
-                        if (accountNo != null) {
-                          bool paymentResult = await makePayment(
-                              accountNo, double.parse(totalAmount));
-                          if (paymentResult) {
-                            print('Payment Successful');
+                      child: OrderNowButton(
+                        onTap: () {
+                          if (value.items.isNotEmpty) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => Payments(
+                                        TotalItemCount: value.items.length,
+                                        totalCartValue:
+                                            value.calculateTotalPrice(),
+                                      )),
+                            );
                           } else {
-                            print('Payment Failed');
+                            value.checkOutOrder(context, "$Fieldname");
                           }
-
-                          // Use a parent context for showDialog
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext dialogContext) {
-                              return AlertDialog(
-                                title: const Text('Payment Result'),
-                                content: Text(paymentResult
-                                    ? 'Payment Successful'
-                                    : 'Payment Failed'),
-                                actions: [
-                                  TextButton(
-                                    child: const Text('OK'),
-                                    onPressed: () {
-                                      Navigator.of(dialogContext).pop();
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        } else {
-                          print('Failed to get account number');
-                        }
-                        value.checkOutOrder(context, "$Fieldname");
-                      }),
+                        },
+                      ),
                     )
                   ],
                 ),
@@ -234,69 +213,6 @@ Future<String?> getAccountNo() async {
   } else {
     print('No matching documents found.');
     return null;
-  }
-}
-
-Future<bool> performAdditionalAction() async {
-  Completer<bool> completer = Completer<bool>();
-
-  // Simulating additional action delay
-  await Future.delayed(const Duration(seconds: 2));
-
-  // Perform the additional action
-  // Replace this with your actual logic
-  bool isSuccess = true;
-
-  // Complete the completer based on the action result
-  if (isSuccess) {
-    completer.complete(true);
-  } else {
-    completer.complete(false);
-  }
-
-  // Return the future of the completer
-  return completer.future;
-}
-
-Future<bool> makePayment(String accountNo, double tatalAmount) async {
-  var url = Uri.parse('https://api.waafipay.net/asm');
-
-  // Create the payment code JSON payload
-  var paymentCode = {
-    "schemaVersion": "1.0",
-    "requestId": "10111331033",
-    "timestamp": "client_timestamp",
-    "channelName": "WEB",
-    "serviceName": "API_PURCHASE",
-    "serviceParams": {
-      "merchantUid": "M0910291",
-      "apiUserId": "1000416",
-      "apiKey": "API-675418888AHX",
-      "paymentMethod": "mwallet_account",
-      "payerInfo": {"accountNo": accountNo},
-      "transactionInfo": {
-        "referenceId": "12334",
-        "invoiceId": "7896504",
-        "amount": tatalAmount,
-        "currency": "USD",
-        "description": "Test USD"
-      }
-    }
-  };
-// Make the HTTP POST request
-  var response = await http.post(
-    url,
-    headers: {'Content-Type': 'application/json'},
-    body: json.encode(paymentCode),
-  );
-
-  // Check the response status
-  if (response.statusCode == 200) {
-    // Payment successful
-    return true;
-  } else {
-    // Payment failed
-    return false;
   }
 }
 
@@ -333,7 +249,7 @@ class OrderNowButton extends StatelessWidget {
               ),
               const SizedBox(width: 15),
               Text(
-                'Order Now',
+                'Check Order',
                 style: TextStyle(
                   color: Theme.of(context).primaryColor,
                   fontFamily: 'Gilroy',

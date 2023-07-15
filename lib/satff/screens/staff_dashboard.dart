@@ -4,16 +4,10 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:laundry_management_system/satff/screens/pendingorder.dart';
-import 'package:laundry_management_system/satff/screens/productsView.dart';
-import 'package:laundry_management_system/satff/screens/staffuserview.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import '../../admin/admin_dashboard.dart';
 import '../../exports.dart';
-import '../../pages/login.dart';
-import 'completeorder.dart';
-import 'deliveredorder.dart';
-import 'ongoingorders.dart';
 
 class StaffUser extends ChangeNotifier {
   int _totolcustomers = 0;
@@ -400,22 +394,23 @@ class _StaffDashboardState extends State<StaffDashboard> {
                                     });
                               },
                               child: Container(
+                                height: 170,
+                                width: 170,
                                 margin: const EdgeInsets.only(top: 10),
                                 decoration: BoxDecoration(
                                   border:
                                       Border.all(color: Colors.red, width: 1),
                                   borderRadius: BorderRadius.circular(360),
                                 ),
-                                child: CircleAvatar(
+                                child: const CircleAvatar(
                                   radius: 60,
                                   backgroundColor: Colors.black,
                                   child: CircleAvatar(
                                     radius: 60,
                                     backgroundColor: Colors.grey,
-                                    backgroundImage: NetworkImage(
-                                        userData['image'].toString(),
-                                        scale: 1.2),
-                                    child: const Column(
+                                    backgroundImage:
+                                        AssetImage("assets/profile.png"),
+                                    child: Column(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         Icon(
@@ -462,7 +457,7 @@ class _StaffDashboardState extends State<StaffDashboard> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (ctx) => const UserStaffScreen(),
+                        builder: (ctx) => const AdminDashboard(),
                       ));
                 },
                 title: 'Users',

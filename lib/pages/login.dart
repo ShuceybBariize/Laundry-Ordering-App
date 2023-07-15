@@ -3,31 +3,26 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../admin/admin_dashboard.dart';
 import '../exports.dart';
-import '../satff/screens/staff_dashboard.dart';
 import '../utility/middle_auth.dart';
-import 'forgotpassward.dart';
-import 'home.dart';
-import 'registration.dart';
 
 class LoginPage extends StatefulWidget {
   static String id = 'loginpage';
-  const LoginPage({super.key});
+
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _email = TextEditingController();
-  final _password = TextEditingController();
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
 
   bool _isObscure = true;
   bool visible = false;
   bool isloading = false;
-  // final String emailcheck = "dalkey@gmail.com";
-  var email = "tony123_90874.coder@yahoo.co.in";
 
-  final _formkey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +41,9 @@ class _LoginPageState extends State<LoginPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const CustomTitles(
-                      subtitle: "Login into your account",
-                      title: "Lets get started"),
+                    subtitle: "Login into your account",
+                    title: "Lets get started",
+                  ),
                   const SizedBox(
                     height: 9,
                   ),
@@ -87,9 +83,10 @@ class _LoginPageState extends State<LoginPage> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                    color: Kinactivetextcolor, width: 1)),
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                  color: Kinactivetextcolor, width: 1),
+                            ),
                             hintText: "Enter Your Email",
                           ),
                           validator: (value) {
@@ -97,16 +94,13 @@ class _LoginPageState extends State<LoginPage> {
                               return "Email cannot be empty";
                             }
                             bool emailValid = RegExp(
-                                    r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
-                                .hasMatch(value);
+                              r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$',
+                            ).hasMatch(value);
 
                             if (!emailValid) {
-                              return ("Please enter a valid email");
+                              return "Please enter a valid email";
                             }
                             return null;
-                          },
-                          onSaved: (value) {
-                            _email.text = value!;
                           },
                           keyboardType: TextInputType.emailAddress,
                         ),
@@ -117,8 +111,11 @@ class _LoginPageState extends State<LoginPage> {
                           controller: _password,
                           obscureText: _isObscure,
                           decoration: InputDecoration(
-                            prefixIcon: const Icon(MdiIcons.lock,
-                                color: Kactivecolor, size: 22),
+                            prefixIcon: const Icon(
+                              MdiIcons.lock,
+                              color: Kactivecolor,
+                              size: 22,
+                            ),
                             suffix: InkWell(
                               child: Icon(_isObscure
                                   ? Icons.visibility
@@ -137,9 +134,10 @@ class _LoginPageState extends State<LoginPage> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                    color: Kinactivetextcolor, width: 1)),
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                  color: Kinactivetextcolor, width: 1),
+                            ),
                             hintText: "Enter Your Password",
                           ),
                           validator: (value) {
@@ -148,46 +146,50 @@ class _LoginPageState extends State<LoginPage> {
                               return "Password cannot be empty";
                             }
                             if (!regex.hasMatch(value)) {
-                              return ("please enter valid password min. 6 character");
-                            } else {
-                              return null;
+                              return "Please enter a valid password (minimum 6 characters)";
                             }
-                          },
-                          onSaved: (value) {
-                            _password.text = value!;
+                            return null;
                           },
                           keyboardType: TextInputType.emailAddress,
                         ),
                         Visibility(
-                            maintainSize: true,
-                            maintainAnimation: true,
-                            maintainState: true,
-                            visible: visible,
-                            child: Center(
-                              child: Container(
-                                  child: const CircularProgressIndicator(
+                          maintainSize: true,
+                          maintainAnimation: true,
+                          maintainState: true,
+                          visible: visible,
+                          child: Center(
+                            child: Container(
+                              child: const CircularProgressIndicator(
                                 color: Colors.black,
-                              )),
-                            )),
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const ForgotScreen()));
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ForgotScreen(),
+                        ),
+                      );
                     },
                     child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text("Forget Password?",
-                              style: GoogleFonts.inter(
-                                  color: Kactivecolor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15))
-                        ]),
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          "Forget Password?",
+                          style: GoogleFonts.inter(
+                            color: Kactivecolor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(
                     height: 20,
@@ -224,49 +226,38 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(
                     height: 20,
                   ),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Divider(
-                        color: Kinactivetextcolor,
-                        thickness: 1,
-                      ),
-                      Text("Or Login With account"),
-                      Divider(
-                        color: Kinactivetextcolor,
-                        thickness: 1,
-                        endIndent: 12,
-                        height: 12,
-                      ),
-                    ],
-                  ),
                   SizedBox(
                     height: 40,
                     child: Row(
-                      // crossAxisAlignment: CrossAxisAlignment.end,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Don't have an account ?",
+                          "Don't have an account?",
                           style: GoogleFonts.inter(
-                              color: Kinactivetextcolor,
-                              fontSize: 17,
-                              fontWeight: FontWeight.w400),
+                            color: Kinactivetextcolor,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
                         const SizedBox(
                           width: 6,
                         ),
                         GestureDetector(
                           onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const SignUpUsers())),
-                          child: Text("Register",
-                              style: GoogleFonts.inter(
-                                  color: Kactivecolor,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold)),
-                        )
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SignUpUsers(),
+                            ),
+                          ),
+                          child: Text(
+                            "Register",
+                            style: GoogleFonts.inter(
+                              color: Kactivecolor,
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),

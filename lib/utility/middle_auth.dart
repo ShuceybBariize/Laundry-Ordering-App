@@ -1,8 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../exports.dart';
-import '../pages/home.dart';
-import '../pages/login.dart';
 
 class MiddleAuth extends StatelessWidget {
   const MiddleAuth({super.key});

@@ -134,7 +134,7 @@ class ProfilePage extends StatelessWidget {
             "Edit $field",
             style: const TextStyle(color: Colors.white),
           ),
-          content: TextField(
+          content: TextFormField(
             autofocus: true,
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
@@ -280,9 +280,13 @@ class ProfilePage extends StatelessWidget {
                           child: Column(
                             children: [
                               Container(
-                                height: 170,
-                                width: 170,
+                                height: 200,
+                                width: 200,
                                 decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Kactivecolor,
+                                      width: 4,
+                                    ),
                                     shape: BoxShape.circle,
                                     image: DecorationImage(
                                         fit: BoxFit.cover,
@@ -388,15 +392,14 @@ class ProfilePage extends StatelessWidget {
                                   );
                                 });
                           },
-                          child: CircleAvatar(
-                            radius: 120,
-                            backgroundColor: Colors.black,
+                          child: const CircleAvatar(
+                            radius: 94,
+                            backgroundColor: Kactivecolor,
                             child: CircleAvatar(
-                              radius: 110,
+                              radius: 90,
                               backgroundColor: Colors.grey,
-                              backgroundImage:
-                                  NetworkImage(userData['image'].toString()),
-                              child: const Column(
+                              backgroundImage: AssetImage("assets/profile.png"),
+                              child: Column(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   Icon(
@@ -451,13 +454,13 @@ class ProfilePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 50),
                   //user posts
-                  Padding(
-                    padding: const EdgeInsets.only(left: 25.0),
-                    child: Text(
-                      "my post",
-                      style: TextStyle(color: Colors.grey[600]),
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.only(left: 25.0),
+                  //   child: Text(
+                  //     "my post",
+                  //     style: TextStyle(color: Colors.grey[600]),
+                  //   ),
+                  // ),
                 ],
               );
             } else if (snapshot.hasError) {
@@ -472,40 +475,3 @@ class ProfilePage extends StatelessWidget {
         ));
   }
 }
-
-// class ProfileModel {
-//   int? phone;
-//   String? name;
-
-//   ProfileModel({
-//     this.phone,
-//     this.name,
-//   });
-
-//   ProfileModel.fromJson(Map<String, dynamic> json) {
-//     phone = json['id'];
-//     name = json['name'];
-//   }
-
-//   Map<String, dynamic> toJson() {
-//     return {
-//       'id': phone,
-//       'name': name,
-//     };
-//   }
-// }
-
-// class StrogeMethods {
-//   final FirebaseStorage _storage = FirebaseStorage.instance;
-//   final FirebaseAuth _auth = FirebaseAuth.instance;
-
-//   //Adding image to firebase storage
-//   Future<String> uploadImageToStorage(String childName, Uint8List file) async {
-//     Reference ref =
-//         _storage.ref().child(childName).child(_auth.currentUser!.uid);
-//     UploadTask uploadTask = ref.putData(file);
-//     TaskSnapshot snapshot = await uploadTask;
-//     String downloadUrl = await snapshot.ref.getDownloadURL();
-//     return downloadUrl;
-//   }
-// }

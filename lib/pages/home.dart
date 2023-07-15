@@ -3,10 +3,6 @@ import 'package:water_drop_nav_bar/water_drop_nav_bar.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 
 import '../exports.dart';
-import 'chat.dart';
-import 'history.dart';
-import 'home_page.dart';
-import 'profile.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({
@@ -28,7 +24,7 @@ class _HomePageState extends State<HomePage> {
   int btn1 = 0;
   final screens = [
     const Home(),
-    const ChatPage(),
+
     const HistoryPage(),
     ProfilePage()
     // proImage(),
@@ -53,10 +49,6 @@ class _HomePageState extends State<HomePage> {
               BarItem(
                 filledIcon: Icons.home,
                 outlinedIcon: Icons.home_outlined,
-              ),
-              BarItem(
-                filledIcon: IconlyLight.message,
-                outlinedIcon: IconlyLight.message,
               ),
               BarItem(filledIcon: Icons.history, outlinedIcon: Icons.history),
               BarItem(filledIcon: Icons.person, outlinedIcon: Icons.person),

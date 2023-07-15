@@ -52,21 +52,25 @@ class OnboardingPage extends StatelessWidget {
                   ),
                   // const SizedBox(height: 43),
                   Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        custombtn(
-                          colorbtn: Colors.white,
-                          onpress: () => Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                builder: (ctx) => const LoginPage(),
-                              ),
-                              (route) => false),
-                          txtbtn: "Get Started",
-                          colortxt: Kactivecolor,
-                        ),
-                      ],
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          custombtn(
+                            colorbtn: Colors.white,
+                            onpress: () => Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (ctx) => const LoginPage(),
+                                ),
+                                (route) => false),
+                            txtbtn: "Get Started",
+                            colortxt: Kactivecolor,
+                          ),
+                        ],
+                      ),
                     ),
                   )
                 ],
