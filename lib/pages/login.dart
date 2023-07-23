@@ -85,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: const BorderSide(
-                                  color: Kinactivetextcolor, width: 1),
+                                  color: Kactivecolor, width: 1),
                             ),
                             hintText: "Enter Your Email",
                           ),
@@ -117,9 +117,11 @@ class _LoginPageState extends State<LoginPage> {
                               size: 22,
                             ),
                             suffix: InkWell(
-                              child: Icon(_isObscure
-                                  ? Icons.visibility
-                                  : Icons.visibility_off),
+                              child: Icon(
+                                  _isObscure
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: Kactivecolor),
                               onTap: () {
                                 setState(() {
                                   _isObscure = !_isObscure;
@@ -136,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: const BorderSide(
-                                  color: Kinactivetextcolor, width: 1),
+                                  color: Kactivecolor, width: 1),
                             ),
                             hintText: "Enter Your Password",
                           ),

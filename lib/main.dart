@@ -26,7 +26,7 @@ void main() async {
         ChangeNotifierProvider.value(value: UploadImages()),
         ChangeNotifierProvider.value(value: AdminUser()),
         ChangeNotifierProvider.value(value: StaffUser()),
-        // ChangeNotifierProvider.value(value: CustomerProvider()),
+        ChangeNotifierProvider.value(value: UserProfileAdmin()),
       ],
       child: const LaundryApp(),
     ),

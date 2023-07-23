@@ -1,8 +1,6 @@
 import 'dart:io';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../exports.dart';
@@ -20,19 +18,17 @@ class UploadImages extends ChangeNotifier {
     final pickedFile = await picker.getImage(source: source);
 
     if (pickedFile != null) {
-      File? croppedImage = await _cropImage(File(pickedFile.path));
-      // _image = File(pickedFile.path);
-      if (croppedImage != null) {
-        _image = croppedImage;
-        uploadImageToFirebase();
-        notifyListeners();
-      }
+      _image = File(pickedFile.path);
+      uploadImageToFirebase();
+      notifyListeners();
+      // if (croppedImage != null) {
+      //   _image = croppedImage;
+
+      // }
     }
   }
 
   Future<void> uploadImageToFirebase() async {
-    final currentUser = FirebaseAuth.instance.currentUser;
-
     // collaction of customer
     // final custCollection = FirebaseFirestore.instance.collection("productdb");
     if (_image != null) {
@@ -69,38 +65,38 @@ class UploadImages extends ChangeNotifier {
     }
   }
 
-  Future<File?> _cropImage(File imageFile) async {
-    File? croppedFile = await ImageCropper().cropImage(
-      sourcePath: imageFile.path,
-      aspectRatioPresets: Platform.isAndroid
-          ? [
-              CropAspectRatioPreset.square,
-              CropAspectRatioPreset.original,
-              CropAspectRatioPreset.ratio3x2,
-              CropAspectRatioPreset.ratio4x3,
-              CropAspectRatioPreset.ratio16x9
-            ]
-          : [
-              CropAspectRatioPreset.original,
-              CropAspectRatioPreset.square,
-              CropAspectRatioPreset.ratio16x9,
-              CropAspectRatioPreset.ratio3x2,
-              CropAspectRatioPreset.ratio5x3,
-              CropAspectRatioPreset.ratio4x3,
-              CropAspectRatioPreset.ratio7x5,
-            ],
-      androidUiSettings: const AndroidUiSettings(
-        toolbarTitle: 'Crop Image',
-        toolbarColor: Colors.deepOrange,
-        toolbarWidgetColor: Colors.white,
-        initAspectRatio: CropAspectRatioPreset.original,
-        lockAspectRatio: false,
-      ),
-      iosUiSettings: const IOSUiSettings(
-        title: 'Crop Image',
-      ),
-    );
+//  Future<CroppedFile?> _cropImage(File imageFile) async {
+//     final croppedFile = await ImageCropper().cropImage(
+//         sourcePath: imageFile.path,
+//         aspectRatioPresets: Platform.isAndroid
+//             ? [
+//                 CropAspectRatioPreset.square,
+//                 CropAspectRatioPreset.original,
+//                 CropAspectRatioPreset.ratio3x2,
+//                 CropAspectRatioPreset.ratio4x3,
+//                 CropAspectRatioPreset.ratio16x9
+//               ]
+//             : [
+//                 CropAspectRatioPreset.original,
+//                 CropAspectRatioPreset.square,
+//                 CropAspectRatioPreset.ratio16x9,
+//                 CropAspectRatioPreset.ratio3x2,
+//                 CropAspectRatioPreset.ratio5x3,
+//                 CropAspectRatioPreset.ratio4x3,
+//                 CropAspectRatioPreset.ratio7x5,
+//               ],
+//         uiSettings: [
+//           AndroidUiSettings(
+//               toolbarTitle: "Image Cropper",
+//               toolbarColor: Colors.orange,
+//               toolbarWidgetColor: Colors.white,
+//               initAspectRatio: CropAspectRatioPreset.original,
+//               lockAspectRatio: false),
+//           IOSUiSettings(
+//             title: "Image Corpper",
+//           )
+//         ]);
 
-    return croppedFile;
-  }
+//     return croppedFile;
+//   }
 }

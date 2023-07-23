@@ -1,56 +1,33 @@
 // ignore_for_file: depend_on_referenced_packages
 
-import 'package:firebase_database/firebase_database.dart';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart' show FirebaseFirestore;
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import '../../exports.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../widgets/uploadproductimages.dart';
-
-class AddProduct extends StatefulWidget {
-  const AddProduct({super.key});
+class UploadSliderImages extends StatefulWidget {
+  const UploadSliderImages({super.key});
 
   @override
-  State<AddProduct> createState() => _AddProductState();
+  State<UploadSliderImages> createState() => _UploadSliderImagesState();
 }
 
 // final firestor = FirebaseFirestore.instance.collection("productdb");
 
-class _AddProductState extends State<AddProduct> {
-  late String txtid = '',
-      txtclothid = '',
-      txtclothname = '',
-      txtinitialprice = '',
-      txtclothprice = '',
-      txtinitialPrice = '',
-      txtquantity = '';
+class _UploadSliderImagesState extends State<UploadSliderImages> {
+  late String imageName = '';
   bool isloading = false;
   // imageurl = '';
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _id = TextEditingController();
-  final TextEditingController _clothId = TextEditingController();
-  final TextEditingController _clothName = TextEditingController();
-  final TextEditingController _initialPrice = TextEditingController();
-  final TextEditingController _clothPrice = TextEditingController();
-  final TextEditingController _quanity = TextEditingController();
-  // ignore: unused_field
-  // final TextEditingController _imageUrl = TextEditingController();
 
-  final databaseReference =
-      // ignore: deprecated_member_use
-      FirebaseDatabase.instance.reference().child("prodcutdb");
-  var collectionName = "productdb";
+  final TextEditingController _imageName = TextEditingController();
+  // final TextEditingController _clothId = TextEditingController();
+
   // String _currentItemSelected = "productdb";
-  void clearControlers() {
-    _id.clear();
-    _clothId.clear();
-    _clothName.clear();
-    _initialPrice.clear();
-    _clothPrice.clear();
-    _quanity.clear();
-  }
 
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
@@ -58,15 +35,15 @@ class _AddProductState extends State<AddProduct> {
   void showSnack(String title) {
     final snackbar = SnackBar(
       content: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: const BoxDecoration(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
           color: Color.fromARGB(255, 1, 29, 5),
           borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
         child: Text(
           title,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 15,
           ),
         ),
@@ -74,19 +51,19 @@ class _AddProductState extends State<AddProduct> {
       behavior: SnackBarBehavior.floating,
       backgroundColor: Colors.transparent,
       elevation: 0,
-      duration: const Duration(seconds: 2),
+      duration: Duration(seconds: 2),
     );
     scaffoldMessengerKey.currentState?.showSnackBar(snackbar);
   }
 
   @override
   Widget build(BuildContext context) {
-    final productImages = Provider.of<UploadImages>(context);
+    final imageSlder = Provider.of<UploadSliderImage>(context);
     return ScaffoldMessenger(
       key: scaffoldMessengerKey,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Add Prodcuts to the firestoer"),
+          title: Text("Add Prodcuts to the firestoer"),
           centerTitle: true,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
@@ -107,9 +84,9 @@ class _AddProductState extends State<AddProduct> {
                     const SizedBox(
                       height: 10,
                     ),
-                    const Text(
+                    Text(
                       "Add the product in here",
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 25,
                         color: Colors.blue,
                         fontWeight: FontWeight.w500,
@@ -118,86 +95,17 @@ class _AddProductState extends State<AddProduct> {
                     const SizedBox(
                       height: 10,
                     ),
-                    TextFormField(
-                      controller: _id,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.all(18),
-                        fillColor: Colors.black,
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Kinactivetextcolor, width: 1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                              color: Kinactivetextcolor, width: 1),
-                        ),
-                        hintText: "Enter Id",
-                      ),
-                      onSaved: (value) {
-                        txtid = value!;
-                      },
-                      validator: validateId,
-                    ),
+
                     const SizedBox(
                       height: 10,
                     ),
-                    TextFormField(
-                      controller: _clothId,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.all(18),
-                        fillColor: Colors.black,
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Kinactivetextcolor, width: 1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                                color: Kinactivetextcolor, width: 1)),
-                        hintText: "Enter cloth id",
-                      ),
-                      onSaved: (value) {
-                        txtclothid = value!;
-                      },
-                      validator: validateclothId,
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    TextFormField(
-                      controller: _clothName,
-                      keyboardType: TextInputType.visiblePassword,
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.all(18),
-                        fillColor: Colors.black,
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Kinactivetextcolor, width: 1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                                color: Kinactivetextcolor, width: 1)),
-                        hintText: "Enter cloth name",
-                      ),
-                      onSaved: (value) {
-                        txtclothname = value!;
-                      },
-                      validator: validateclothname,
-                    ),
+
                     const SizedBox(
                       height: 10,
                     ),
                     TextFormField(
                       obscureText: false,
-                      keyboardType: TextInputType.number,
-                      controller: _initialPrice,
+                      controller: _imageName,
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.all(18),
                         fillColor: Colors.black,
@@ -213,98 +121,24 @@ class _AddProductState extends State<AddProduct> {
                         hintText: "Enter initial price",
                       ),
                       onSaved: (value) {
-                        txtinitialPrice = value!;
+                        imageName = value!;
                       },
                       validator: validateInitalpirace,
                     ),
                     const SizedBox(
                       height: 10,
                     ),
-                    TextFormField(
-                      keyboardType: TextInputType.number,
-                      obscureText: false,
-                      controller: _clothPrice,
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.all(18),
-                        fillColor: Colors.black,
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Kinactivetextcolor, width: 1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                                color: Kinactivetextcolor, width: 1)),
-                        hintText: "Enter cloth price",
-                      ),
-                      onSaved: (value) {
-                        txtclothprice = value!;
-                      },
-                      validator: validateclothprice,
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    TextFormField(
-                      keyboardType: TextInputType.number,
-                      obscureText: false,
-                      controller: _quanity,
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.all(18),
-                        fillColor: Colors.black,
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Kinactivetextcolor, width: 1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                                color: Kinactivetextcolor, width: 1)),
-                        hintText: "Quantity",
-                      ),
-                      onSaved: (value) {
-                        txtquantity = value!;
-                      },
-                      validator: validateclothprice,
-                    ),
-                    // const SizedBox(
-                    //   height: 10,
-                    // ),
-                    // TextFormField(
-                    //   obscureText: false,
-                    //   controller: imageUrl,
-                    //   decoration: InputDecoration(
-                    //     contentPadding: const EdgeInsets.all(18),
-                    //     fillColor: Colors.black,
-                    //     enabledBorder: OutlineInputBorder(
-                    //       borderSide: const BorderSide(
-                    //           color: Kinactivetextcolor, width: 1),
-                    //       borderRadius: BorderRadius.circular(12),
-                    //     ),
-                    //     focusedBorder: OutlineInputBorder(
-                    //         borderRadius: BorderRadius.circular(12),
-                    //         borderSide: const BorderSide(
-                    //             color: Kinactivetextcolor, width: 1)),
-                    //     hintText: "Image url",
-                    //   ),
-                    //   onSaved: (value) {
-                    //     imageurl = value!;
-                    //   },
-                    //   validator: validateimageurl,
-                    // ),
 
                     const SizedBox(height: 20),
                     // here the begining of uplading image
-                    productImages.image != null
+                    imageSlder.image != null
                         ? Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Expanded(
                                 child: InkWell(
-                                  child: const Column(
-                                    children: [
+                                  child: Column(
+                                    children: const [
                                       Icon(
                                         Icons.camera_alt_outlined,
                                         size: 60,
@@ -325,8 +159,7 @@ class _AddProductState extends State<AddProduct> {
                                     ].request();
                                     if (statUser[Permission.camera]!
                                         .isGranted) {
-                                      productImages
-                                          .pickImage(ImageSource.camera);
+                                      imageSlder.pickImage(ImageSource.camera);
 
                                       // Navigator.pop(context);
                                     } else {
@@ -337,8 +170,8 @@ class _AddProductState extends State<AddProduct> {
                               ),
                               Expanded(
                                 child: InkWell(
-                                  child: const Column(
-                                    children: [
+                                  child: Column(
+                                    children: const [
                                       Icon(
                                         Icons.image,
                                         size: 60,
@@ -359,8 +192,7 @@ class _AddProductState extends State<AddProduct> {
                                     ].request();
                                     if (statUser[Permission.storage]!
                                         .isGranted) {
-                                      productImages
-                                          .pickImage(ImageSource.gallery);
+                                      imageSlder.pickImage(ImageSource.gallery);
                                       //Navigator.pop(context);
                                     } else {
                                       print("no Permission GALLERY");
@@ -375,8 +207,8 @@ class _AddProductState extends State<AddProduct> {
                             children: [
                               Expanded(
                                 child: InkWell(
-                                  child: const Column(
-                                    children: [
+                                  child: Column(
+                                    children: const [
                                       Icon(
                                         Icons.camera_alt_outlined,
                                         size: 60,
@@ -397,8 +229,7 @@ class _AddProductState extends State<AddProduct> {
                                     ].request();
                                     if (statUser[Permission.camera]!
                                         .isGranted) {
-                                      productImages
-                                          .pickImage(ImageSource.camera);
+                                      imageSlder.pickImage(ImageSource.camera);
 
                                       //Navigator.pop(context);
                                     } else {
@@ -409,8 +240,8 @@ class _AddProductState extends State<AddProduct> {
                               ),
                               Expanded(
                                 child: InkWell(
-                                  child: const Column(
-                                    children: [
+                                  child: Column(
+                                    children: const [
                                       Icon(
                                         Icons.image,
                                         size: 60,
@@ -431,8 +262,7 @@ class _AddProductState extends State<AddProduct> {
                                     ].request();
                                     if (statUser[Permission.storage]!
                                         .isGranted) {
-                                      productImages
-                                          .pickImage(ImageSource.gallery);
+                                      imageSlder.pickImage(ImageSource.gallery);
                                       //Navigator.pop(context);
                                     } else {
                                       print("no Permission GALLERY");
@@ -446,54 +276,7 @@ class _AddProductState extends State<AddProduct> {
                     const SizedBox(
                       height: 20,
                     ),
-                    DropdownButtonFormField<String>(
-                      decoration: const InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          //<-- SEE HERE
-                          borderSide: BorderSide(color: Colors.black, width: 1),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          //<-- SEE HERE
-                          gapPadding: 1.0,
-                          borderSide: BorderSide(
-                            color: Colors.black,
-                            width: 1,
-                          ),
-                        ),
-                        labelText: 'Select the collection',
-                        labelStyle: TextStyle(
-                          fontSize: 25,
-                        ),
-                        filled: true,
-                        fillColor: Colors.white,
-                      ),
-                      dropdownColor: Colors.white,
-                      isExpanded: false,
-                      isDense: false,
-                      value: collectionName.isEmpty ? collectionName : null,
-                      items: <String>[
-                        'productdb',
-                        'ironclothes',
-                        'wash_and_irondb',
-                        'suitsdb',
-                      ].map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(
-                            value,
-                            selectionColor: Colors.amber,
-                            style: const TextStyle(fontSize: 20),
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: (String? value) {
-                        setState(() {
-                          //  _currentItemSelected = value!;
 
-                          collectionName = value!;
-                        });
-                      },
-                    ),
                     const SizedBox(
                       height: 20,
                     ),
@@ -505,21 +288,15 @@ class _AddProductState extends State<AddProduct> {
                           if (_formKey.currentState!.validate()) {
                             try {
                               Map<String, dynamic> addProduct = {
-                                'id': int.parse(_id.text),
-                                'clothid': int.parse(_clothId.text),
-                                'clothName': _clothName.text,
-                                'initialPrice':
-                                    double.parse(_initialPrice.text),
-                                'clothPirce': double.parse(_clothPrice.text),
-                                'quantity': int.parse(_quanity.text),
-                                'imageUrl': productImages.imageURL.toString(),
+                                'imageName': _imageName.text,
+                                'imageUrl': imageSlder.imageURL.toString(),
                               };
 
                               FirebaseFirestore.instance
-                                  .collection(collectionName)
+                                  .collection('slider_images')
                                   .add(addProduct);
                               print(
-                                  'The url image must be this: ${productImages.imageURL}');
+                                  'The url image must be this: ${imageSlder.imageURL}');
                               print("added to te firestoer");
                             } catch (err) {
                               print(err);
@@ -528,7 +305,7 @@ class _AddProductState extends State<AddProduct> {
                         });
                         isloading = false;
                         setState(() {
-                          showSnack('Added to ..  $collectionName');
+                          showSnack('Added to ..  sliderimges');
                         });
                       },
                       child: Container(
@@ -542,11 +319,11 @@ class _AddProductState extends State<AddProduct> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             isloading
-                                ? const CircularProgressIndicator(
+                                ? CircularProgressIndicator(
                                     backgroundColor: Colors.amber,
                                     color: Colors.white,
                                   )
-                                : const Text(
+                                : Text(
                                     "Register",
                                     style: TextStyle(
                                       fontSize: 25,
@@ -559,9 +336,9 @@ class _AddProductState extends State<AddProduct> {
                     ),
                     TextButton(
                       onPressed: () {
-                        clearControlers();
+                        // clearControlers();
                       },
-                      child: const Text(
+                      child: Text(
                         "Clear",
                         style: TextStyle(
                           decoration: TextDecoration.underline,
@@ -579,6 +356,103 @@ class _AddProductState extends State<AddProduct> {
       ),
     );
   }
+}
+
+class UploadSliderImage extends ChangeNotifier {
+  File? _image;
+  String? _imageUrl;
+
+  File? get image => _image;
+  String? get imageUrl => _imageUrl;
+  String? imageURL;
+  Future<void> pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    // ignore: deprecated_member_use
+    final pickedFile = await picker.getImage(source: source);
+
+    if (pickedFile != null) {
+      _image = File(pickedFile.path);
+      uploadImageToFirebase();
+      notifyListeners();
+      // if (croppedImage != null) {
+      //   _image = croppedImage;
+
+      // }
+    }
+  }
+
+  Future<void> uploadImageToFirebase() async {
+
+    // collaction of customer
+    // final custCollection = FirebaseFirestore.instance.collection("productdb");
+    if (_image != null) {
+      try {
+        Reference storageReference = FirebaseStorage.instance
+            .ref()
+            .child('images/${DateTime.now().millisecondsSinceEpoch}.png');
+        UploadTask uploadTask = storageReference.putFile(_image!);
+        TaskSnapshot snapshot = await uploadTask;
+        String downloadUrl = await snapshot.ref.getDownloadURL();
+        // _imageUrl = downloadUrl;
+
+        //  // await custCollection
+        //       .doc(currentUser!.uid)
+        //       .set({'imageUrl': downloadUrl});
+
+        notifyListeners();
+        print('Image uploaded. Download URL: $downloadUrl');
+
+        // Store the image URL in the "profile_image" collection in Firestore
+        // FirebaseFirestore.instance.collection('imgProfileCustomer').add({
+        //   'image_url': downloadUrl,
+        //   'timestamp': FieldValue.serverTimestamp(),
+        // });
+        imageURL = downloadUrl;
+        //   return downloadUrl;
+        print('Image URL stored in Firestore');
+      } catch (error) {
+        // Handle any errors that occur during image upload
+        print('Image upload failed. Error: $error');
+      }
+    } else {
+      print('No image selected');
+    }
+  }
+
+//  Future<CroppedFile?> _cropImage(File imageFile) async {
+//     final croppedFile = await ImageCropper().cropImage(
+//         sourcePath: imageFile.path,
+//         aspectRatioPresets: Platform.isAndroid
+//             ? [
+//                 CropAspectRatioPreset.square,
+//                 CropAspectRatioPreset.original,
+//                 CropAspectRatioPreset.ratio3x2,
+//                 CropAspectRatioPreset.ratio4x3,
+//                 CropAspectRatioPreset.ratio16x9
+//               ]
+//             : [
+//                 CropAspectRatioPreset.original,
+//                 CropAspectRatioPreset.square,
+//                 CropAspectRatioPreset.ratio16x9,
+//                 CropAspectRatioPreset.ratio3x2,
+//                 CropAspectRatioPreset.ratio5x3,
+//                 CropAspectRatioPreset.ratio4x3,
+//                 CropAspectRatioPreset.ratio7x5,
+//               ],
+//         uiSettings: [
+//           AndroidUiSettings(
+//               toolbarTitle: "Image Cropper",
+//               toolbarColor: Colors.orange,
+//               toolbarWidgetColor: Colors.white,
+//               initAspectRatio: CropAspectRatioPreset.original,
+//               lockAspectRatio: false),
+//           IOSUiSettings(
+//             title: "Image Corpper",
+//           )
+//         ]);
+
+//     return croppedFile;
+//   }
 }
 
 String? validateId(String? id) {

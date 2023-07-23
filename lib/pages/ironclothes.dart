@@ -2,27 +2,31 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:provider/provider.dart';
-import 'package:sizer/sizer.dart';
 import 'package:badges/badges.dart' as badges;
+
 import '../exports.dart';
 import '../provider.dart';
-import '../utility/0nitems_list.dart';
 import '../utility/card.dart';
-import 'cart.dart';
-import 'product_screen.dart';
 
-class IronClothes extends StatelessWidget {
-  const IronClothes({super.key});
+class IronOrder extends StatelessWidget {
+  const IronOrder({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Consumer<CartProvider>(builder: (context, value, _) {
       return Scaffold(
           appBar: AppBar(
+            centerTitle: true,
             actions: [
               IconButton(
                 onPressed: () => Navigator.push(
                     context, MaterialPageRoute(builder: (_) => CartScreen())),
+                // Navigator.pushAndRemoveUntil(
+                //     context,
+                //     MaterialPageRoute(
+                //       builder: (ctx) => CartScreen(),
+                //     ),
+                //     (route) => false),
                 icon: badges.Badge(
                   badgeContent: Text(
                     value.items.length.toString(),
@@ -40,13 +44,14 @@ class IronClothes extends StatelessWidget {
               icon: const Icon(
                 FontAwesomeIcons.arrowLeft,
                 size: 21,
+                color: Kactivecolor,
               ),
               // FontAwesomeIcons.arrowLeft,
             ),
             backgroundColor: Colors.white,
             elevation: 0,
             title: Text(
-              "Happy Laundry",
+              "Happy Ironing",
               style: GoogleFonts.inter(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -55,7 +60,7 @@ class IronClothes extends StatelessWidget {
           ),
           body: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
-                  .collection("ironclothes")
+                  .collection("ironOrders")
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
@@ -75,7 +80,7 @@ class IronClothes extends StatelessWidget {
                       children: [
                         Container(
                           margin: const EdgeInsets.all(8),
-                          height: 25.h,
+                          height: 175,
                           width: double.infinity,
                           decoration: BoxDecoration(
                             boxShadow: const [
@@ -89,7 +94,7 @@ class IronClothes extends StatelessWidget {
                             ],
                             borderRadius: BorderRadius.circular(8),
                             image: const DecorationImage(
-                                image: AssetImage("assets/laundry.jpeg"),
+                                image: AssetImage("assets/ironing.jpg"),
                                 alignment: Alignment.center,
                                 fit: BoxFit.fill),
                           ),
@@ -133,13 +138,13 @@ class IronClothes extends StatelessWidget {
                                 ),
                               ),
                               SizedBox(
-                                  height: 50.h,
+                                  height: 445,
                                   child: ListView.builder(
                                     scrollDirection: Axis.vertical,
                                     itemCount: items.length,
                                     itemBuilder: (context, index) => Padding(
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 6),
+                                            horizontal: 0),
                                         child:
                                             // Text("${items[0]}")
 

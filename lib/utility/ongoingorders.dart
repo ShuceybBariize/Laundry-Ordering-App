@@ -1,23 +1,22 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
-import '../../exports.dart';
-import '../../provider.dart';
+import 'package:provider/provider.dart' show Consumer;
 
-class PendingOrder extends StatefulWidget {
-  const PendingOrder({super.key});
+import '../exports.dart';
+import '../provider.dart';
+
+class OgoingOrders extends StatefulWidget {
+  const OgoingOrders({super.key});
 
   @override
-  State<PendingOrder> createState() => _PendingOrderState();
+  State<OgoingOrders> createState() => _OgoingOrdersState();
 }
 
-class _PendingOrderState extends State<PendingOrder> {
-  // final docUser = FirebaseFirestore.instance.collection('customers').doc();
+class _OgoingOrdersState extends State<OgoingOrders> {
+  final docUser = FirebaseFirestore.instance.collection('customers').doc();
 
   FirebaseAuth auth = FirebaseAuth.instance;
-//get docid
   // here is function to get docid
   String? documentid;
   Future<void> getcompltedorder(String name) async {
@@ -89,29 +88,43 @@ class _PendingOrderState extends State<PendingOrder> {
   }
 
 //
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     // String? uid = docUser.id;
 
-    var today = DateTime.now();
-    var dateFormat = DateFormat('dd-MM-yyyy');
-    // ignore: unused_local_variable
-    String currentDate = dateFormat.format(today);
-
     return SafeArea(
       child: Consumer<CartProvider>(builder: (context, value, _) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text("Pending orders"),
+            title: const Text("Ongiong Screen Orders"),
             centerTitle: true,
           ),
           body: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection("cart_wash_orders")
-                .where('orderstatus', isEqualTo: '')
-                // .orderBy('name')
-                .snapshots(),
+            stream:
+                //  FirebaseFirestore.instance
+                //     .collection("cart_orders")
+                //     .where('orderstatus', isEqualTo: 'complete')
+                //     .orderBy('name')
+                //     .snapshots(),
+                FirebaseFirestore.instance
+                    .collection("cart_orders")
+                    //  .orderBy('userId')
+                    .where('orderstatus', whereIn: [
+              'ongoing',
+              'Ongoing',
+              'ong',
+              'Ong',
+              'on',
+              'On',
+              'O',
+              'o'
+            ]).snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return const Center(
@@ -144,73 +157,6 @@ class _PendingOrderState extends State<PendingOrder> {
                       },
                       totalPrice: items[index]['Total'],
                     );
-
-                    // InkWell(
-                    //   onTap: () {
-                    //     setState(() {
-                    //       getcompltedorder(items[index]['orderstatus']);
-                    //     });
-                    //   },
-                    //   child: Container(
-                    //       margin: EdgeInsets.all(10),
-                    //       color: Colors.amber,
-                    //       child: Column(
-                    //         mainAxisAlignment: MainAxisAlignment.start,
-                    //         children: [
-                    //           Text(items[index]['name'].toString()),
-                    //           Row(
-                    //             mainAxisAlignment: MainAxisAlignment.start,
-                    //             children: [
-                    //               CachedNetworkImage(
-                    //                 imageUrl: items[index]['imageUrl'],
-                    //                 width: 80,
-                    //                 height: 80,
-                    //               ),
-                    //               const SizedBox(height: 10),
-                    //               Row(
-                    //                 children: [
-                    //                   Column(
-                    //                     mainAxisAlignment:
-                    //                         MainAxisAlignment.end,
-                    //                     children: [
-                    //                       Text(items[index]['clothName']),
-                    //                       SizedBox(height: 10),
-                    //                       Text(
-                    //                           'Quantity: ${items[index]['quantity']}'),
-                    //                       SizedBox(height: 10),
-                    //                       Text(
-                    //                           'Price: ${items[index]['clothPrice']}'),
-                    //                       SizedBox(height: 10),
-                    //                       Text(
-                    //                           'Total Money: ${items[index]['Total']}'),
-                    //                       SizedBox(height: 10),
-                    //                       Text(
-                    //                           'Taking date: ${items[index]['date']}'),
-                    //                       Text(
-                    //                           'Orderstatus: ${items[index]['orderstatus']}'),
-                    //                       const SizedBox(height: 20),
-                    //                     ],
-                    //                   ),
-                    //                   const SizedBox(width: 50),
-                    //                   IconButton(
-                    // onPressed: () {
-                    //   editField();
-                    //   setState(() {});
-                    //   getcompltedorder(items[index]
-                    //           ['orderstatus']
-                    //       .toString());
-                    // },
-                    // icon: Icon(
-                    //   Icons.settings,
-                    // ),
-                    //                   ),
-                    //                 ],
-                    //               ),
-                    //             ],
-                    //           ),
-                    //         ],
-                    //       )),
-                    // );
                   },
                 );
               }

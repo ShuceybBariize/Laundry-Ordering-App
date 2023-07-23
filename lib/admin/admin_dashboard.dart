@@ -1,30 +1,40 @@
 // ignore_for_file: avoid_print
 
+import 'dart:async';
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 
+// ignore: depend_on_referenced_packages
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:laundry_management_system/admin/screens/create_users.dart';
-import 'package:laundry_management_system/admin/screens/users.dart';
-
+import 'package:laundry_management_system/admin/screens/earning.dart';
+// import 'package:laundry_order_app/satff/screens/staff_dashboard.dart';
 import 'package:permission_handler/permission_handler.dart';
+// ignore: depend_on_referenced_packages
 import 'package:provider/provider.dart';
 
 import '../addproduct.dart';
 import '../exports.dart';
+import 'screens/completed_view.dart';
+import 'screens/create_users.dart';
 import 'screens/delivered_view.dart';
 import 'screens/ongoing_view.dart';
 import 'screens/pending_view.dart';
 import 'screens/productview.dart';
+import 'screens/users.dart';
 import 'widgets/custom_button.dart';
 
 class AdminUser extends ChangeNotifier {
   int _totolUsersAdmins = 0;
   int _totolcustomers = 0;
+  double _totalAmount = 0;
   int allusers = 0;
   int _totalProducts = 0;
-  final int _totalproductdb = 0;
-  int _totalironclothes = 0;
+  // final int _totalproductdb = 0;
+  final int _totalironclothes = 0;
+
   int _totalpendingOrders = 0;
   int _deliveredOrder = 0;
   int _completeOrders = 0;
@@ -34,14 +44,40 @@ class AdminUser extends ChangeNotifier {
   int get totolcustomers => _totolcustomers;
   // int get allusers => _allusers;
   int get totalProducts => _totalProducts;
-  int get totalproductdb => _totalproductdb;
+  double get totalAmount => _totalAmount;
+  // int get totalproductdb => _totalproductdb;
   int get totalironclothes => _totalironclothes;
+
   int get totalpendingOrders => _totalpendingOrders;
   int get deliveredOrder => _deliveredOrder;
   int get completeOrders => _completeOrders;
   int get ongoingOrders => _ongoingOrders;
 
+  void addAmount(int newAmount) {
+    _totalAmount += newAmount;
+    notifyListeners();
+  }
+
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  Future<void> _totalAmountTranssection() async {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('payment success').get();
+    double totalAmount = 0;
+
+    for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
+      Map<String, dynamic>? paymentData =
+          documentSnapshot.data() as Map<String, dynamic>?;
+      double amount = paymentData?['amount'] ?? 0.0;
+      // Default to 0 if 'amount' is not found or null.
+
+      totalAmount += amount;
+    }
+
+    _totalAmount = totalAmount;
+    notifyListeners();
+  }
+
   Future<void> _stafftotalCustomers() async {
     QuerySnapshot querySnapshot = await firestore.collection('customers').get();
     _totolcustomers = querySnapshot.docs.length;
@@ -56,21 +92,23 @@ class AdminUser extends ChangeNotifier {
   }
 
   Future<void> _totalProdcuts() async {
-    QuerySnapshot querySnapshot1 =
-        await firestore.collection('suitorder').get();
-    int totalsuitclothdb = querySnapshot1.docs.length;
-    _totalironclothes = totalsuitclothdb;
+    QuerySnapshot querySnapshot1 = await firestore.collection('laundry').get();
+    int totalproductdb = querySnapshot1.docs.length;
+
     QuerySnapshot querySnapshot2 =
-        await firestore.collection('wash_iron_Oders').get();
-    int totalwashironclothdb = querySnapshot1.docs.length;
-    _totalironclothes = totalwashironclothdb;
-    QuerySnapshot querySnapshot3 =
         await firestore.collection('ironOrders').get();
-    int totalironclothdb = querySnapshot1.docs.length;
-    _totalironclothes = totalironclothdb;
-    QuerySnapshot querySnapshot = await firestore.collection('laundry').get();
-    int totalproductdb = querySnapshot.docs.length;
-    _totalProducts = totalproductdb + totalironclothdb;
+    int totalironclothes = querySnapshot2.docs.length;
+
+    QuerySnapshot querySnapshot3 =
+        await firestore.collection('suitorder').get();
+    int totalsuitsdb = querySnapshot3.docs.length;
+
+    QuerySnapshot querySnapshot4 =
+        await firestore.collection('washIronOrder').get();
+    int totalWashandIron = querySnapshot4.docs.length;
+
+    _totalProducts =
+        totalproductdb + totalironclothes + totalsuitsdb + totalWashandIron;
     notifyListeners();
   }
 
@@ -118,7 +156,7 @@ class AdminUser extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _CompleteOrder() async {
+  Future<void> _completeOrder() async {
     QuerySnapshot querySnapshot = await firestore
         .collection('cart_orders')
         .where('orderstatus', whereIn: [
@@ -157,11 +195,13 @@ class AdminUser extends ChangeNotifier {
   Future<void> fetchData() async {
     // await _totalCustomerUsers();
     await _totalUsersStaffs();
+    await _stafftotalCustomers();
+    await _totalAmountTranssection();
     await _totalProdcuts();
     await _totalPendingOrders();
     await _deliveredOrders();
     await _ongoingOrder();
-    await _CompleteOrder();
+    await _completeOrder();
   }
 }
 
@@ -173,9 +213,6 @@ class AdminDashboard extends StatefulWidget {
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
-  // Future waiting() async {
-  //   await Future.delayed(const Duration(seconds: 3));
-  // }
   bool isloading = false;
   @override
   void initState() {
@@ -187,12 +224,21 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    final ImgProfile = Provider.of<UserProfile>(context);
+    final imgProfile = Provider.of<UserProfileAdmin>(context);
     final adminAccess = Provider.of<AdminUser>(context);
 
-    final currentUser = FirebaseAuth.instance.currentUser;
     adminAccess.allusers =
         adminAccess.totolUsersAdmins + adminAccess.totolcustomers;
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    adminAccess._completeOrder();
+    adminAccess._totalUsersStaffs();
+    adminAccess._totalAmountTranssection();
+    adminAccess._stafftotalCustomers();
+    adminAccess._totalProdcuts();
+    adminAccess._totalPendingOrders();
+    adminAccess._ongoingOrder();
+    adminAccess._deliveredOrders();
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -223,9 +269,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   if (snapshot.hasData) {
                     final userData =
                         snapshot.data!.data() as Map<String, dynamic>;
+
                     return Column(
                       children: [
-                        ImgProfile.image != null
+                        imgProfile.image != null
                             //  Image.file(ImgProfile.image!)
 
                             ? GestureDetector(
@@ -272,7 +319,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                                       if (statUser[Permission
                                                               .camera]!
                                                           .isGranted) {
-                                                        ImgProfile.pickImage(
+                                                        imgProfile.pickImage(
                                                             ImageSource.camera);
                                                         Navigator.pop(context);
                                                       } else {
@@ -304,7 +351,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                                       if (statUser[Permission
                                                               .storage]!
                                                           .isGranted) {
-                                                        ImgProfile.pickImage(
+                                                        imgProfile.pickImage(
                                                             ImageSource
                                                                 .gallery);
 
@@ -328,13 +375,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                       height: 170,
                                       width: 170,
                                       decoration: BoxDecoration(
-                                          border: Border.all(
-                                              width: 4, color: Kactivecolor),
                                           shape: BoxShape.circle,
                                           image: DecorationImage(
                                               fit: BoxFit.cover,
                                               image: FileImage(
-                                                  ImgProfile.image!))),
+                                                  imgProfile.image!))),
                                     )
                                   ],
                                 ),
@@ -389,7 +434,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                                       if (statUser[Permission
                                                               .camera]!
                                                           .isGranted) {
-                                                        ImgProfile.pickImage(
+                                                        imgProfile.pickImage(
                                                             ImageSource.camera);
 
                                                         Navigator.pop(context);
@@ -427,7 +472,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                                       if (statUser[Permission
                                                               .storage]!
                                                           .isGranted) {
-                                                        ImgProfile.pickImage(
+                                                        imgProfile.pickImage(
                                                             ImageSource
                                                                 .gallery);
                                                         Navigator.pop(context);
@@ -445,23 +490,22 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                       });
                                 },
                                 child: Container(
-                                  height: 170,
-                                  width: 170,
                                   margin: const EdgeInsets.only(top: 10),
                                   decoration: BoxDecoration(
                                     border:
                                         Border.all(color: Colors.red, width: 1),
                                     borderRadius: BorderRadius.circular(360),
                                   ),
-                                  child: const CircleAvatar(
+                                  child: CircleAvatar(
                                     radius: 60,
-                                    backgroundColor: Kactivecolor,
+                                    backgroundColor: Colors.black,
                                     child: CircleAvatar(
-                                      radius: 80,
+                                      radius: 60,
                                       backgroundColor: Colors.grey,
-                                      backgroundImage:
-                                          AssetImage("assets/profile.png"),
-                                      child: Column(
+                                      backgroundImage: NetworkImage(
+                                          userData['image'].toString(),
+                                          scale: 1.2),
+                                      child: const Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.end,
                                         children: [
@@ -508,7 +552,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           builder: (ctx) => const UsersButton(),
                         ));
 
-                    print(adminAccess._totalpendingOrders.toString());
+                    //print('the tolal users are: $_totalpendingOrders');
                   },
                   title: 'Users',
                   no: adminAccess.allusers.toString(),
@@ -541,18 +585,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 ),
                 const SizedBox(width: 10),
                 Admin_controlers(
-                  no: '\$140',
-                  onPressed: () {
-                    adminAccess._getearnedMoney();
-                  },
-                  title: 'Earning',
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Admin_controlers(
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -562,16 +594,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     // totalProdcuts();
                   },
                   title: 'products',
-                  no: adminAccess.totalProducts.toString(),
-                ),
-                const SizedBox(width: 10),
-                Admin_controlers(
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => const PendingView()));
-                  },
-                  title: 'Pending order',
-                  no: adminAccess.totalpendingOrders.toString(),
+                  no: adminAccess._totalProducts.toString(),
                 ),
               ],
             ),
@@ -581,12 +604,36 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 Admin_controlers(
                   onPressed: () {
                     Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => const PendingView()));
+                  },
+                  title: 'Pending order',
+                  no: adminAccess.totalpendingOrders.toString(),
+                ),
+                const SizedBox(width: 10),
+                Admin_controlers(
+                  onPressed: () {
+                    Navigator.push(context,
                         MaterialPageRoute(builder: (_) => const OngoingView()));
 
                     // totalProdcuts();
                   },
                   title: 'Ongoing order',
-                  no: adminAccess.ongoingOrders.toString(),
+                  no: adminAccess._ongoingOrders.toString(),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Admin_controlers(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const CompletedView()));
+                  },
+                  title: 'Completed Order',
+                  no: adminAccess.completeOrders.toString(),
                 ),
                 const SizedBox(width: 10),
                 Admin_controlers(
@@ -594,10 +641,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (_) => const CompleteOrders()));
+                            builder: (_) => const DeliveredView()));
                   },
-                  title: 'Completed order',
-                  no: adminAccess.completeOrders.toString(),
+                  title: 'Delivered order',
+                  no: adminAccess._deliveredOrder.toString(),
                 ),
               ],
             ),
@@ -620,14 +667,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     ],
                   ),
                   child: Admin_controlers(
-                    no: adminAccess.deliveredOrder.toString(),
+                    no: adminAccess.totalAmount.toString(),
                     onPressed: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => const DeliveredView()));
+                              builder: (_) => const transactionPayments()));
                     },
-                    title: 'Delivered  order',
+                    title: 'Earning',
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -683,4 +730,100 @@ class Admin_controlers extends StatelessWidget {
       ),
     );
   }
+}
+
+class UserProfileAdmin extends ChangeNotifier {
+  File? _image;
+  String? _imageUrl;
+
+  File? get image => _image;
+  String? get imageUrl => _imageUrl;
+
+  Future<void> pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    // ignore: deprecated_member_use
+    final pickedFile = await picker.getImage(source: source);
+
+    if (pickedFile != null) {
+      _image = File(pickedFile.path);
+      uploadImageToFirebase();
+      notifyListeners();
+      // if (croppedImage != null) {
+      //   _image = croppedImage;
+
+      // }
+    }
+  }
+
+  Future<void> uploadImageToFirebase() async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    // collaction of customer
+    final custCollection = FirebaseFirestore.instance.collection("users");
+    if (_image != null) {
+      try {
+        Reference storageReference = FirebaseStorage.instance
+            .ref()
+            .child('images/${DateTime.now().millisecondsSinceEpoch}.png');
+        UploadTask uploadTask = storageReference.putFile(_image!);
+        TaskSnapshot snapshot = await uploadTask;
+        String downloadUrl = await snapshot.ref.getDownloadURL();
+        // _imageUrl = downloadUrl;
+
+        await custCollection
+            .doc(currentUser!.uid)
+            .update({'image': downloadUrl});
+
+        notifyListeners();
+        print('Image uploaded. Download URL: $downloadUrl');
+
+        // Store the image URL in the "profile_image" collection in Firestore
+        // FirebaseFirestore.instance.collection('imgProfileCustomer').add({
+        //   'image_url': downloadUrl,
+        //   'timestamp': FieldValue.serverTimestamp(),
+        // });
+        print('Image URL stored in Firestore');
+      } catch (error) {
+        // Handle any errors that occur during image upload
+        print('Image upload failed. Error: $error');
+      }
+    } else {
+      print('No image selected');
+    }
+  }
+
+//  Future<CroppedFile?> _cropImage(File imageFile) async {
+//     final croppedFile = await ImageCropper().cropImage(
+//         sourcePath: imageFile.path,
+//         aspectRatioPresets: Platform.isAndroid
+//             ? [
+//                 CropAspectRatioPreset.square,
+//                 CropAspectRatioPreset.original,
+//                 CropAspectRatioPreset.ratio3x2,
+//                 CropAspectRatioPreset.ratio4x3,
+//                 CropAspectRatioPreset.ratio16x9
+//               ]
+//             : [
+//                 CropAspectRatioPreset.original,
+//                 CropAspectRatioPreset.square,
+//                 CropAspectRatioPreset.ratio16x9,
+//                 CropAspectRatioPreset.ratio3x2,
+//                 CropAspectRatioPreset.ratio5x3,
+//                 CropAspectRatioPreset.ratio4x3,
+//                 CropAspectRatioPreset.ratio7x5,
+//               ],
+//         uiSettings: [
+//           AndroidUiSettings(
+//               toolbarTitle: "Image Cropper",
+//               toolbarColor: Colors.orange,
+//               toolbarWidgetColor: Colors.white,
+//               initAspectRatio: CropAspectRatioPreset.original,
+//               lockAspectRatio: false),
+//           IOSUiSettings(
+//             title: "Image Corpper",
+//           )
+//         ]);
+
+//     return croppedFile;
+//   }
 }

@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../admin_dashboard.dart';
+
 class AdminStafsUserview extends StatefulWidget {
   const AdminStafsUserview({super.key});
 
@@ -54,7 +56,8 @@ class _AdminStafsUserviewState extends State<AdminStafsUserview> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const AdminDashboard()));
             },
           ),
         ),

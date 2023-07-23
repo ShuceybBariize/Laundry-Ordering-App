@@ -19,7 +19,8 @@ class ProductView extends StatefulWidget {
 
 class _ProductViewState extends State<ProductView> {
   @override
-  var collectionName = "productdb";
+  // ignore: override_on_non_overriding_member
+  var collectionName = "laundry";
   @override
   Widget build(BuildContext context) {
     return Consumer<CartProvider>(builder: (context, value, _) {
@@ -56,8 +57,12 @@ class _ProductViewState extends State<ProductView> {
                   isExpanded: false,
                   isDense: false,
                   value: collectionName.isEmpty ? collectionName : null,
-                  items: <String>['productdb', 'ironclothes']
-                      .map<DropdownMenuItem<String>>((String value) {
+                  items: <String>[
+                    'laundry',
+                    'ironOrders',
+                    'washIronOrder',
+                    'suitorder'
+                  ].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(

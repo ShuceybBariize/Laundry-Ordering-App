@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:laundry_management_system/admin/screens/userview.dart';
 
 import 'admin_staffview.dart';
+import 'userview.dart';
 
 class UsersButton extends StatefulWidget {
   const UsersButton({super.key});
@@ -86,8 +86,8 @@ class _UsersButtonState extends State<UsersButton> {
                           ),
                         ],
                       ),
-                      child: Column(
-                        children: const [
+                      child: const Column(
+                        children: [
                           Image(
                             image: AssetImage(
                               "assets/customer1.png",
@@ -131,8 +131,8 @@ class _UsersButtonState extends State<UsersButton> {
                             ),
                           ],
                         ),
-                        child: Column(
-                          children: const [
+                        child: const Column(
+                          children: [
                             // Icon(
                             //   Icons.person,
                             //   size: 50,

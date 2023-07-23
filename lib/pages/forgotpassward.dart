@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 
 import '../exports.dart';
 
@@ -64,6 +63,9 @@ class _ForgotScreenState extends State<ForgotScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+      ),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -137,24 +139,14 @@ class _ForgotScreenState extends State<ForgotScreen> {
                             height: 25,
                           ),
                           Center(
-                            child: MaterialButton(
-                              shape: const RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(20.0))),
-                              elevation: 5.0,
-                              height: 40,
-                              onPressed: () {
-                                sendpasswordresetemail(emailController.text);
-                              },
-                              color: Colors.blue,
-                              child: const Text(
-                                "Reset Passward ",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                ),
-                              ),
-                            ),
-                          ),
+                              child: custombtn(
+                            colorbtn: Kactivecolor,
+                            colortxt: Colors.white,
+                            txtbtn: "Reset Password",
+                            onpress: () {
+                              sendpasswordresetemail(emailController.text);
+                            },
+                          )),
                           const SizedBox(
                             height: 10,
                           ),

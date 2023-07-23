@@ -1,4 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,7 +9,8 @@ import 'package:provider/provider.dart';
 import '../exports.dart';
 import '../provider.dart';
 import '../utility/menu_par.dart';
-import 'contact_page.dart';
+import 'suits_list.dart';
+import 'wash_and_iron.dart';
 
 class Home extends StatefulWidget {
   static String id = 'homepage';
@@ -63,15 +65,14 @@ class _HomeState extends State<Home> {
           appBar: AppBar(
             actions: [
               IconButton(
-                onPressed: () =>
-                    // Navigator.push(
-                    //     context, MaterialPageRoute(builder: (_) => CartScreen())),
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (ctx) => CartScreen(),
-                        ),
-                        (route) => false),
+                onPressed: () => Navigator.push(
+                    context, MaterialPageRoute(builder: (_) => CartScreen())),
+                // Navigator.pushAndRemoveUntil(
+                //     context,
+                //     MaterialPageRoute(
+                //       builder: (ctx) => CartScreen(),
+                //     ),
+                //     (route) => false),
                 icon: badges.Badge(
                   badgeContent: Text(
                     value.items.length.toString(),
@@ -80,28 +81,10 @@ class _HomeState extends State<Home> {
                   child: const Icon(Icons.shopping_basket),
                 ),
               ),
-              IconButton(
-                  onPressed: () async {
-                    try {
-                      await FirebaseAuth.instance.signOut();
-                    } catch (e) {
-                      print('Signout Erro$e');
-                    }
-                    //   Navigator.push(context,
-                    //       MaterialPageRoute(builder: (_) => const LoginPage()));
-                    // },
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (ctx) => const LoginPage(),
-                        ),
-                        (route) => false);
-                  },
-                  icon: const Icon(Icons.logout_outlined))
             ],
             title: const Text("Laundry Ordering"),
-            titleTextStyle:
-                GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 22),
+            titleTextStyle: GoogleFonts.inter(
+                fontWeight: FontWeight.bold, fontSize: 22, color: Colors.black),
             centerTitle: true,
           ),
           drawer: Drawer(
@@ -111,109 +94,140 @@ class _HomeState extends State<Home> {
                 bottomRight: Radius.circular(40),
               ),
             ),
-            child: Column(
-              children: [
-                Container(
-                  width: double.infinity,
-                  height: 200,
-                  decoration: const BoxDecoration(color: Kactivecolor),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+            child: StreamBuilder<DocumentSnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('customers')
+                    .doc(currentUser.uid)
+                    .snapshots(),
+                builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  }
+
+                  final customerData = snapshot.data!;
+                  final imageUrl = customerData['image'];
+                  final customerName = customerData['name'];
+                  return Column(
                     children: [
-                      Container(
-                        height: 70,
-                        decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                                image: AssetImage('assets/shuceyb.jpg'))),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (_) => ProfilePage()));
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          height: 235,
+                          decoration: const BoxDecoration(
+                            color: Kactivecolor,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(top: 12),
+                                height: 150,
+                                width: 150,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(80),
+                                  // shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image:
+                                          CachedNetworkImageProvider(imageUrl)),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 12,
+                              ),
+                              Text(
+                                customerName,
+                                style: GoogleFonts.inter(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                    letterSpacing: 2),
+                              ),
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              Text(
+                                currentUser.email!,
+                                style: GoogleFonts.inter(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                    letterSpacing: 2),
+                              ),
+                              const SizedBox(
+                                height: 8,
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
+                      const SizedBox(height: 22),
+                      drawerList(
+                          icon: Icons.history,
+                          text: 'History',
+                          ontap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const HistoryPage()));
+                          }),
                       const SizedBox(
-                        height: 12,
+                        height: 30,
                       ),
-                      Text(
-                        currentUser.email!,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Colors.white,
-                            letterSpacing: 2),
+                      drawerList(
+                          icon: Icons.support_agent_sharp,
+                          text: 'Help center',
+                          ontap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const ContactPage()));
+                          }),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      drawerList(
+                          icon: FontAwesomeIcons.whatsapp,
+                          text: 'Contact Us',
+                          ontap: () {
+                            openWhatsapp();
+                          }),
+                      const Spacer(),
+                      drawerList(
+                          icon: Icons.logout,
+                          text: 'Logout',
+                          ontap: () async {
+                            try {
+                              await FirebaseAuth.instance.signOut();
+                            } catch (e) {
+                              print('Signout Erro$e');
+                            }
+                            //   Navigator.push(context,
+                            //       MaterialPageRoute(builder: (_) => const LoginPage()));
+                            // },
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (ctx) => const LoginPage(),
+                                ),
+                                (route) => false);
+                          }),
+                      const SizedBox(
+                        height: 30,
                       ),
                     ],
-                  ),
-                ),
-                const SizedBox(height: 22),
-                drawerList(
-                    icon: Icons.history,
-                    text: 'History',
-                    ontap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const HistoryPage()));
-                    }),
-                const SizedBox(
-                  height: 30,
-                ),
-                drawerList(
-                    icon: Icons.support_agent_sharp,
-                    text: 'Help center',
-                    ontap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const ContactPage()));
-                    }),
-                const SizedBox(
-                  height: 30,
-                ),
-                drawerList(
-                    icon: FontAwesomeIcons.whatsapp,
-                    text: 'Contact Us',
-                    ontap: () {
-                      openWhatsapp();
-                    }),
-                const SizedBox(
-                  height: 30,
-                ),
-                drawerList(
-                    icon: Icons.logout,
-                    text: 'Logout',
-                    ontap: () async {
-                      try {
-                        await FirebaseAuth.instance.signOut();
-                      } catch (e) {
-                        print('Signout Erro$e');
-                      }
-                      //   Navigator.push(context,
-                      //       MaterialPageRoute(builder: (_) => const LoginPage()));
-                      // },
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (ctx) => const LoginPage(),
-                          ),
-                          (route) => false);
-                    }),
-                const SizedBox(
-                  height: 30,
-                ),
-              ],
-            ),
+                  );
+                }),
           ),
           body: Column(
             children: [
-              // const SizedBox(height: 10),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.end,
-              //   children: [
-              //     IconButton(
-              //         hoverColor: Kactivecolor,
-              //         onPressed: () {},
-              //         // onPressed: () => Navigator.push(context,
-              //         //     MaterialPageRoute(builder: (context) => const Menu())),
-              //         icon: const Icon(FontAwesomeIcons.bars))
-              //   ],
-              // ),
               Container(
                 child: Column(
                   children: [
@@ -253,7 +267,7 @@ class _HomeState extends State<Home> {
                           style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(244, 19, 1, 55),
+                            color: Colors.black,
                           )),
                       const SizedBox(
                         height: 10,
@@ -263,18 +277,10 @@ class _HomeState extends State<Home> {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              setState(() {
-                                // Navigator.push(
-                                //     context,
-                                //     MaterialPageRoute(
-                                //         builder: (_) => const OrderList()));
-                                Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (ctx) => const OrderList(),
-                                    ),
-                                    (route) => false);
-                              });
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const OrderList()));
                             },
                             child: Container(
                               height: 120,
@@ -294,18 +300,10 @@ class _HomeState extends State<Home> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              setState(() {
-                                // Navigator.push(
-                                //     context,
-                                //     MaterialPageRoute(
-                                //         builder: (_) => const IronClothes()));
-                                Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (ctx) => const IronClothes(),
-                                    ),
-                                    (route) => false);
-                              });
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const IronOrder()));
                             },
                             child: Container(
                               height: 120,
@@ -326,32 +324,48 @@ class _HomeState extends State<Home> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            height: 120,
-                            width: 160,
-                            decoration: BoxDecoration(
-                              color: Colors.white70,
-                              border: Border.all(color: Colors.blueAccent),
-                              borderRadius: BorderRadius.circular(
-                                12,
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const Wash_IronOrder()));
+                            },
+                            child: Container(
+                              height: 120,
+                              width: 160,
+                              decoration: BoxDecoration(
+                                color: Colors.white70,
+                                border: Border.all(color: Colors.blueAccent),
+                                borderRadius: BorderRadius.circular(
+                                  12,
+                                ),
                               ),
+                              child: MyCard(item: items[2]),
                             ),
-                            child: MyCard(item: items[2]),
                           ),
                           const SizedBox(
                             width: 25,
                           ),
-                          Container(
-                            height: 120,
-                            width: 160,
-                            decoration: BoxDecoration(
-                              color: Colors.white70,
-                              border: Border.all(color: Colors.blueAccent),
-                              borderRadius: BorderRadius.circular(
-                                12,
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const SuitOrder()));
+                            },
+                            child: Container(
+                              height: 120,
+                              width: 160,
+                              decoration: BoxDecoration(
+                                color: Colors.white70,
+                                border: Border.all(color: Colors.blueAccent),
+                                borderRadius: BorderRadius.circular(
+                                  12,
+                                ),
                               ),
+                              child: MyCard(item: items[3]),
                             ),
-                            child: MyCard(item: items[3]),
                           ),
                         ],
                       ),

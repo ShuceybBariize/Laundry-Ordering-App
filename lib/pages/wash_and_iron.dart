@@ -1,16 +1,16 @@
-// ignore_for_file: prefer_const_constructors
-
+// ignore: depend_on_referenced_packages
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:provider/provider.dart';
 import 'package:badges/badges.dart' as badges;
+
 import '../exports.dart';
 import '../provider.dart';
 import '../utility/card.dart';
 
-class OrderList extends StatelessWidget {
-  const OrderList({super.key});
+class Wash_IronOrder extends StatelessWidget {
+  const Wash_IronOrder({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +52,7 @@ class OrderList extends StatelessWidget {
             backgroundColor: Colors.white,
             elevation: 0,
             title: Text(
-              "Happy Laundry",
+              "Happy Wash & Iron",
               style: GoogleFonts.inter(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -60,11 +60,12 @@ class OrderList extends StatelessWidget {
             ),
           ),
           body: StreamBuilder<QuerySnapshot>(
-              stream:
-                  FirebaseFirestore.instance.collection("laundry").snapshots(),
+              stream: FirebaseFirestore.instance
+                  .collection("washIronOrder")
+                  .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
-                  return Center(
+                  return const Center(
                     child: Text("ERROR OCCURED"),
                   );
                 }
@@ -94,7 +95,7 @@ class OrderList extends StatelessWidget {
                             ],
                             borderRadius: BorderRadius.circular(8),
                             image: const DecorationImage(
-                                image: AssetImage("assets/laundry.jpeg"),
+                                image: AssetImage("assets/washiron.jpeg"),
                                 alignment: Alignment.center,
                                 fit: BoxFit.fill),
                           ),
@@ -105,15 +106,16 @@ class OrderList extends StatelessWidget {
                         Container(
                           // padding: const EdgeInsets.only(top: 10),
                           width: double.infinity,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                               // color: Colors.grey[300],
-                              borderRadius: const BorderRadius.only(
+                              borderRadius: BorderRadius.only(
                                   topLeft: Radius.circular(20),
                                   topRight: Radius.circular(20))),
                           child: Column(
                             children: [
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 5),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,

@@ -16,11 +16,12 @@ class drawerList extends StatelessWidget {
     return MaterialButton(
       onPressed: ontap,
       child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
         height: 60,
         width: double.infinity,
         decoration: BoxDecoration(
-          color: Kactivecolor,
-          borderRadius: BorderRadius.circular(50),
+          color: Colors.grey[300],
+          borderRadius: BorderRadius.circular(25),
         ),
         child: Expanded(
           child: Row(
@@ -28,16 +29,17 @@ class drawerList extends StatelessWidget {
               Icon(
                 icon,
                 size: 35,
-                color: Colors.grey,
+                color: Kactivecolor,
               ),
               const SizedBox(
                 width: 20,
               ),
-              Text(
-                text,
-                style: const TextStyle(
-                    color: Color.fromARGB(255, 71, 95, 106), fontSize: 20),
-              )
+              Text(text,
+                  style: GoogleFonts.inter(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Kactivecolor,
+                  ))
             ],
           ),
         ),

@@ -1,7 +1,5 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:provider/provider.dart' show Consumer;
 
 import '../../exports.dart';
@@ -81,58 +79,68 @@ class _PendingViewState extends State<PendingView> {
                 return ListView.builder(
                   itemCount: documents.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return InkWell(
-                      onTap: () {
-                        setState(() {
-                          // print(index);
-                          // getcompltedorder(items[index]['name'].toString());
-                        });
-                      },
-                      child: Container(
-                          margin: const EdgeInsets.all(10),
-                          padding: const EdgeInsets.only(left: 5.5),
-                          color: Colors.amber,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(items[index]['name'].toString()),
-                              // Text('$fields!'),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  CachedNetworkImage(
-                                    imageUrl: items[index]['imageUrl'],
-                                    width: 80,
-                                    height: 80,
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text(items[index]['clothName']),
-                                      const SizedBox(height: 10),
-                                      Text(
-                                          'Quantity: ${items[index]['quantity']}'),
-                                      const SizedBox(height: 10),
-                                      Text(
-                                          'Price: ${items[index]['clothPrice']}'),
-                                      const SizedBox(height: 10),
-                                      Text(
-                                          'Total Money: ${items[index]['Total']}'),
-                                      const SizedBox(height: 10),
-                                      Text(
-                                          'Taking date: ${items[index]['date']}'),
-                                      const SizedBox(height: 20),
-                                      Text(
-                                          'Orderstatus: ${items[index]['orderstatus']}'),
-                                      const SizedBox(height: 20),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          )),
+                    return CustomerOrderWidget(
+                      customerName: items[index]['name'],
+                      clothImage: items[index]['imageUrl'],
+                      clothPrice: items[index]['clothPrice'],
+                      clothName: items[index]['clothName'],
+                      quantity: items[index]['quantity'],
+                      date: items[index]['date'],
+                      totalPrice: items[index]['Total'],
                     );
+
+                    // InkWell(
+                    //   onTap: () {
+                    //     setState(() {
+                    //       // print(index);
+                    //       // getcompltedorder(items[index]['name'].toString());
+                    //     });
+                    //   },
+                    //   child: Container(
+                    //       margin: EdgeInsets.all(10),
+                    //       padding: EdgeInsets.only(left: 5.5),
+                    //       color: Colors.amber,
+                    //       child: Column(
+                    //         mainAxisAlignment: MainAxisAlignment.start,
+                    //         children: [
+                    //           Text(items[index]['name'].toString()),
+                    //           // Text('$fields!'),
+                    //           Row(
+                    //             mainAxisAlignment: MainAxisAlignment.start,
+                    //             children: [
+                    //               CachedNetworkImage(
+                    //                 imageUrl: items[index]['imageUrl'],
+                    //                 width: 80,
+                    //                 height: 80,
+                    //               ),
+                    //               const SizedBox(height: 10),
+                    //               Column(
+                    //                 mainAxisAlignment: MainAxisAlignment.start,
+                    //                 children: [
+                    //                   Text(items[index]['clothName']),
+                    //                   SizedBox(height: 10),
+                    //                   Text(
+                    //                       'Quantity: ${items[index]['quantity']}'),
+                    //                   SizedBox(height: 10),
+                    //                   Text(
+                    //                       'Price: ${items[index]['clothPrice']}'),
+                    //                   SizedBox(height: 10),
+                    //                   Text(
+                    //                       'Total Money: ${items[index]['Total']}'),
+                    //                   SizedBox(height: 10),
+                    //                   Text(
+                    //                       'Taking date: ${items[index]['date']}'),
+                    //                   const SizedBox(height: 20),
+                    //                   Text(
+                    //                       'Orderstatus: ${items[index]['orderstatus']}'),
+                    //                   const SizedBox(height: 20),
+                    //                 ],
+                    //               ),
+                    //             ],
+                    //           ),
+                    //         ],
+                    //       )),
+                    // );
                   },
                 );
               }
@@ -146,6 +154,79 @@ class _PendingViewState extends State<PendingView> {
     );
   }
 }
+
+class CustomerOrderWidget extends StatelessWidget {
+  final String customerName;
+  final String clothName;
+  final String clothImage;
+  final double clothPrice;
+  final int quantity;
+  final double totalPrice;
+  final String date;
+
+  const CustomerOrderWidget({
+    super.key,
+    required this.customerName,
+    required this.clothName,
+    required this.date,
+    required this.clothImage,
+    required this.clothPrice,
+    required this.quantity,
+    required this.totalPrice,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.amber,
+      elevation: 2.0,
+      semanticContainer: true,
+      margin: const EdgeInsets.all(10),
+      child: SizedBox(
+        width: double.infinity,
+        height: 100,
+        child: ListTile(
+          leading: Container(
+            width: 60.0,
+            height: 60.0,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(
+                image: NetworkImage(clothImage),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          title: Text(
+            customerName,
+            style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text('Cltoh: $clothName'),
+              Text('Price: \$${clothPrice.toStringAsFixed(2)}'),
+              Text('Quantity: $quantity'),
+              Text('Date: $date'),
+            ],
+          ),
+          trailing: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              Text(
+                'Total: \$${totalPrice.toStringAsFixed(2)}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10.0),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
 
 //  Future<void> userSetupDone() async {
 //     CollectionReference users = FirebaseFirestore.instance.collection('Users');

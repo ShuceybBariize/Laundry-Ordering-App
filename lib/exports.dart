@@ -30,8 +30,7 @@ export 'pages/profile.dart';
 export 'pages/registration.dart';
 export 'pages/slider_model.dart';
 export 'satff/screens/completeorder.dart';
-export 'satff/screens/deliveredorder.dart';
-export 'satff/screens/ongoingorders.dart';
-export 'satff/screens/pendingorder.dart';
+
 export 'satff/screens/productsView.dart';
 export 'satff/screens/staff_dashboard.dart';
+export 'pages/contact.dart';

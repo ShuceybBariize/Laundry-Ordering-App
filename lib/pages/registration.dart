@@ -7,8 +7,6 @@ import 'package:cloud_firestore/cloud_firestore.dart'
 import 'package:firebase_database/firebase_database.dart';
 
 import '../exports.dart';
-import 'email_verification_page.dart';
-import 'login.dart';
 
 class SignUpUsers extends StatefulWidget {
   static String id = 'signUpUsers';
@@ -151,14 +149,14 @@ class _SignUpUsersState extends State<SignUpUsers> {
                         contentPadding: const EdgeInsets.all(18),
                         fillColor: Colors.black,
                         enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Kinactivetextcolor, width: 1),
+                          borderSide:
+                              const BorderSide(color: Kactivecolor, width: 2),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                              color: Kinactivetextcolor, width: 1),
+                          borderSide:
+                              const BorderSide(color: Kactivecolor, width: 1),
                         ),
                         hintText: "Enter fullname",
                       ),
@@ -179,14 +177,14 @@ class _SignUpUsersState extends State<SignUpUsers> {
                         contentPadding: const EdgeInsets.all(18),
                         fillColor: Colors.black,
                         enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Kinactivetextcolor, width: 1),
+                          borderSide:
+                              const BorderSide(color: Kactivecolor, width: 2),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: const BorderSide(
-                                color: Kinactivetextcolor, width: 1)),
+                                color: Kactivecolor, width: 1)),
                         hintText: "Phone",
                       ),
                       onSaved: (value) {
@@ -206,14 +204,14 @@ class _SignUpUsersState extends State<SignUpUsers> {
                         contentPadding: const EdgeInsets.all(18),
                         fillColor: Colors.black,
                         enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Kinactivetextcolor, width: 1),
+                          borderSide:
+                              const BorderSide(color: Kactivecolor, width: 2),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: const BorderSide(
-                                color: Kinactivetextcolor, width: 1)),
+                                color: Kactivecolor, width: 1)),
                         hintText: "Enter Your Email",
                       ),
                       onSaved: (value) {
@@ -233,14 +231,17 @@ class _SignUpUsersState extends State<SignUpUsers> {
                         contentPadding: const EdgeInsets.all(18),
                         fillColor: Colors.black,
                         enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Kinactivetextcolor, width: 1),
+                          borderSide:
+                              const BorderSide(color: Kactivecolor, width: 2),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         suffix: InkWell(
-                          child: Icon(_isObscure1
-                              ? Icons.visibility
-                              : Icons.visibility_off),
+                          child: Icon(
+                            _isObscure1
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Kactivecolor,
+                          ),
                           onTap: () {
                             setState(() {
                               _isObscure1 = !_isObscure1;
@@ -250,7 +251,7 @@ class _SignUpUsersState extends State<SignUpUsers> {
                         focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: const BorderSide(
-                                color: Kinactivetextcolor, width: 1)),
+                                color: Kactivecolor, width: 1)),
                         hintText: "Enter Your Password",
                       ),
                       onSaved: (value) {
@@ -266,9 +267,11 @@ class _SignUpUsersState extends State<SignUpUsers> {
                       controller: _confirmpassword,
                       decoration: InputDecoration(
                         suffix: InkWell(
-                          child: Icon(_isObscure2
-                              ? Icons.visibility
-                              : Icons.visibility_off),
+                          child: Icon(
+                              _isObscure2
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: Kactivecolor),
                           onTap: () {
                             setState(() {
                               _isObscure2 = !_isObscure2;
@@ -280,14 +283,14 @@ class _SignUpUsersState extends State<SignUpUsers> {
                         contentPadding: const EdgeInsets.all(18),
                         fillColor: Colors.black,
                         enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Kinactivetextcolor, width: 1),
+                          borderSide:
+                              const BorderSide(color: Kactivecolor, width: 2),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: const BorderSide(
-                                color: Kinactivetextcolor, width: 1)),
+                                color: Kactivecolor, width: 1)),
                         hintText: "Confirm Your Password",
                       ),
                       onSaved: (value) {

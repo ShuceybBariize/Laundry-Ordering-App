@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart' show Consumer;
@@ -102,14 +101,20 @@ class _CompleteOrdersState extends State<CompleteOrders> {
       child: Consumer<CartProvider>(builder: (context, value, _) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text("Completed  Orders"),
+            title: const Text("Ongiong Screen Orders"),
             centerTitle: true,
           ),
           body: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection("cart_orders")
-                //  .orderBy('userId')
-                .where('orderstatus', whereIn: [
+            stream:
+                //  FirebaseFirestore.instance
+                //     .collection("cart_orders")
+                //     .where('orderstatus', isEqualTo: 'complete')
+                //     .orderBy('name')
+                //     .snapshots(),
+                FirebaseFirestore.instance
+                    .collection("cart_orders")
+                    //  .orderBy('userId')
+                    .where('orderstatus', whereIn: [
               'Com',
               'com',
               'completed',
@@ -136,57 +141,22 @@ class _CompleteOrdersState extends State<CompleteOrders> {
                 return ListView.builder(
                   itemCount: documents.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return InkWell(
-                      onTap: () {
+                    return CustomerOrderWidget(
+                      customerName: items[index]['name'],
+                      clothImage: items[index]['imageUrl'],
+                      clothPrice: items[index]['clothPrice'],
+                      clothName: items[index]['clothName'],
+                      quantity: items[index]['quantity'],
+                      date: items[index]['date'],
+                      onpress: () {
                         setState(() {
-                          // print(index);
-                          // getcompltedorder(items[index]['name'].toString());
+                          editField();
+                          setState(() {});
+                          getcompltedorder(
+                              items[index]['orderstatus'].toString());
                         });
                       },
-                      child: Container(
-                          margin: const EdgeInsets.all(10),
-                          padding: const EdgeInsets.only(left: 5.5),
-                          color: Colors.amber,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(items[index]['name'].toString()),
-                              // Text('$fields!'),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  CachedNetworkImage(
-                                    imageUrl: items[index]['imageUrl'],
-                                    width: 80,
-                                    height: 80,
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text(items[index]['clothName']),
-                                      const SizedBox(height: 10),
-                                      Text(
-                                          'Quantity: ${items[index]['quantity']}'),
-                                      const SizedBox(height: 10),
-                                      Text(
-                                          'Price: ${items[index]['clothPrice']}'),
-                                      const SizedBox(height: 10),
-                                      Text(
-                                          'Total Money: ${items[index]['Total']}'),
-                                      const SizedBox(height: 10),
-                                      Text(
-                                          'Taking date: ${items[index]['date']}'),
-                                      const SizedBox(height: 20),
-                                      Text(
-                                          'Orderstatus: ${items[index]['orderstatus']}'),
-                                      const SizedBox(height: 20),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          )),
+                      totalPrice: items[index]['Total'],
                     );
                   },
                 );
@@ -202,18 +172,85 @@ class _CompleteOrdersState extends State<CompleteOrders> {
   }
 }
 
-//  Future<void> userSetupDone() async {
-//     CollectionReference users = FirebaseFirestore.instance.collection('Users');
-    
-//     final docUser = FirebaseFirestore.instance.collection('Users').doc();
-    
-//     FirebaseAuth auth = FirebaseAuth.instance;
+class CustomerOrderWidget extends StatelessWidget {
+  final String customerName;
+  final String clothName;
+  final String clothImage;
+  final double clothPrice;
+  final int quantity;
+  final double totalPrice;
+  final String date;
+  final VoidCallback onpress;
 
-//     String? email = auth.currentUser?.email.toString();
-//     String? phone = auth.currentUser?.phoneNumber.toString();
-//     String? displayName = auth.currentUser?.displayName.toString();
-    
-//     DocumentReference reference= await users.add({'Uid': '', "Email": email, "Phone": phone, "Name": displayName});
-//     await reference.update({"Uid": reference.id});
-//     return;
-// }
+  const CustomerOrderWidget({
+    super.key,
+    required this.customerName,
+    required this.clothName,
+    required this.date,
+    required this.clothImage,
+    required this.clothPrice,
+    required this.quantity,
+    required this.totalPrice,
+    required this.onpress,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.amber,
+      elevation: 2.0,
+      semanticContainer: true,
+      margin: const EdgeInsets.all(10),
+      child: SizedBox(
+        width: double.infinity,
+        height: 100,
+        child: ListTile(
+          leading: Container(
+            width: 60.0,
+            height: 60.0,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(
+                image: NetworkImage(clothImage),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          title: Text(
+            customerName,
+            style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text('Cltoh: $clothName'),
+              Text('Price: \$${clothPrice.toStringAsFixed(2)}'),
+              Text('Quantity: $quantity'),
+              Text('Date: $date'),
+            ],
+          ),
+          trailing: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              Text(
+                'Total: \$${totalPrice.toStringAsFixed(2)}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10.0),
+              Expanded(
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.settings,
+                    size: 33,
+                    color: Colors.black,
+                  ),
+                  onPressed: onpress,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

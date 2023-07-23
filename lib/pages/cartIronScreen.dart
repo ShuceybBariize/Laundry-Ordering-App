@@ -1,24 +1,27 @@
 import 'dart:async';
 
+// ignore: depend_on_referenced_packages
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:laundry_management_system/pages/payment.dart';
 
 import 'package:lottie/lottie.dart';
+// ignore: depend_on_referenced_packages
 import 'package:provider/provider.dart';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
+// import '../provider.dart';
 import '../exports.dart';
 import '../provider.dart';
 import '../utility/cart_item.dart';
+// ignore: depend_on_referenced_packages
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class CartScreen extends StatelessWidget {
-  static const String id = 'CartScreen';
+// ignore: must_be_immutable
+class CartIronScreen extends StatelessWidget {
+  static const String id = 'CartIronScreen';
   // showing field
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  CartScreen({super.key});
+  CartIronScreen({super.key});
 
   Future<List<String>> getFieldValuesByEmail(String email) async {
     QuerySnapshot querySnapshot = await firestore
@@ -38,7 +41,6 @@ class CartScreen extends StatelessWidget {
   }
 
   String? email = FirebaseAuth.instance.currentUser!.email!;
-  // User? user = FirebaseAuth.instance.currentUser;
   // ignore: non_constant_identifier_names
   String? Fieldname;
   Future<String> displayName() async {
@@ -57,31 +59,17 @@ class CartScreen extends StatelessWidget {
     return Fieldname!;
   }
 
-  bool isLoading = false;
-
 //end of showing field name
   @override
   Widget build(BuildContext context) {
+    // ignore: non_constant_identifier_names, unused_local_variable
     Future<String> Fieldvalue = displayName();
     return Consumer<CartProvider>(
       builder: (context, value, _) => Scaffold(
         appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.white70,
-          centerTitle: true,
-          leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(
-              FontAwesomeIcons.arrowLeft,
-              size: 21,
-              color: Kactivecolor,
-            ),
-            // FontAwesomeIcons.arrowLeft,
-          ),
-          title: Text(
+          title: const Text(
             'Cart',
-            style: GoogleFonts.inter(
-                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+            style: TextStyle(fontSize: 20),
           ),
         ),
         body: Column(
@@ -177,22 +165,11 @@ class CartScreen extends StatelessWidget {
                     Expanded(
                       child: OrderNowButton(
                         onTap: () {
-                          if (value.items.isNotEmpty) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => Payments(
-                                        TotalItemCount: value.items.length,
-                                        totalCartValue:
-                                            value.calculateTotalPrice(),
-                                      )),
-                            );
-                          } else {
-                            value.checkwashOrder(context, "$Fieldname");
-                          }
+                          value.checkoutIron(context, "$Fieldname");
+                          print("magaca waa: $Fieldname");
                         },
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -201,22 +178,6 @@ class CartScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-Future<String?> getAccountNo() async {
-  String? email = FirebaseAuth.instance.currentUser!.email;
-  QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-      .collection('customers')
-      .where('email', isEqualTo: email)
-      .get();
-
-  if (querySnapshot.docs.isNotEmpty) {
-    DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
-    return documentSnapshot.get('phone');
-  } else {
-    print('No matching documents found.');
-    return null;
   }
 }
 
@@ -253,7 +214,7 @@ class OrderNowButton extends StatelessWidget {
               ),
               const SizedBox(width: 15),
               Text(
-                'Check Order',
+                'Order Now',
                 style: TextStyle(
                   color: Theme.of(context).primaryColor,
                   fontFamily: 'Gilroy',

@@ -22,6 +22,7 @@ dependencies:
   firebase_core_web: ^2.2.1
   firebase_database: ^10.2.3
   firebase_storage: ^11.2.3
+  
   flutter:
     sdk: flutter
   flutter_iconly: ^1.0.2
@@ -47,6 +48,7 @@ dependencies:
   http: ^0.13.4
   url_launcher: ^6.1.12
   awesome_dialog: ^3.1.0
+  merchant_evc_plus: ^0.0.2
 
 
 dev_dependencies:

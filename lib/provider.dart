@@ -2,13 +2,16 @@
 
 import 'dart:async';
 
+// ignore: depend_on_referenced_packages
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:laundry_management_system/utility/0nitems_list.dart';
 import 'package:lottie/lottie.dart';
+// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
+
+import 'utility/0nitems_list.dart';
 
 class CartProvider extends ChangeNotifier {
   List<Map<String, dynamic>> items = [];
@@ -53,16 +56,6 @@ class CartProvider extends ChangeNotifier {
     } else {}
   }
 
-  // calculateTotalPrice() {
-  //   double totalPrice = 0;
-  //   for (var item in items) {
-  //     if (item.containsKey('clothPrice')) {
-  //       totalPrice += item['clothPrice'];
-  //       total = totalPrice;
-  //     }
-  //   }
-  //   return totalPrice.toStringAsFixed(2);
-  // }
   calculateTotalPrice() {
     double totalPrice = 0;
     for (var item in items) {
@@ -72,17 +65,8 @@ class CartProvider extends ChangeNotifier {
       }
     }
     return totalPrice;
+    // return totalPrice.toStringAsFixed(2);
   }
-
-  // double calculateTotalPrice() {
-  //   double totalPrice = 0;
-  //   for (var item in items) {
-  //     if (item.containsKey('clothPrice')) {
-  //       totalPrice += item['clothPrice'];
-  //     }
-  //   }
-  //   return totalPrice;
-  // }
 
   void decreaseQuantity(int index) {
     if (index >= 0 && index < items.length && items[index]['quantity'] > 1) {
@@ -98,7 +82,8 @@ class CartProvider extends ChangeNotifier {
     return items.any((item) => item.toString() == product.toString());
   }
 
-  void checkOutOrder(BuildContext context, String name) async {
+//checkout wash order
+  void checkwashOrder(BuildContext context, String name) async {
     isLoading = true;
     var today = DateTime.now();
 
@@ -108,7 +93,7 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
     if (items.isNotEmpty) {
       CollectionReference cardCollection =
-          FirebaseFirestore.instance.collection('cart_orders');
+          FirebaseFirestore.instance.collection('cart_wash_orders');
       User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser != null) {
         String userId = currentUser.uid;
@@ -123,6 +108,163 @@ class CartProvider extends ChangeNotifier {
             'name': name,
             'date': currentDate,
             'Total': total,
+            'orderstatus': '',
+            // 'name': displayStatusOrder().asStream(),
+          };
+          await cardCollection.add(newItem);
+        }
+        showMyDialog(context);
+        items.length = 0;
+        notifyListeners();
+      } else {
+        Fluttertoast.showToast(
+          msg: 'No logged-in user.',
+          gravity: ToastGravity.BOTTOM,
+          toastLength: Toast.LENGTH_SHORT,
+        );
+      }
+    } else {
+      Fluttertoast.showToast(
+        msg: 'There is no order',
+        gravity: ToastGravity.BOTTOM,
+        toastLength: Toast.LENGTH_SHORT,
+      );
+    }
+    isLoading = false;
+    notifyListeners();
+  }
+
+//checkout iron clothes
+  void checkoutIron(BuildContext context, String name) async {
+    isLoading = true;
+    var today = DateTime.now();
+
+    var dateFormat = DateFormat('dd-MM-yyyy');
+
+    String currentDate = dateFormat.format(today);
+    notifyListeners();
+    if (items.isNotEmpty) {
+      CollectionReference cardCollection =
+          FirebaseFirestore.instance.collection('cart_iron_orders');
+      User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        String userId = currentUser.uid;
+        for (var item in items) {
+          Map<String, dynamic> newItem = {
+            ...item,
+            // 'price': 0, // Custom price field
+            // 'quantity': 0, // Custom quantity field
+            'userId': userId,
+            // Add logged-in user's ID
+            // 'name': '${Fieldname}',
+            'name': name,
+            'date': currentDate,
+            'Total': total,
+            'orderstatus': '',
+            // 'name': displayStatusOrder().asStream(),
+          };
+          await cardCollection.add(newItem);
+        }
+        showMyDialog(context);
+        items.length = 0;
+        notifyListeners();
+      } else {
+        Fluttertoast.showToast(
+          msg: 'No logged-in user.',
+          gravity: ToastGravity.BOTTOM,
+          toastLength: Toast.LENGTH_SHORT,
+        );
+      }
+    } else {
+      Fluttertoast.showToast(
+        msg: 'There is no order',
+        gravity: ToastGravity.BOTTOM,
+        toastLength: Toast.LENGTH_SHORT,
+      );
+    }
+    isLoading = false;
+    notifyListeners();
+  }
+
+  //checkout wash and iron
+  void checkoutwashIron(BuildContext context, String name) async {
+    isLoading = true;
+    var today = DateTime.now();
+
+    var dateFormat = DateFormat('dd-MM-yyyy');
+
+    String currentDate = dateFormat.format(today);
+    notifyListeners();
+    if (items.isNotEmpty) {
+      CollectionReference cardCollection =
+          FirebaseFirestore.instance.collection('cart_wash_iron_orders');
+      User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        String userId = currentUser.uid;
+        for (var item in items) {
+          Map<String, dynamic> newItem = {
+            ...item,
+            // 'price': 0, // Custom price field
+            // 'quantity': 0, // Custom quantity field
+            'userId': userId,
+            // Add logged-in user's ID
+            // 'name': '${Fieldname}',
+            'name': name,
+            'date': currentDate,
+            'Total': total,
+            'orderstatus': '',
+            // 'name': displayStatusOrder().asStream(),
+          };
+          await cardCollection.add(newItem);
+        }
+        showMyDialog(context);
+        items.length = 0;
+        notifyListeners();
+      } else {
+        Fluttertoast.showToast(
+          msg: 'No logged-in user.',
+          gravity: ToastGravity.BOTTOM,
+          toastLength: Toast.LENGTH_SHORT,
+        );
+      }
+    } else {
+      Fluttertoast.showToast(
+        msg: 'There is no order',
+        gravity: ToastGravity.BOTTOM,
+        toastLength: Toast.LENGTH_SHORT,
+      );
+    }
+    isLoading = false;
+    notifyListeners();
+  }
+
+// //check out suit
+  void checkoutSuits(BuildContext context, String name) async {
+    isLoading = true;
+    var today = DateTime.now();
+
+    var dateFormat = DateFormat('dd-MM-yyyy');
+
+    String currentDate = dateFormat.format(today);
+    notifyListeners();
+    if (items.isNotEmpty) {
+      CollectionReference cardCollection =
+          FirebaseFirestore.instance.collection('cart_suit_orders');
+      User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        String userId = currentUser.uid;
+        for (var item in items) {
+          Map<String, dynamic> newItem = {
+            ...item,
+            // 'price': 0, // Custom price field
+            // 'quantity': 0, // Custom quantity field
+            'userId': userId,
+            // Add logged-in user's ID
+            // 'name': '${Fieldname}',
+            'name': name,
+            'date': currentDate,
+            'Total': total,
+            'orderstatus': '',
             // 'name': displayStatusOrder().asStream(),
           };
           await cardCollection.add(newItem);
