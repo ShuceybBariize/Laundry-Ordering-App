@@ -17,13 +17,14 @@ class _PendingOrderState extends State<PendingOrder> {
   // final docUser = FirebaseFirestore.instance.collection('customers').doc();
 
   FirebaseAuth auth = FirebaseAuth.instance;
+  var collectionName = "cart_wash_orders";
 //get docid
   // here is function to get docid
   String? documentid;
   Future<void> getcompltedorder(String name) async {
     try {
       CollectionReference collectionRef =
-          FirebaseFirestore.instance.collection('cart_orders');
+          FirebaseFirestore.instance.collection(collectionName);
       QuerySnapshot querySnapshot =
           await collectionRef.where('orderstatus', isEqualTo: name).get();
       for (var doc in querySnapshot.docs) {
@@ -82,7 +83,7 @@ class _PendingOrderState extends State<PendingOrder> {
     if (newValue.trim().isNotEmpty) {
       // await custCollection.doc(currentUser.uid).update({field: newValue});
       CollectionReference ref =
-          FirebaseFirestore.instance.collection('cart_orders');
+          FirebaseFirestore.instance.collection(collectionName);
 
       ref.doc(documentid).update({'orderstatus': newValue});
     }
@@ -103,12 +104,66 @@ class _PendingOrderState extends State<PendingOrder> {
       child: Consumer<CartProvider>(builder: (context, value, _) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text("Pending orders"),
-            centerTitle: true,
+            title: Card(
+              color: Colors.blue,
+              surfaceTintColor: Colors.amber,
+              child: Container(
+                padding: const EdgeInsets.only(top: 5, bottom: 5),
+                // margin: EdgeInsets.only(top: 10),
+                child: DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                      //<-- SEE HERE
+                      borderSide: BorderSide(color: Colors.white, width: 1),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      //<-- SEE HERE
+                      gapPadding: 1.0,
+                      borderSide: BorderSide(
+                        color: Colors.black,
+                        width: 1,
+                      ),
+                    ),
+                    labelText: 'Select the collection',
+                    labelStyle: TextStyle(
+                      fontSize: 15,
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                  dropdownColor: Colors.white,
+                  isExpanded: false,
+                  isDense: false,
+                  value: collectionName.isEmpty ? collectionName : null,
+                  items: <String>[
+                    'cart_iron_orders',
+                    'cart_wash_iron_orders',
+                    'cart_wash_orders',
+                    'cart_suit_orders'
+                  ].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        value,
+                        selectionColor: Colors.amber,
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (String? value) {
+                    setState(() {
+                      //  _currentItemSelected = value!;
+
+                      collectionName = value!;
+                    });
+                  },
+                ),
+              ),
+            ),
           ),
           body: StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
-                .collection("cart_wash_orders")
+                .collection(collectionName)
                 .where('orderstatus', isEqualTo: '')
                 // .orderBy('name')
                 .snapshots(),
@@ -118,7 +173,11 @@ class _PendingOrderState extends State<PendingOrder> {
                   child: Text("ERROR OCCURED"),
                 );
               }
-
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return Center(
+                  child: Text("There is no pending  $collectionName"),
+                );
+              }
               if (snapshot.hasData) {
                 QuerySnapshot querySnapshot = snapshot.data!;
                 List<QueryDocumentSnapshot> documents = querySnapshot.docs;
@@ -130,7 +189,9 @@ class _PendingOrderState extends State<PendingOrder> {
                     return CustomerOrderWidget(
                       customerName: items[index]['name'],
                       clothImage: items[index]['imageUrl'],
-                      clothPrice: items[index]['clothPrice'],
+                      clothPrice: double.tryParse(
+                              items[index]['clothPrice'].toString()) ??
+                          0,
                       clothName: items[index]['clothName'],
                       quantity: items[index]['quantity'],
                       date: items[index]['date'],
@@ -144,79 +205,15 @@ class _PendingOrderState extends State<PendingOrder> {
                       },
                       totalPrice: items[index]['Total'],
                     );
-
-                    // InkWell(
-                    //   onTap: () {
-                    //     setState(() {
-                    //       getcompltedorder(items[index]['orderstatus']);
-                    //     });
-                    //   },
-                    //   child: Container(
-                    //       margin: EdgeInsets.all(10),
-                    //       color: Colors.amber,
-                    //       child: Column(
-                    //         mainAxisAlignment: MainAxisAlignment.start,
-                    //         children: [
-                    //           Text(items[index]['name'].toString()),
-                    //           Row(
-                    //             mainAxisAlignment: MainAxisAlignment.start,
-                    //             children: [
-                    //               CachedNetworkImage(
-                    //                 imageUrl: items[index]['imageUrl'],
-                    //                 width: 80,
-                    //                 height: 80,
-                    //               ),
-                    //               const SizedBox(height: 10),
-                    //               Row(
-                    //                 children: [
-                    //                   Column(
-                    //                     mainAxisAlignment:
-                    //                         MainAxisAlignment.end,
-                    //                     children: [
-                    //                       Text(items[index]['clothName']),
-                    //                       SizedBox(height: 10),
-                    //                       Text(
-                    //                           'Quantity: ${items[index]['quantity']}'),
-                    //                       SizedBox(height: 10),
-                    //                       Text(
-                    //                           'Price: ${items[index]['clothPrice']}'),
-                    //                       SizedBox(height: 10),
-                    //                       Text(
-                    //                           'Total Money: ${items[index]['Total']}'),
-                    //                       SizedBox(height: 10),
-                    //                       Text(
-                    //                           'Taking date: ${items[index]['date']}'),
-                    //                       Text(
-                    //                           'Orderstatus: ${items[index]['orderstatus']}'),
-                    //                       const SizedBox(height: 20),
-                    //                     ],
-                    //                   ),
-                    //                   const SizedBox(width: 50),
-                    //                   IconButton(
-                    // onPressed: () {
-                    //   editField();
-                    //   setState(() {});
-                    //   getcompltedorder(items[index]
-                    //           ['orderstatus']
-                    //       .toString());
-                    // },
-                    // icon: Icon(
-                    //   Icons.settings,
-                    // ),
-                    //                   ),
-                    //                 ],
-                    //               ),
-                    //             ],
-                    //           ),
-                    //         ],
-                    //       )),
-                    // );
                   },
                 );
               }
               return const Center(
-                child: CircularProgressIndicator(),
+                child: Text("There is pending order"),
               );
+              // return const Center(
+              //   child: CircularProgressIndicator(),
+              // );
             },
           ),
         );
@@ -256,13 +253,13 @@ class CustomerOrderWidget extends StatelessWidget {
       margin: const EdgeInsets.all(10),
       child: SizedBox(
         width: double.infinity,
-        height: 100,
+        height: 120,
         child: ListTile(
           leading: Container(
             width: 60.0,
             height: 60.0,
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
+              shape: BoxShape.rectangle,
               image: DecorationImage(
                 image: NetworkImage(clothImage),
                 fit: BoxFit.cover,
@@ -277,8 +274,11 @@ class CustomerOrderWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text('Cltoh: $clothName'),
-              Text('Price: \$${clothPrice.toStringAsFixed(2)}'),
+              const SizedBox(height: 5),
+              Text('Price: \$${double.parse(clothPrice.toStringAsFixed(2))}'),
+              const SizedBox(height: 5),
               Text('Quantity: $quantity'),
+              const SizedBox(height: 5),
               Text('Date: $date'),
             ],
           ),
@@ -293,9 +293,9 @@ class CustomerOrderWidget extends StatelessWidget {
               Expanded(
                 child: IconButton(
                   icon: const Icon(
-                    Icons.settings,
+                    Icons.edit,
                     size: 33,
-                    color: Colors.black,
+                    color: Color.fromARGB(255, 5, 128, 9),
                   ),
                   onPressed: onpress,
                 ),

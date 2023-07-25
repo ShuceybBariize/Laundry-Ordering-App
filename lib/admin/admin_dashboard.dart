@@ -15,8 +15,8 @@ import 'package:permission_handler/permission_handler.dart';
 // ignore: depend_on_referenced_packages
 import 'package:provider/provider.dart';
 
-import '../addproduct.dart';
 import '../exports.dart';
+import '../utility/menu_par.dart';
 import 'screens/completed_view.dart';
 import 'screens/create_users.dart';
 import 'screens/delivered_view.dart';
@@ -61,14 +61,16 @@ class AdminUser extends ChangeNotifier {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   Future<void> _totalAmountTranssection() async {
-    QuerySnapshot querySnapshot =
-        await FirebaseFirestore.instance.collection('payment success').get();
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('successful_payments')
+        .get();
     double totalAmount = 0;
 
     for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
       Map<String, dynamic>? paymentData =
           documentSnapshot.data() as Map<String, dynamic>?;
-      double amount = paymentData?['amount'] ?? 0.0;
+      // double amount = paymentData?['amount'] ?? 0.0;
+      double amount = paymentData?['amount']?.toDouble() ?? 0.0;
       // Default to 0 if 'amount' is not found or null.
 
       totalAmount += amount;
@@ -245,19 +247,145 @@ class _AdminDashboardState extends State<AdminDashboard> {
         appBar: AppBar(
           title: const Text("Admin Dashboard"),
           centerTitle: true,
-          leading: IconButton(
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                // ignore: use_build_context_synchronously
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (ctx) => const LoginPage(),
-                    ),
-                    (route) => false);
-              },
-              icon: const Icon(Icons.exit_to_app)),
+          actions: [
+            IconButton(
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                  // ignore: use_build_context_synchronously
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (ctx) => const LoginPage(),
+                      ),
+                      (route) => false);
+                },
+                icon: const Icon(Icons.exit_to_app)),
+          ],
         ),
+        drawer: Drawer(
+            width: 250,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                bottomRight: Radius.circular(40),
+              ),
+            ),
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => ProfilePage()));
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    height: 265,
+                    decoration: const BoxDecoration(
+                      color: Kactivecolor,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 12),
+                          height: 150,
+                          width: 150,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(80),
+                            // shape: BoxShape.circle,
+                            // image: DecorationImage(
+                            //     fit: BoxFit.cover,
+                            //     image:
+                            //         CachedNetworkImageProvider(imageUrl)),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 12,
+                        ),
+                        Text(
+                          'currentUser.email!',
+                          style: GoogleFonts.inter(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.black,
+                              letterSpacing: 2),
+                        ),
+                        const SizedBox(
+                          height: 12,
+                        ),
+                        Text(
+                          'currentUser.email!',
+                          style: GoogleFonts.inter(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 22),
+                drawerList(
+                    icon: Icons.history,
+                    text: 'Create User',
+                    ontap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const SignUpScreen()));
+                    }),
+                const SizedBox(
+                  height: 30,
+                ),
+                drawerList(
+                    icon: Icons.person,
+                    text: 'Users View',
+                    ontap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const UsersButton()));
+                    }),
+                const SizedBox(
+                  height: 30,
+                ),
+                drawerList(
+                    icon: MdiIcons.cartVariant,
+                    text: 'Add Products',
+                    ontap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const UsersButton()));
+                    }),
+                const Spacer(),
+                drawerList(
+                    icon: Icons.logout,
+                    text: 'Logout',
+                    ontap: () async {
+                      try {
+                        await FirebaseAuth.instance.signOut();
+                      } catch (e) {
+                        print('Signout Erro$e');
+                      }
+                      //   Navigator.push(context,
+                      //       MaterialPageRoute(builder: (_) => const LoginPage()));
+                      // },
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (ctx) => const LoginPage(),
+                          ),
+                          (route) => false);
+                    }),
+                const SizedBox(
+                  height: 30,
+                ),
+              ],
+            )),
         body: ListView(
           children: [
             StreamBuilder<DocumentSnapshot>(
@@ -273,8 +401,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     return Column(
                       children: [
                         imgProfile.image != null
-                            //  Image.file(ImgProfile.image!)
-
                             ? GestureDetector(
                                 onTap: () {
                                   showBottomSheet(
@@ -559,32 +685,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 ),
                 const SizedBox(width: 10),
                 Admin_controlers(
-                  no: '',
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const SignUpScreen()));
-                  },
-                  title: 'Creat user',
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Admin_controlers(
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => const AddProduct()));
-
-                    // totalProdcuts();
-                  },
-                  title: 'add products',
-                  no: '',
-                ),
-                const SizedBox(width: 10),
-                Admin_controlers(
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -667,12 +767,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     ],
                   ),
                   child: Admin_controlers(
-                    no: adminAccess.totalAmount.toString(),
+                    no: adminAccess.totalAmount.toStringAsFixed(2),
                     onPressed: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => const transactionPayments()));
+                              builder: (_) =>
+                                  const transactionPaymentsStsff()));
                     },
                     title: 'Earning',
                   ),
@@ -706,7 +807,7 @@ class Admin_controlers extends StatelessWidget {
         margin: const EdgeInsets.all(5.5),
         width: 180,
         height: 160,
-        decoration: const BoxDecoration(color: Colors.orangeAccent),
+        decoration: const BoxDecoration(color: Kactivecolor),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

@@ -14,14 +14,14 @@ class CompleteOrders extends StatefulWidget {
 
 class _CompleteOrdersState extends State<CompleteOrders> {
   final docUser = FirebaseFirestore.instance.collection('customers').doc();
-
+  var collectionName = "cart_wash_orders";
   FirebaseAuth auth = FirebaseAuth.instance;
   // here is function to get docid
   String? documentid;
   Future<void> getcompltedorder(String name) async {
     try {
       CollectionReference collectionRef =
-          FirebaseFirestore.instance.collection('cart_orders');
+          FirebaseFirestore.instance.collection(collectionName);
       QuerySnapshot querySnapshot =
           await collectionRef.where('orderstatus', isEqualTo: name).get();
       for (var doc in querySnapshot.docs) {
@@ -80,7 +80,7 @@ class _CompleteOrdersState extends State<CompleteOrders> {
     if (newValue.trim().isNotEmpty) {
       // await custCollection.doc(currentUser.uid).update({field: newValue});
       CollectionReference ref =
-          FirebaseFirestore.instance.collection('cart_orders');
+          FirebaseFirestore.instance.collection(collectionName);
 
       ref.doc(documentid).update({'orderstatus': newValue});
     }
@@ -101,8 +101,62 @@ class _CompleteOrdersState extends State<CompleteOrders> {
       child: Consumer<CartProvider>(builder: (context, value, _) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text("Ongiong Screen Orders"),
-            centerTitle: true,
+            title: Card(
+              color: Colors.blue,
+              surfaceTintColor: Colors.amber,
+              child: Container(
+                padding: const EdgeInsets.only(top: 5, bottom: 5),
+                // margin: EdgeInsets.only(top: 10),
+                child: DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                      //<-- SEE HERE
+                      borderSide: BorderSide(color: Colors.white, width: 1),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      //<-- SEE HERE
+                      gapPadding: 1.0,
+                      borderSide: BorderSide(
+                        color: Colors.black,
+                        width: 1,
+                      ),
+                    ),
+                    labelText: 'Select the collection',
+                    labelStyle: TextStyle(
+                      fontSize: 15,
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                  dropdownColor: Colors.white,
+                  isExpanded: false,
+                  isDense: false,
+                  value: collectionName.isEmpty ? collectionName : null,
+                  items: <String>[
+                    'cart_iron_orders',
+                    'cart_wash_iron_orders',
+                    'cart_wash_orders',
+                    'cart_suit_orders'
+                  ].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        value,
+                        selectionColor: Colors.amber,
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (String? value) {
+                    setState(() {
+                      //  _currentItemSelected = value!;
+
+                      collectionName = value!;
+                    });
+                  },
+                ),
+              ),
+            ),
           ),
           body: StreamBuilder<QuerySnapshot>(
             stream:
@@ -112,7 +166,7 @@ class _CompleteOrdersState extends State<CompleteOrders> {
                 //     .orderBy('name')
                 //     .snapshots(),
                 FirebaseFirestore.instance
-                    .collection("cart_orders")
+                    .collection(collectionName)
                     //  .orderBy('userId')
                     .where('orderstatus', whereIn: [
               'Com',
@@ -132,7 +186,11 @@ class _CompleteOrdersState extends State<CompleteOrders> {
                   child: Text("ERROR OCCURED"),
                 );
               }
-
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return Center(
+                  child: Text("There is no completed  $collectionName"),
+                );
+              }
               if (snapshot.hasData) {
                 QuerySnapshot querySnapshot = snapshot.data!;
                 List<QueryDocumentSnapshot> documents = querySnapshot.docs;
@@ -144,7 +202,9 @@ class _CompleteOrdersState extends State<CompleteOrders> {
                     return CustomerOrderWidget(
                       customerName: items[index]['name'],
                       clothImage: items[index]['imageUrl'],
-                      clothPrice: items[index]['clothPrice'],
+                      clothPrice: double.tryParse(
+                              items[index]['clothPrice'].toString()) ??
+                          0,
                       clothName: items[index]['clothName'],
                       quantity: items[index]['quantity'],
                       date: items[index]['date'],
@@ -203,13 +263,13 @@ class CustomerOrderWidget extends StatelessWidget {
       margin: const EdgeInsets.all(10),
       child: SizedBox(
         width: double.infinity,
-        height: 100,
+        height: 120,
         child: ListTile(
           leading: Container(
             width: 60.0,
             height: 60.0,
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
+              shape: BoxShape.rectangle,
               image: DecorationImage(
                 image: NetworkImage(clothImage),
                 fit: BoxFit.cover,
@@ -224,8 +284,11 @@ class CustomerOrderWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text('Cltoh: $clothName'),
-              Text('Price: \$${clothPrice.toStringAsFixed(2)}'),
+              const SizedBox(height: 5),
+              Text('Price: \$${double.parse(clothPrice.toStringAsFixed(2))}'),
+              const SizedBox(height: 5),
               Text('Quantity: $quantity'),
+              const SizedBox(height: 5),
               Text('Date: $date'),
             ],
           ),
@@ -240,9 +303,9 @@ class CustomerOrderWidget extends StatelessWidget {
               Expanded(
                 child: IconButton(
                   icon: const Icon(
-                    Icons.settings,
+                    Icons.edit,
                     size: 33,
-                    color: Colors.black,
+                    color: Color.fromARGB(255, 5, 128, 9),
                   ),
                   onPressed: onpress,
                 ),

@@ -119,7 +119,7 @@ class _HomeState extends State<Home> {
                         },
                         child: Container(
                           width: double.infinity,
-                          height: 235,
+                          height: 265,
                           decoration: const BoxDecoration(
                             color: Kactivecolor,
                           ),
@@ -151,18 +151,18 @@ class _HomeState extends State<Home> {
                                     letterSpacing: 2),
                               ),
                               const SizedBox(
-                                height: 8,
+                                height: 12,
                               ),
                               Text(
                                 currentUser.email!,
                                 style: GoogleFonts.inter(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                    color: Colors.black,
-                                    letterSpacing: 2),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  color: Colors.black,
+                                ),
                               ),
                               const SizedBox(
-                                height: 8,
+                                height: 16,
                               ),
                             ],
                           ),

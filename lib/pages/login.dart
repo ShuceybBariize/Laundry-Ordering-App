@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../admin/admin_dashboard.dart';
 import '../exports.dart';
@@ -15,6 +16,25 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  // Get the device token using Firebase Messaging
+  Future<String?> getDeviceToken() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    // Request permission (iOS only)
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    print('User granted permission: ${settings.authorizationStatus}');
+
+    // Get the device token
+    String? token = await messaging.getToken();
+    print('Device token: $token');
+    return token;
+  }
+
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
 
@@ -322,6 +342,13 @@ class _LoginPageState extends State<LoginPage> {
           email: email,
           password: password,
         );
+ // Get the device token
+        String? deviceToken = await getDeviceToken();
+
+        // Update the device token in Firestore
+        FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).update({
+          'deviceToken': deviceToken,
+        });
         route();
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {

@@ -32,5 +32,5 @@ export 'pages/slider_model.dart';
 export 'satff/screens/completeorder.dart';
 
 export 'satff/screens/productsView.dart';
-export 'satff/screens/staff_dashboard.dart';
+export 'satff/staff_dashboard.dart';
 export 'pages/contact.dart';

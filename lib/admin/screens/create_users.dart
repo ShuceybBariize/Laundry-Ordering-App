@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'
     show CollectionReference, FirebaseFirestore;
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../../exports.dart';
 import 'adminverifcation.dart';
@@ -110,8 +111,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (_formKey.currentState!.validate()) {
         await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
+        // Get the device token
+        FirebaseMessaging messaging = FirebaseMessaging.instance;
+        String? deviceToken = await messaging.getToken();
 
-        postDetailsToFirestore(name, email, password, phone, image, role);
+        postDetailsToFirestore(
+            name, email, password, phone, image, role, deviceToken);
       } else {
         var snackbar = const SnackBar(content: Text('something went wrong '));
         ScaffoldMessenger.of(context).showSnackBar(snackbar);
@@ -148,7 +153,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   postDetailsToFirestore(String email, String password, String name,
-      String phone, String image, String role) async {
+      String phone, String image, String role, String? deviceToken) async {
     // ignore: unused_local_variable
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
     var user = _auth.currentUser;
@@ -160,6 +165,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       'phone': txtphone,
       'role': role,
       'image': image,
+      'deviceToken': deviceToken,
     });
     // Navigator.pushReplacement(
     //     context, MaterialPageRoute(builder: (context) => const LoginPage()));

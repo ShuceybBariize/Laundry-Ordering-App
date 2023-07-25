@@ -1,15 +1,3 @@
-// import 'dart:ffi';
-
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:laundry_order_app/admin/screens/addproduct.dart';
-// import 'package:laundry_order_app/admin/screens/create_users.dart';
-// import 'package:laundry_order_app/admin/screens/users.dart';
-// import 'package:laundry_order_app/admin/widgets/custom_button.dart';
-// import 'package:laundry_order_app/exports.dart';
-// import 'package:laundry_order_app/exports.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'dart:async';
 import 'dart:io';
 
@@ -19,20 +7,22 @@ import 'package:firebase_storage/firebase_storage.dart';
 // ignore: depend_on_referenced_packages
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:laundry_management_system/satff/screens/pendingorder.dart';
+import 'package:laundry_management_system/satff/screens/earning.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 // ignore: depend_on_referenced_packages
 import 'package:provider/provider.dart';
 
-import '../../exports.dart';
-import '../../utility/ongoingorders.dart';
-import 'deliveredorder.dart';
-import 'staffuserview.dart';
+import '../exports.dart';
+import '../utility/ongoingorders.dart';
+import 'screens/deliveredorder.dart';
+import 'screens/pendingorder.dart';
+import 'screens/staffuserview.dart';
 
 class StaffUser extends ChangeNotifier {
   int _totolcustomers = 0;
   int _totalProducts = 0;
+  double _totalAmount = 0;
   final int _totalproductdb = 0;
   final int _totalironclothes = 0;
   int _totalpendingOrders = 0;
@@ -40,6 +30,7 @@ class StaffUser extends ChangeNotifier {
   int _totalcompleteOrder = 0;
   int _totaldeliveredOrder = 0;
 
+  double get totalAmount => _totalAmount;
   int get totolcustomers => _totolcustomers;
   int get totalProducts => _totalProducts;
   int get totalironclothes => _totalironclothes;
@@ -49,6 +40,31 @@ class StaffUser extends ChangeNotifier {
   int get completeOrder => _totalcompleteOrder;
   int get deliveredOrder => _totaldeliveredOrder;
 
+  void addAmount(int newAmount) {
+    _totalAmount += newAmount;
+    notifyListeners();
+  }
+
+  Future<void> _totalAmountTranssection() async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('successful_payments')
+        .get();
+    double totalAmount = 0;
+
+    for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
+      Map<String, dynamic>? paymentData =
+          documentSnapshot.data() as Map<String, dynamic>?;
+      // double amount = paymentData?['amount'] ?? 0.0;
+      double amount = paymentData?['amount']?.toDouble() ?? 0.0;
+      // Default to 0 if 'amount' is not found or null.
+
+      totalAmount += amount;
+    }
+
+    _totalAmount = totalAmount;
+    notifyListeners();
+  }
+
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   Future<void> _stafftotalCustomers() async {
     QuerySnapshot querySnapshot = await firestore.collection('customers').get();
@@ -57,18 +73,19 @@ class StaffUser extends ChangeNotifier {
   }
 
   Future<void> _stafftotalProdcuts() async {
-    QuerySnapshot querySnapshot1 = await firestore.collection('laundry').get();
+    QuerySnapshot querySnapshot1 =
+        await firestore.collection('productdb').get();
     int totalproductdb = querySnapshot1.docs.length;
 
     QuerySnapshot querySnapshot2 =
-        await firestore.collection('ironOrders').get();
+        await firestore.collection('ironclothes').get();
     int totalironclothes = querySnapshot2.docs.length;
 
     QuerySnapshot querySnapshot3 = await firestore.collection('suitsdb').get();
     int totalsuitsdb = querySnapshot3.docs.length;
 
     QuerySnapshot querySnapshot4 =
-        await firestore.collection('washIronOrder').get();
+        await firestore.collection('wash_and_irondb').get();
     int totalWashandIron = querySnapshot4.docs.length;
 
     _totalProducts =
@@ -77,18 +94,37 @@ class StaffUser extends ChangeNotifier {
   }
 
   Future<void> _staffftotalPendingOrders() async {
-    QuerySnapshot querySnapshot = await firestore
-        .collection('cart_orders')
+    QuerySnapshot querySnapshot1 = await firestore
+        .collection('cart_wash_orders')
         .where('orderstatus', isEqualTo: '')
         .get();
-    _totalpendingOrders = querySnapshot.docs.length;
+    int wash = querySnapshot1.docs.length;
+
+    QuerySnapshot querySnapshot2 = await firestore
+        .collection('cart_wash_iron_orders')
+        .where('orderstatus', isEqualTo: '')
+        .get();
+    int washIron = querySnapshot2.docs.length;
+
+    QuerySnapshot querySnapshot3 = await firestore
+        .collection('cart_iron_orders')
+        .where('orderstatus', isEqualTo: '')
+        .get();
+    int iron = querySnapshot3.docs.length;
+
+    QuerySnapshot querySnapshot4 = await firestore
+        .collection('cart_suit_orders')
+        .where('orderstatus', isEqualTo: '')
+        .get();
+    int suits = querySnapshot4.docs.length;
+    _totalpendingOrders = wash + washIron + iron + suits;
     notifyListeners();
   }
 
 //Ongoing order
   Future<void> _ongoingOrder() async {
-    QuerySnapshot querySnapshot = await firestore
-        .collection('cart_orders')
+    QuerySnapshot querySnapshot1 = await firestore
+        .collection('cart_iron_orders')
         .where('orderstatus', whereIn: [
       'O',
       'o',
@@ -99,14 +135,56 @@ class StaffUser extends ChangeNotifier {
       'ongo',
       'Ongo',
     ]).get();
-    _totalongoingOrders = querySnapshot.docs.length;
+    int on1 = querySnapshot1.docs.length;
+
+    QuerySnapshot querySnapshot2 = await firestore
+        .collection('cart_wash_iron_orders')
+        .where('orderstatus', whereIn: [
+      'O',
+      'o',
+      'On',
+      'on',
+      'ongoing',
+      'Ongoing',
+      'ongo',
+      'Ongo',
+    ]).get();
+    int on2 = querySnapshot2.docs.length;
+
+    QuerySnapshot querySnapshot3 = await firestore
+        .collection('cart_wash_orders')
+        .where('orderstatus', whereIn: [
+      'O',
+      'o',
+      'On',
+      'on',
+      'ongoing',
+      'Ongoing',
+      'ongo',
+      'Ongo',
+    ]).get();
+    int on3 = querySnapshot3.docs.length;
+    QuerySnapshot querySnapshot4 = await firestore
+        .collection('cart_suit_orders')
+        .where('orderstatus', whereIn: [
+      'O',
+      'o',
+      'On',
+      'on',
+      'ongoing',
+      'Ongoing',
+      'ongo',
+      'Ongo',
+    ]).get();
+    int on4 = querySnapshot4.docs.length;
+    _totalongoingOrders = on1 + on2 + on3 + on4;
     notifyListeners();
   }
 
   // complete order
   Future<void> _completeOrder() async {
-    QuerySnapshot querySnapshot = await firestore
-        .collection('cart_orders')
+    QuerySnapshot querySnapshot1 = await firestore
+        .collection('cart_iron_orders')
         .where('orderstatus', whereIn: [
       'Com',
       'com',
@@ -119,15 +197,65 @@ class StaffUser extends ChangeNotifier {
       'Comp',
       'comp'
     ]).get();
-    _totalcompleteOrder = querySnapshot.docs.length;
+    int com1 = querySnapshot1.docs.length;
+
+    QuerySnapshot querySnapshot2 = await firestore
+        .collection('cart_wash_iron_orders')
+        .where('orderstatus', whereIn: [
+      'Com',
+      'com',
+      'completed',
+      'Completed',
+      'complete',
+      'Complete',
+      'c',
+      'C',
+      'Comp',
+      'comp'
+    ]).get();
+    int com2 = querySnapshot2.docs.length;
+    QuerySnapshot querySnapshot3 = await firestore
+        .collection('cart_wash_orders')
+        .where('orderstatus', whereIn: [
+      'Com',
+      'com',
+      'completed',
+      'Completed',
+      'complete',
+      'Complete',
+      'c',
+      'C',
+      'Comp',
+      'comp'
+    ]).get();
+    int com3 = querySnapshot3.docs.length;
+
+    QuerySnapshot querySnapshot4 = await firestore
+        .collection('cart_suit_orders')
+        .where('orderstatus', whereIn: [
+      'Com',
+      'com',
+      'completed',
+      'Completed',
+      'complete',
+      'Complete',
+      'c',
+      'C',
+      'Comp',
+      'comp'
+    ]).get();
+    int com4 = querySnapshot4.docs.length;
+
+    _totalcompleteOrder = com1 + com2 + com3 + com4;
+
     notifyListeners();
   }
 
   //delivered orders
 
   Future<void> _deliveredOrders() async {
-    QuerySnapshot querySnapshot = await firestore
-        .collection('cart_orders')
+    QuerySnapshot querySnapshot1 = await firestore
+        .collection('cart_wash_orders')
         .where('orderstatus', whereIn: [
       'delivered',
       'Delivered',
@@ -138,7 +266,49 @@ class StaffUser extends ChangeNotifier {
       'd',
       'Deliver',
     ]).get();
-    _totaldeliveredOrder = querySnapshot.docs.length;
+
+    int del1 = querySnapshot1.docs.length;
+    QuerySnapshot querySnapshot2 = await firestore
+        .collection('cart_wash_iron_orders')
+        .where('orderstatus', whereIn: [
+      'delivered',
+      'Delivered',
+      'deliver',
+      'del',
+      'Del',
+      'D',
+      'd',
+      'Deliver',
+    ]).get();
+    int del2 = querySnapshot2.docs.length;
+    QuerySnapshot querySnapshot3 = await firestore
+        .collection('cart_iron_orders')
+        .where('orderstatus', whereIn: [
+      'delivered',
+      'Delivered',
+      'deliver',
+      'del',
+      'Del',
+      'D',
+      'd',
+      'Deliver',
+    ]).get();
+    int del3 = querySnapshot3.docs.length;
+    QuerySnapshot querySnapshot4 = await firestore
+        .collection('cart_suit_orders')
+        .where('orderstatus', whereIn: [
+      'delivered',
+      'Delivered',
+      'deliver',
+      'del',
+      'Del',
+      'D',
+      'd',
+      'Deliver',
+    ]).get();
+    int del4 = querySnapshot4.docs.length;
+    _totaldeliveredOrder = del1 + del2 + del3 + del4;
+
     notifyListeners();
   }
 
@@ -152,6 +322,7 @@ class StaffUser extends ChangeNotifier {
     await _ongoingOrder();
     await _completeOrder();
     await _deliveredOrders();
+    await _totalAmountTranssection();
   }
 }
 
@@ -180,6 +351,7 @@ class _StaffDashboardState extends State<StaffDashboard> {
     staff._ongoingOrder();
     staff._completeOrder();
     staff._deliveredOrders();
+    staff._totalAmountTranssection();
     final currentUser = FirebaseAuth.instance.currentUser;
     // currentUser = FirebaseAuth.instance.currentUser!;
     // totalusers = totolusers + totolcustomers;
@@ -501,8 +673,14 @@ class _StaffDashboardState extends State<StaffDashboard> {
               ),
               const SizedBox(width: 10),
               Admin_controlers(
-                no: '\$6',
-                onPressed: () {},
+                no: staff.totalAmount.toStringAsFixed(2),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (ctx) => const transactionPaymentsStsff(),
+                      ));
+                },
                 title: 'Earning',
               ),
             ],
@@ -610,7 +788,7 @@ class Admin_controlers extends StatelessWidget {
         margin: const EdgeInsets.all(5.5),
         width: 180,
         height: 160,
-        decoration: const BoxDecoration(color: Colors.orangeAccent),
+        decoration: const BoxDecoration(color: Kactivecolor),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
