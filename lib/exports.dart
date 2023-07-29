@@ -33,4 +33,4 @@ export 'satff/screens/completeorder.dart';
 
 export 'satff/screens/productsView.dart';
 export 'satff/staff_dashboard.dart';
-export 'pages/contact.dart';
+export 'pages/feedback.dart';

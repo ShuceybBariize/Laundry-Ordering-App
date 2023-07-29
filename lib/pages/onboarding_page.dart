@@ -1,5 +1,4 @@
 import '../exports.dart';
-import 'login.dart';
 
 class OnboardingPage extends StatelessWidget {
   static String id = 'onboardingPage';

@@ -8,13 +8,13 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:laundry_management_system/satff/screens/earning.dart';
+import 'package:laundry_management_system/satff/screens/ongoingorders.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 // ignore: depend_on_referenced_packages
 import 'package:provider/provider.dart';
 
 import '../exports.dart';
-import '../utility/ongoingorders.dart';
 import 'screens/deliveredorder.dart';
 import 'screens/pendingorder.dart';
 import 'screens/staffuserview.dart';

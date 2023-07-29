@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 // ignore: depend_on_referenced_packages
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:laundry_management_system/admin/screens/earning.dart';
+import 'package:laundry_management_system/admin/screens/reportview.dart';
 // import 'package:laundry_order_app/satff/screens/staff_dashboard.dart';
 import 'package:permission_handler/permission_handler.dart';
 // ignore: depend_on_referenced_packages
@@ -360,6 +361,18 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           context,
                           MaterialPageRoute(
                               builder: (_) => const UsersButton()));
+                    }),
+                const SizedBox(
+                  height: 30,
+                ),
+                drawerList(
+                    icon: MdiIcons.help,
+                    text: 'Report View',
+                    ontap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const ReportView()));
                     }),
                 const Spacer(),
                 drawerList(

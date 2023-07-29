@@ -1,6 +1,6 @@
 import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:laundry_management_system/exports.dart';
@@ -17,8 +17,90 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
-import '../main.dart';
-import 'test.dart';
+// Function to get all staff device tokens from Firestore
+Future<List<String>> getStaffDeviceTokens() async {
+  List<String> deviceTokens = [];
+
+  try {
+    // Access the "users" collection in Firestore
+    CollectionReference usersCollection =
+        FirebaseFirestore.instance.collection('users');
+
+    // Query documents with the role "staff"
+    QuerySnapshot staffSnapshot =
+        await usersCollection.where('role', isEqualTo: 'staff').get();
+
+    // Iterate through the documents and get the device tokens
+    for (QueryDocumentSnapshot document in staffSnapshot.docs) {
+      String? deviceToken = document.get('deviceToken');
+      if (deviceToken != null) {
+        deviceTokens.add(deviceToken);
+      }
+    }
+  } catch (e) {
+    print('Error getting staff device tokens: $e');
+  }
+
+  return deviceTokens;
+}
+
+Future<void> sendNotificationsToStaff() async {
+  // Step 1: Get the device tokens of all staff members
+  List<String> staffDeviceTokens = await getStaffDeviceTokens();
+
+  if (staffDeviceTokens.isEmpty) {
+    print('No staff members found.');
+    return;
+  }
+
+  // Step 2: Send notifications to each staff member
+  String serverKey =
+      'AAAAs23xekk:APA91bESWPXzuhTzMkvbumu31NOHCl-Qn0r7dskr4REgUPo_Sc6cIkvhB2WK8HQYc9kXCKHEprmVDMBzDc6iM9ZjSRS3SKsFXnDnBboKH1eSDhyVgJklBj6_NMVl7ryZp7sKBIeAkkQN'; // Replace with your FCM server key
+
+  final Map<String, dynamic> notification = {
+    'body': 'There is a new pending order.', // Notification message
+    'title': 'New Order', // Notification title
+    'sound': 'default', // Notification sound (optional)
+  };
+
+  final Map<String, dynamic> data = {
+    'click_action':
+        'FLUTTER_NOTIFICATION_CLICK', // Action when notification is clicked (optional)
+    'payload': 'bending_order', // Payload data (optional)
+  };
+
+  final Map<String, dynamic> fcmMessage = {
+    'notification': notification,
+    'data': data,
+  };
+
+  final headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'key=$serverKey',
+  };
+
+  try {
+    // Send notifications to each staff member
+    for (String deviceToken in staffDeviceTokens) {
+      fcmMessage['to'] = deviceToken;
+      final response = await http.post(
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        headers: headers,
+        body: jsonEncode(fcmMessage),
+      );
+
+      if (response.statusCode == 200) {
+        print(
+            'Notification sent successfully to staff member with device token: $deviceToken');
+      } else {
+        print(
+            'Failed to send notification to staff member with device token: $deviceToken. Status code: ${response.statusCode}');
+      }
+    }
+  } catch (e) {
+    print('Error sending notifications to staff members: $e');
+  }
+}
 
 class Payments extends StatefulWidget {
   final double totalCartValue;
@@ -34,7 +116,37 @@ class Payments extends StatefulWidget {
 }
 
 class _PaymentsState extends State<Payments> {
-  // bool _isProcessingPayment = false;
+  Future<void> sendNotificationToAllStaff(
+      List<String> staffDeviceTokens) async {
+    // ... existing notification sending code ...
+
+    // for (String deviceToken in staffDeviceTokens) {
+    //   await sendNotificationToUser(deviceToken);
+    // }
+
+    Future<List<String>> getStaffDeviceTokens() async {
+      List<String> deviceTokens = [];
+      try {
+        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .where('role', isEqualTo: 'staff')
+            .get();
+
+        if (querySnapshot.docs.isNotEmpty) {
+          for (DocumentSnapshot documentSnapshot in querySnapshot.docs) {
+            String deviceToken = documentSnapshot.get('deviceToken');
+            if (deviceToken.isNotEmpty) {
+              deviceTokens.add(deviceToken);
+            }
+          }
+        }
+      } catch (e) {
+        print('Error getting staff device tokens: $e');
+      }
+
+      return deviceTokens;
+    }
+  }
 
   bool _isProcessingPayment = false;
 
@@ -49,8 +161,8 @@ class _PaymentsState extends State<Payments> {
           double totalAmount = value.calculateTotalPrice();
           if (accountNo != null) {
             MerchantEvcPlus merchantEvcPlus = const MerchantEvcPlus(
-              apiKey: 'API-675418888AHX', // API KEY
-              merchantUid: 'M0910291', // Merchant UID
+              apiKey: 'API-675418888AHX',
+              merchantUid: 'M0910291',
               apiUserId: '1000416',
             );
             String generateRandomId() {
@@ -77,42 +189,78 @@ class _PaymentsState extends State<Payments> {
               payerPhoneNumber: accountNo,
             );
 
-            merchantEvcPlus.makePayment(
-              transactionInfo: transactionInfo,
-              onSuccess: (TransactionInfo successTransactionInfo) {
-                // Handle success scenario and access the details from successTransactionInfo.
-                print('Payment successful! Transaction Details:');
-                print('Reference ID: ${successTransactionInfo.referenceId}');
-                print('Invoice ID: ${successTransactionInfo.invoiceId}');
-                print('Description: ${successTransactionInfo.description}');
-                value.checkwashOrder(context, "$Fieldname");
+            try {
+              await merchantEvcPlus.makePayment(
+                transactionInfo: transactionInfo,
+                onSuccess: (TransactionInfo successTransactionInfo) {
+                  // Handle success scenario and access the details from successTransactionInfo.
+                  sendNotificationsToStaff();
+                  print('Reference ID: ${successTransactionInfo.referenceId}');
+                  print('Invoice ID: ${successTransactionInfo.invoiceId}');
+                  print('Description: ${successTransactionInfo.description}');
 
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => const HomePage()));
-                Noti.showBigTextNotification(
-                    id: 1,
-                    payload: "home",
-                    title: "New Orders ",
-                    body: "There is New Bending Order",
-                    fln: flutterLocalNotificationsPlugin);
-              },
-              onFailure: (message) {
-                print('Payment failed with error: $message');
-              },
-              onPaymentCancelled: () {
-                setState(() {
-                  _isProcessingPayment = false;
-                });
-                print('Payment was cancelled by the user.');
-              },
-              context: context,
-            );
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => const HomePage()),
+                    (route) => false,
+                  );
+                  value.checkwashOrder(context, "$Fieldname");
+                },
+                onFailure: (message) {
+                  // Show AwesomeDialog with the error message
+                  showAwesomeDialog(
+                    context: context,
+                    title: 'Payment Failed error',
+                    description: ' $message',
+                  );
+                  // Stop the processing of ModalProgressHUD
+                  setState(() {
+                    _isProcessingPayment = false;
+                  });
+                },
+                onPaymentCancelled: () {
+                  setState(() {
+                    _isProcessingPayment = false;
+                  });
+                  print('Payment was cancelled by the user.');
+                },
+                context: context,
+              );
+            } catch (e) {
+              print('Error making payment: $e');
+              // Show AwesomeDialog with the error message
+              showAwesomeDialog(
+                context: context,
+                title: 'Payment Failed',
+                description: 'Payment failed with error: $e',
+              );
+
+              // Stop the processing of ModalProgressHUD
+              setState(() {
+                _isProcessingPayment = false;
+              });
+            }
           } else {
             print('Failed to get account number');
           }
         },
         colorbtn: Kactivecolor,
         colortxt: Colors.white);
+  }
+
+  void showAwesomeDialog({
+    required BuildContext context,
+    required String title,
+    required String description,
+  }) {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.ERROR,
+      animType: AnimType.BOTTOMSLIDE,
+      title: title,
+      desc: description,
+      btnOkOnPress: () {},
+    ).show();
   }
 
   @override
@@ -366,6 +514,11 @@ class _PaymentsState extends State<Payments> {
                             ),
                           ],
                         )),
+                    // ElevatedButton(
+                    //     onPressed: () {
+
+                    //     },
+                    // child: const Text("click")),
                     const Spacer(),
                     Expanded(
                       child: Container(
@@ -579,12 +732,13 @@ class MerchantEvcPlus {
             );
             onPaymentCancelled?.call();
           } else {
+            print('Payment failed with error: $message');
             // Payment failed due to other reasons.
-            showAwesomeDialog(
-              context: context!,
-              title: 'Payment Failed',
-              description: 'Payment failed with error: $message',
-            );
+            // showAwesomeDialog(
+            //   context: context!,
+            //   title: 'Payment Failed',
+            //   description: ,
+            // );
             onFailure?.call('Payment failed with error: $message');
           }
         }
