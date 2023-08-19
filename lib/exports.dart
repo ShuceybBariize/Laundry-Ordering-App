@@ -5,6 +5,7 @@ export 'package:google_fonts/google_fonts.dart';
 export 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 export 'constans/colors.dart';
+export '../provider.dart';
 
 // export 'pages/order_details.dart';
 
@@ -14,23 +15,23 @@ export 'utility/icons_screen.dart';
 export 'utility/search.dart';
 export 'utility/title_subtitle.dart';
 export 'utility/0nitems_list.dart';
-export 'pages/cart.dart';
-export 'pages/chat.dart';
-export 'pages/email_verification_page.dart';
-export 'pages/forgotpassward.dart';
-export 'pages/history.dart';
-export 'pages/home.dart';
-export 'pages/home_page.dart';
-export 'pages/ironclothes.dart';
-export 'pages/login.dart'; //
-export 'pages/order_list.dart';
-export 'pages/product_screen.dart';
-export 'pages/onboarding_page.dart';
-export 'pages/profile.dart';
-export 'pages/registration.dart';
-export 'pages/slider_model.dart';
-export 'satff/screens/completeorder.dart';
+// export 'pages/cart.dart';
+export 'admin/screens/admin_verification_page.dart';
+export 'Screens/forgotpassward.dart';
+export 'Screens/history.dart';
+export 'Screens/home.dart';
+export 'Screens/home_page.dart';
+// export 'pages/ironclothes.dart';
+export 'Screens/login.dart'; //
+// export 'pages/order_list.dart';
+export 'Screens/product_screen.dart';
+export 'Screens/onboarding_page.dart';
+export 'Screens/profile.dart';
+export 'Screens/registration.dart';
+export 'Screens/slider_model.dart';
+export 'staff/screens/completeorder.dart';
 
-export 'satff/screens/productsView.dart';
-export 'satff/staff_dashboard.dart';
-export 'pages/feedback.dart';
+export 'staff/screens/productsView.dart';
+export 'staff/staff_dashboard.dart';
+
+// export 'pages/feedback.dart';

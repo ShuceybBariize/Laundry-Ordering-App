@@ -1,22 +1,17 @@
-import 'dart:async';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:laundry_management_system/admin/admin_dashboard.dart';
 
 import 'package:provider/provider.dart';
-import 'package:sizer/sizer.dart';
 import 'admin/widgets/uploadproductimages.dart';
 import 'exports.dart';
 import 'firebase_options.dart';
-import 'provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
   runApp(
     MultiProvider(
       providers: [
@@ -29,52 +24,85 @@ void main() async {
         ChangeNotifierProvider.value(value: StaffUser()),
         ChangeNotifierProvider.value(value: UserProfileAdmin()),
       ],
-      child: const LaundryApp(),
+      child: Main(),
     ),
   );
 }
 
-class LaundryApp extends StatefulWidget {
-  const LaundryApp({super.key});
-  @override
-  State<LaundryApp> createState() => _LaundryAppState();
-}
+class Main extends StatelessWidget {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-class _LaundryAppState extends State<LaundryApp> {
-  //const LaundryApp({super.key});
-  late StreamSubscription<User?> user;
-  @override
-  void initState() {
-    super.initState();
-    user = FirebaseAuth.instance.authStateChanges().listen((user) {
-      if (user == null) {
-        print('User is currently signed out!');
-      } else {
-        print('User is signed in!');
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    user.cancel();
-    super.dispose();
-  }
+  Main({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Sizer(builder: (context, orientation, deviceType) {
-      return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        initialRoute: FirebaseAuth.instance.currentUser == null
-            ? OnboardingPage.id
-            : LoginPage.id,
-        routes: {
-          OnboardingPage.id: (context) => const OnboardingPage(),
-          LoginPage.id: (context) => const LoginPage(),
-        },
-        home: const OnboardingPage(),
-      );
-    });
+    return StreamBuilder<User?>(
+      stream: _auth.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.active) {
+          final user = snapshot.data;
+          if (user == null) {
+            // User not logged in, navigate to OnboardingScreen for new users
+            return const MaterialApp(
+              debugShowCheckedModeBanner: false,
+              home: OnboardingPage(),
+            );
+          } else {
+            // User logged in, navigate to appropriate screens based on role
+            return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+              future: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(user.uid)
+                  .get(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  // Loading data from Firestore
+                  return const MaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    home: Scaffold(
+                        body: Center(child: CircularProgressIndicator())),
+                  );
+                } else {
+                  // Data retrieved, check the role and navigate accordingly
+                  final data = snapshot.data?.data();
+                  final role = data?['role'] ?? '';
+                  if (role == 'customer') {
+                    // Navigate to HomePage for customers
+                    return const MaterialApp(
+                      debugShowCheckedModeBanner: false,
+                      home: HomePage(),
+                    );
+                  } else if (role == 'staff') {
+                    // Navigate to StaffDashboard for staff members
+                    return const MaterialApp(
+                      debugShowCheckedModeBanner: false,
+                      home: StaffDashboard(),
+                    );
+                  } else if (role == 'admin') {
+                    // Navigate to AdminDashboard for administrators
+                    return const MaterialApp(
+                      debugShowCheckedModeBanner: false,
+                      home: AdminDashboard(),
+                    );
+                  } else {
+                    // Unknown role, handle this case accordingly
+                    return const MaterialApp(
+                      debugShowCheckedModeBanner: false,
+                      home: LoginPage(),
+                    );
+                  }
+                }
+              },
+            );
+          }
+        } else {
+          // Connection state not active, show loading or splash screen
+          return const MaterialApp(
+            debugShowCheckedModeBanner: false,
+            home: Scaffold(body: Center(child: CircularProgressIndicator())),
+          );
+        }
+      },
+    );
   }
 }

@@ -2,8 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import '../admin_dashboard.dart';
-
 class AdminStafsUserview extends StatefulWidget {
   const AdminStafsUserview({super.key});
 
@@ -12,9 +10,32 @@ class AdminStafsUserview extends StatefulWidget {
 }
 
 class _AdminStafsUserviewState extends State<AdminStafsUserview> {
-  final FirebaseAuth auth = FirebaseAuth.instance;
+  String getInitials(String user) => user.isNotEmpty
+      ? user.trim().split(RegExp(' +')).map((s) => s[0]).take(2).join()
+      : '';
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final TextEditingController _searchController = TextEditingController();
+  // ignore: unused_field
+  List<User> _searchResults = [];
+
+  Future<void> searchUsers(String query) async {
+    final QuerySnapshot usersSnapshot = await _firestore
+        .collection('users')
+        .where('name', isGreaterThanOrEqualTo: query)
+        .where('name', isLessThanOrEqualTo: '$query\uf8ff')
+        .get();
+
+    setState(() {
+      _searchResults = usersSnapshot.docs
+          .map((doc) =>
+              User(name: doc['name'] as String, email: doc['email'] as String))
+          .toList();
+    });
+  }
+
+  // here is function to get docid
   String? documentid;
-  Future<void> getAdminsAndStaffs(String name) async {
+  Future<void> getdocid(String name) async {
     try {
       CollectionReference collectionRef =
           FirebaseFirestore.instance.collection('users');
@@ -23,7 +44,7 @@ class _AdminStafsUserviewState extends State<AdminStafsUserview> {
       for (var doc in querySnapshot.docs) {
         documentid = doc.id;
         //print('Document ID: ${doc.id}');
-        print('Documentid waa : $documentid');
+        //  print('Documentid waa : $documentid');
         setState(() {});
       }
     } on FirebaseAuthException catch (e) {
@@ -32,67 +53,101 @@ class _AdminStafsUserviewState extends State<AdminStafsUserview> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    // final userID = FirebaseFirestore.instance.collection("customers").doc().id;
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
-// Function to delete a user document
-    Future<void> deleteUser(String userID) async {
-      try {
-        await FirebaseFirestore.instance
-            .collection("users")
-            .doc(documentid)
-            .delete();
-        print('User deleted successfully');
-      } catch (e) {
-        print('Error deleting user: $e');
-      }
-    }
+  @override
+  Widget build(BuildContext context) {
+    // final FirebaseAuth auth = FirebaseAuth.instance;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: const Text(("User View")),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const AdminDashboard()));
-            },
-          ),
+          title: Card(
+              child: TextField(
+            controller: _searchController,
+            onChanged: (value) => searchUsers(value),
+            decoration: const InputDecoration(
+                hintText: "searching....", prefixIcon: Icon(Icons.search)),
+          )),
         ),
         body: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection("users").snapshots(),
+          stream: FirebaseFirestore.instance
+              .collection("users")
+              .where('role', whereIn: ['admin', 'staff']).snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return const Center(
                 child: Text("ERROR OCCURED"),
               );
             }
-
             if (snapshot.hasData) {
               QuerySnapshot querySnapshot = snapshot.data!;
               List<QueryDocumentSnapshot> documents = querySnapshot.docs;
               List<Map> items = documents.map((e) => e.data() as Map).toList();
+              final Set<int> uniqueFields = <int>{};
               return ListView.builder(
                 itemCount: documents.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return SizedBox(
-                    width: 100,
-                    child: UserCardView(
-                      imageURl: items[index]['image'].toString(),
-                      user: items[index]['name'].toString(),
-                      email: items[index]['email'].toString(),
-                      phone: items[index]['phone'].toString(),
-                      role: items[index]['role'].toString(),
-                      onPressed: () {
-                        setState(() {
-                          getAdminsAndStaffs(items[index]['name']);
-                          deleteUser(documentid.toString());
-                        });
-                      },
-                    ),
-                  );
+                  final field = documents.length;
+                  if (!uniqueFields.contains(field)) {
+                    uniqueFields.add(field);
+
+                    if (_searchController.text.isEmpty) {
+                      return Container(
+                        margin: EdgeInsets.all(10),
+                        child: Column(children: [
+                          Text("the total customer users: $field"),
+                          UserCardView(
+                            imageURl: items[index]['image'].toString(),
+                            user: items[index]['name'].toString(),
+                            email: items[index]['email'].toString(),
+                            phone: items[index]['phone'].toString(),
+                            orderstatus: items[index]['orderstatus'].toString(),
+                          ),
+                        ]),
+                      );
+                    }
+                  } else {
+                    return Container(
+                      margin: EdgeInsets.all(1),
+                      child: Column(children: [
+                        // Text("the total customer user: $field"),
+                        UserCardView(
+                          imageURl: items[index]['image'].toString(),
+                          user: items[index]['name'].toString(),
+                          email: items[index]['email'].toString(),
+                          phone: items[index]['phone'].toString(),
+                          orderstatus: items[index]['orderstatus'].toString(),
+                        ),
+                      ]),
+                    );
+                  }
+
+                  if (items[index]['name']
+                      .toString()
+                      .toLowerCase()
+                      .startsWith(_searchController.text.toLowerCase())) {
+                    // ignore: sized_box_for_whitespace
+                    return Container(
+                      width: 100,
+                      child: UserCardView(
+                        imageURl: items[index]['image'].toString(),
+                        user: items[index]['name'].toString(),
+                        email: items[index]['email'].toString(),
+                        phone: items[index]['phone'].toString(),
+                        orderstatus: items[index]['orderstatus'].toString(),
+                        // onPressed: () {
+                        //   editField();
+                        // }
+                      ),
+                    );
+                  } else {
+                    return Container();
+                  }
                 },
               );
             }
@@ -104,27 +159,77 @@ class _AdminStafsUserviewState extends State<AdminStafsUserview> {
       ),
     );
   }
+
+  Future<void> editField() async {
+    String newValue = "";
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.grey[900],
+        title: const Text(
+          "Edit Order Status",
+          style: TextStyle(color: Colors.white),
+        ),
+        content: TextField(
+          autofocus: true,
+          style: const TextStyle(color: Colors.white),
+          decoration: const InputDecoration(
+            hintText: "Enter new Order Status",
+            hintStyle: TextStyle(color: Colors.grey),
+          ),
+          onChanged: (value) {
+            newValue = value;
+          },
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                "Cancel",
+                style: TextStyle(color: Colors.white),
+              )),
+
+          //Save button
+          TextButton(
+              onPressed: () => Navigator.of(context).pop(newValue),
+              child: const Text(
+                "Save",
+                style: TextStyle(color: Colors.white),
+              ))
+        ],
+      ),
+    );
+
+    // update  in firestore
+    if (newValue.trim().isNotEmpty) {
+      // await custCollection.doc(currentUser.uid).update({field: newValue});
+      CollectionReference ref = FirebaseFirestore.instance.collection('users');
+
+      ref.doc(documentid).update({'orderstatus': newValue});
+    }
+  }
 }
 
 class UserCardView extends StatelessWidget {
   final String user;
   final String email;
   final String phone;
-  final String role;
+  final String? orderstatus;
   final String imageURl;
-  final Function() onPressed;
+  //final Function()? onPressed;
+
   const UserCardView({
     super.key,
     required this.user,
-    required this.imageURl,
     required this.email,
     required this.phone,
-    required this.role,
-    required this.onPressed,
+    this.orderstatus,
+    //this.onPressed,
+    required this.imageURl,
   });
-  String getInitials(String user) => user.isNotEmpty
-      ? user.trim().split(RegExp(' +')).map((s) => s[0]).take(2).join()
-      : '';
+  // String getInitials(String user) => user.isNotEmpty
+  //     ? user.trim().split(RegExp(' +')).map((s) => s[0]).take(2).join()
+  //     : '';
   @override
   Widget build(BuildContext context) {
     // return Container(
@@ -152,46 +257,23 @@ class UserCardView extends StatelessWidget {
           // child: Image.network(imageURl.toString(), fit: BoxFit.cover),
         ),
         title: Text(user),
-        subtitle: Text('$email\n$phone\n$role'),
-        trailing: IconButton(
-          icon: const Icon(
-            Icons.delete,
-            color: Colors.red,
-          ),
-          onPressed: onPressed,
-        ),
+        subtitle: Text('$email\n$phone\n$orderstatus'),
+        // trailing: IconButton(
+        //   onPressed: onPressed,
+        //   icon: Icon(
+        //     Icons.settings,
+        //     color: Colors.grey[400],
+        //   ),
+        // ),
       ),
     );
   }
 }
 
-class DatabaseService {
-  final String? uid;
+////////////////////code be/////////
+class User {
+  final String name;
+  final String email;
 
-  DatabaseService({this.uid});
-
-  final CollectionReference userCollection =
-      FirebaseFirestore.instance.collection('users');
-
-  Future deleteuser() {
-    return userCollection.doc(uid).delete();
-  }
+  User({required this.name, required this.email});
 }
-
-//Email verified
-// User? user = FirebaseAuth.instance.currentUser;
-
-// if (user != null && !user.emailVerified) {
-//   var actionCodeSettings = ActionCodeSettings(
-//       url: 'https://www.example.com/?email=${user.email}',
-//       dynamicLinkDomain: 'example.page.link',
-//       androidPackageName: 'com.example.android',
-//       androidInstallApp: true,
-//       androidMinimumVersion: '12',
-//       iOSBundleId: 'com.example.ios',
-//       handleCodeInApp: true,
-//   );
-
-//   await user.sendEmailVerification(actionCodeSettings);
-// }
-

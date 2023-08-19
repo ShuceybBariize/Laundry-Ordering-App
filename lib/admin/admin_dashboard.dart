@@ -1,38 +1,32 @@
-// ignore_for_file: avoid_print
-
-import 'dart:async';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
-
-// ignore: depend_on_referenced_packages
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:laundry_management_system/admin/screens/addproduct.dart';
+import 'package:laundry_management_system/admin/screens/completed_view.dart';
+import 'package:laundry_management_system/admin/screens/create_users.dart';
 import 'package:laundry_management_system/admin/screens/earning.dart';
+import 'package:laundry_management_system/admin/screens/pending_view.dart';
 import 'package:laundry_management_system/admin/screens/reportview.dart';
-// import 'package:laundry_order_app/satff/screens/staff_dashboard.dart';
+import 'package:laundry_management_system/admin/screens/users.dart';
+import 'package:laundry_management_system/admin/widgets/custom_button.dart';
+import 'package:laundry_management_system/utility/menu_par.dart';
 import 'package:permission_handler/permission_handler.dart';
-// ignore: depend_on_referenced_packages
 import 'package:provider/provider.dart';
 
 import '../exports.dart';
-import '../utility/menu_par.dart';
-import 'screens/completed_view.dart';
-import 'screens/create_users.dart';
 import 'screens/delivered_view.dart';
 import 'screens/ongoing_view.dart';
-import 'screens/pending_view.dart';
 import 'screens/productview.dart';
-import 'screens/users.dart';
-import 'widgets/custom_button.dart';
 
 class AdminUser extends ChangeNotifier {
   int _totolUsersAdmins = 0;
   int _totolcustomers = 0;
-  double _totalAmount = 0;
   int allusers = 0;
   int _totalProducts = 0;
+  double _totalAmount = 0;
   // final int _totalproductdb = 0;
   final int _totalironclothes = 0;
 
@@ -45,7 +39,6 @@ class AdminUser extends ChangeNotifier {
   int get totolcustomers => _totolcustomers;
   // int get allusers => _allusers;
   int get totalProducts => _totalProducts;
-  double get totalAmount => _totalAmount;
   // int get totalproductdb => _totalproductdb;
   int get totalironclothes => _totalironclothes;
 
@@ -53,13 +46,14 @@ class AdminUser extends ChangeNotifier {
   int get deliveredOrder => _deliveredOrder;
   int get completeOrders => _completeOrders;
   int get ongoingOrders => _ongoingOrders;
+  double get totalAmount => _totalAmount;
+
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   void addAmount(int newAmount) {
     _totalAmount += newAmount;
     notifyListeners();
   }
-
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   Future<void> _totalAmountTranssection() async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -95,19 +89,19 @@ class AdminUser extends ChangeNotifier {
   }
 
   Future<void> _totalProdcuts() async {
-    QuerySnapshot querySnapshot1 = await firestore.collection('laundry').get();
+    QuerySnapshot querySnapshot1 =
+        await firestore.collection('productdb').get();
     int totalproductdb = querySnapshot1.docs.length;
 
     QuerySnapshot querySnapshot2 =
-        await firestore.collection('ironOrders').get();
+        await firestore.collection('ironclothes').get();
     int totalironclothes = querySnapshot2.docs.length;
 
-    QuerySnapshot querySnapshot3 =
-        await firestore.collection('suitorder').get();
+    QuerySnapshot querySnapshot3 = await firestore.collection('suitsdb').get();
     int totalsuitsdb = querySnapshot3.docs.length;
 
     QuerySnapshot querySnapshot4 =
-        await firestore.collection('washIronOrder').get();
+        await firestore.collection('wash_and_irondb').get();
     int totalWashandIron = querySnapshot4.docs.length;
 
     _totalProducts =
@@ -116,97 +110,178 @@ class AdminUser extends ChangeNotifier {
   }
 
   Future<void> _totalPendingOrders() async {
-    QuerySnapshot querySnapshot = await firestore
-        .collection('cart_orders')
+    QuerySnapshot querySnapshot1 = await firestore
+        .collection('Washing Clothes Order')
         .where('orderstatus', isEqualTo: '')
         .get();
-    _totalpendingOrders = querySnapshot.docs.length;
-    notifyListeners();
-  }
+    int wash = querySnapshot1.docs.length;
 
-  Future<void> _deliveredOrders() async {
-    QuerySnapshot querySnapshot = await firestore
-        .collection('cart_orders')
-        .where('orderstatus', whereIn: [
-      'delivered',
-      'Delivered',
-      'deliver',
-      'del',
-      'Del',
-      'D',
-      'd',
-      'Deliver',
-    ]).get();
-    _deliveredOrder = querySnapshot.docs.length;
+    QuerySnapshot querySnapshot2 = await firestore
+        .collection('Washing and Ironing Clothes Order')
+        .where('orderstatus', isEqualTo: '')
+        .get();
+    int washIron = querySnapshot2.docs.length;
+
+    QuerySnapshot querySnapshot3 = await firestore
+        .collection('Ironing Clothes Order')
+        .where('orderstatus', isEqualTo: '')
+        .get();
+    int iron = querySnapshot3.docs.length;
+
+    QuerySnapshot querySnapshot4 = await firestore
+        .collection('Suits Order')
+        .where('orderstatus', isEqualTo: '')
+        .get();
+    int suits = querySnapshot4.docs.length;
+    _totalpendingOrders = wash + washIron + iron + suits;
     notifyListeners();
   }
 
 //Ongoing order
   Future<void> _ongoingOrder() async {
-    QuerySnapshot querySnapshot = await firestore
-        .collection('cart_orders')
-        .where('orderstatus', whereIn: [
-      'O',
-      'o',
-      'On',
-      'on',
-      'ongoing',
-      'Ongoing',
-      'ongo',
-      'Ongo',
-    ]).get();
-    _ongoingOrders = querySnapshot.docs.length;
+    QuerySnapshot querySnapshot1 = await firestore
+        .collection('Ironing Clothes Order')
+        .where('orderstatus', isEqualTo: 'Ongoing')
+        .get();
+    int on1 = querySnapshot1.docs.length;
+
+    QuerySnapshot querySnapshot2 = await firestore
+        .collection('Washing and Ironing Clothes Order')
+        .where('orderstatus', isEqualTo: 'Ongoing')
+        .get();
+    int on2 = querySnapshot2.docs.length;
+
+    QuerySnapshot querySnapshot3 = await firestore
+        .collection('Washing Clothes Order')
+        .where('orderstatus', isEqualTo: 'Ongoing')
+        .get();
+    int on3 = querySnapshot3.docs.length;
+    QuerySnapshot querySnapshot4 = await firestore
+        .collection('Suits Order')
+        .where('orderstatus', isEqualTo: 'Ongoing')
+        .get();
+    int on4 = querySnapshot4.docs.length;
+    _ongoingOrders = on1 + on2 + on3 + on4;
     notifyListeners();
   }
 
+//complete
   Future<void> _completeOrder() async {
-    QuerySnapshot querySnapshot = await firestore
-        .collection('cart_orders')
-        .where('orderstatus', whereIn: [
-      'Com',
-      'com',
-      'completed',
-      'Completed',
-      'complete',
-      'Complete',
-      'c',
-      'C',
-      'Comp',
-      'comp'
-    ]).get();
-    _completeOrders = querySnapshot.docs.length;
+    QuerySnapshot querySnapshot1 = await firestore
+        .collection('Ironing Clothes Order')
+        .where('orderstatus', isEqualTo: 'Completed')
+        .get();
+    int com1 = querySnapshot1.docs.length;
+
+    QuerySnapshot querySnapshot2 = await firestore
+        .collection('Washing and Ironing Clothes Order')
+        .where('orderstatus', isEqualTo: 'Completed')
+        .get();
+    int com2 = querySnapshot2.docs.length;
+    QuerySnapshot querySnapshot3 = await firestore
+        .collection('Washing Clothes Order')
+        .where('orderstatus', isEqualTo: 'Completed')
+        .get();
+    int com3 = querySnapshot3.docs.length;
+
+    QuerySnapshot querySnapshot4 = await firestore
+        .collection('Suits Order')
+        .where('orderstatus', isEqualTo: 'Completed')
+        .get();
+    int com4 = querySnapshot4.docs.length;
+
+    _completeOrders = com1 + com2 + com3 + com4;
     notifyListeners();
   }
 
-  Future<void> _getearnedMoney() async {
-    QuerySnapshot querySnapshot = await firestore
-        .collection('cart_orders')
-        .where('orderstatus', whereIn: [
-      'delivered',
-      'Delivered',
-      'deliver',
-      'del',
-      'Del',
-      'D',
-      'd',
-      'Deliver',
-    ]).get();
-    _deliveredOrder = querySnapshot.docs.length;
+//delivered
+  Future<void> _deliveredOrders() async {
+    QuerySnapshot querySnapshot1 = await firestore
+        .collection('Washing Clothes Order')
+        .where('orderstatus', isEqualTo: 'Delivered')
+        .get();
+
+    int del1 = querySnapshot1.docs.length;
+    QuerySnapshot querySnapshot2 = await firestore
+        .collection('Washing and Ironing Clothes Order')
+        .where('orderstatus', isEqualTo: 'Delivered')
+        .get();
+    int del2 = querySnapshot2.docs.length;
+    QuerySnapshot querySnapshot3 = await firestore
+        .collection('Washing Clothes Order')
+        .where('orderstatus', isEqualTo: 'Delivered')
+        .get();
+    int del3 = querySnapshot3.docs.length;
+    QuerySnapshot querySnapshot4 = await firestore
+        .collection('Washing Clothes Order')
+        .where('orderstatus', isEqualTo: "Deliveted")
+        .get();
+    int del4 = querySnapshot4.docs.length;
+    _deliveredOrder = del1 + del2 + del3 + del4;
     notifyListeners();
   }
+
+  // Future<void> _getearnedMoney() async {
+  //   QuerySnapshot querySnapshot1 = await firestore
+  //       .collection('Ironing Clothes Order')
+  //       .where('orderstatus', whereIn: [
+  //     'delivered',
+  //     'Delivered',
+  //     'deliver',
+  //     'del',
+  //     'Del',
+  //     'D',
+  //     'd',
+  //     'Deliver',
+  //   ]).get();
+  //   int del1 = querySnapshot1.docs.length;
+
+  //   QuerySnapshot querySnapshot2 = await firestore
+  //       .collection('Washing and Ironing Clothes Order')
+  //       .where('orderstatus', whereIn: [
+  //     'delivered',
+  //     'Delivered',
+  //     'deliver',
+  //     'del',
+  //     'Del',
+  //     'D',
+  //     'd',
+  //     'Deliver',
+  //   ]).get();
+  //   int del2 = querySnapshot2.docs.length;
+
+  //   QuerySnapshot querySnapshot3 = await firestore
+  //       .collection('Washing Clothes Order')
+  //       .where('orderstatus', whereIn: [
+  //     'delivered',
+  //     'Delivered',
+  //     'deliver',
+  //     'del',
+  //     'Del',
+  //     'D',
+  //     'd',
+  //     'Deliver',
+  //   ]).get();
+  //   int del3 = querySnapshot3.docs.length;
+  //   _deliveredOrder = del1 + del2 + del3;
+  //   notifyListeners();
+  // }
 
   Future<void> fetchData() async {
     // await _totalCustomerUsers();
     await _totalUsersStaffs();
     await _stafftotalCustomers();
-    await _totalAmountTranssection();
     await _totalProdcuts();
+    await _totalAmountTranssection();
+
     await _totalPendingOrders();
     await _deliveredOrders();
     await _ongoingOrder();
     await _completeOrder();
   }
 }
+
+//compltete
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -252,7 +327,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             IconButton(
                 onPressed: () async {
                   await FirebaseAuth.instance.signOut();
-                  // ignore: use_build_context_synchronously
+
                   Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
@@ -274,8 +349,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => ProfilePage()));
+                    // Navigator.push(context,
+                    //     MaterialPageRoute(builder: (_) => ProfilePage()));
                   },
                   child: Container(
                     width: double.infinity,
@@ -292,29 +367,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           width: 150,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(80),
-                            // shape: BoxShape.circle,
-                            // image: DecorationImage(
-                            //     fit: BoxFit.cover,
-                            //     image:
-                            //         CachedNetworkImageProvider(imageUrl)),
                           ),
                         ),
                         const SizedBox(
                           height: 12,
                         ),
-                        Text(
-                          'currentUser.email!',
-                          style: GoogleFonts.inter(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.black,
-                              letterSpacing: 2),
-                        ),
                         const SizedBox(
                           height: 12,
                         ),
                         Text(
-                          'currentUser.email!',
+                          currentUser!.email!,
                           style: GoogleFonts.inter(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -360,14 +422,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => const UsersButton()));
+                              builder: (_) => const AddProduct()));
                     }),
                 const SizedBox(
                   height: 30,
                 ),
                 drawerList(
-                    icon: MdiIcons.help,
-                    text: 'Report View',
+                    icon: MdiIcons.information,
+                    text: 'Report view',
                     ontap: () {
                       Navigator.push(
                           context,
@@ -378,6 +440,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 drawerList(
                     icon: Icons.logout,
                     text: 'Logout',
+                    // ignore: duplicate_ignore
                     ontap: () async {
                       try {
                         await FirebaseAuth.instance.signOut();
@@ -387,6 +450,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       //   Navigator.push(context,
                       //       MaterialPageRoute(builder: (_) => const LoginPage()));
                       // },
+
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
@@ -404,7 +468,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             StreamBuilder<DocumentSnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection("users")
-                    .doc(currentUser!.uid)
+                    .doc(currentUser.uid)
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
@@ -418,6 +482,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 onTap: () {
                                   showBottomSheet(
                                       context: context,
+                                      // ignore: non_constant_identifier_names, avoid_types_as_parameter_names
                                       builder: (Builder) {
                                         return Card(
                                           child: Container(
@@ -786,7 +851,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           context,
                           MaterialPageRoute(
                               builder: (_) =>
-                                  const transactionPaymentsStsff()));
+                                  const TransactionPaymentsStsff()));
                     },
                     title: 'Earning',
                   ),
@@ -801,6 +866,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   }
 }
 
+// ignore: camel_case_types
 class Admin_controlers extends StatelessWidget {
   final String? no;
   final String title;

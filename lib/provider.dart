@@ -83,7 +83,7 @@ class CartProvider extends ChangeNotifier {
   }
 
 //checkout wash order
-  void checkwashOrder(BuildContext context, String name) async {
+  void checkwashOrder(BuildContext context, String name, String email) async {
     isLoading = true;
     var today = DateTime.now();
 
@@ -93,7 +93,8 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
     if (items.isNotEmpty) {
       CollectionReference cardCollection =
-          FirebaseFirestore.instance.collection('cart_wash_orders');
+          FirebaseFirestore.instance.collection('Washing Clothes Order');
+
       User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser != null) {
         String userId = currentUser.uid;
@@ -109,6 +110,8 @@ class CartProvider extends ChangeNotifier {
             'date': currentDate,
             'Total': total,
             'orderstatus': '',
+            'email': email,
+            //'email': email,
             // 'name': displayStatusOrder().asStream(),
           };
           await cardCollection.add(newItem);
@@ -134,8 +137,27 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+// //copy
+//   Future<void> copyCollectionData() async {
+//     final QuerySnapshot sourceSnapshot =
+//         await FirebaseFirestore.instance.collection('cart_iron_orders').get();
+
+//     for (QueryDocumentSnapshot document in sourceSnapshot.docs) {
+//       final Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+//       final String documentId = document.id;
+
+//       await FirebaseFirestore.instance
+//           .collection('cartOrders')
+//           .doc(documentId)
+//           .set(data);
+//       print('Data copied for document ID: $documentId');
+//     }
+
+//     print('Copy operation completed');
+//   }
+
 //checkout iron clothes
-  void checkoutIron(BuildContext context, String name) async {
+  void checkoutIron(BuildContext context, String name, String email) async {
     isLoading = true;
     var today = DateTime.now();
 
@@ -145,7 +167,8 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
     if (items.isNotEmpty) {
       CollectionReference cardCollection =
-          FirebaseFirestore.instance.collection('cart_iron_orders');
+          FirebaseFirestore.instance.collection('Ironing Clothes Order');
+
       User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser != null) {
         String userId = currentUser.uid;
@@ -161,6 +184,7 @@ class CartProvider extends ChangeNotifier {
             'date': currentDate,
             'Total': total,
             'orderstatus': '',
+            'email': email,
             // 'name': displayStatusOrder().asStream(),
           };
           await cardCollection.add(newItem);
@@ -187,7 +211,7 @@ class CartProvider extends ChangeNotifier {
   }
 
   //checkout wash and iron
-  void checkoutwashIron(BuildContext context, String name) async {
+  void checkoutwashIron(BuildContext context, String name, String email) async {
     isLoading = true;
     var today = DateTime.now();
 
@@ -196,8 +220,9 @@ class CartProvider extends ChangeNotifier {
     String currentDate = dateFormat.format(today);
     notifyListeners();
     if (items.isNotEmpty) {
-      CollectionReference cardCollection =
-          FirebaseFirestore.instance.collection('cart_wash_iron_orders');
+      CollectionReference cardCollection = FirebaseFirestore.instance
+          .collection('Washing and Ironing Clothes Order');
+
       User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser != null) {
         String userId = currentUser.uid;
@@ -213,6 +238,7 @@ class CartProvider extends ChangeNotifier {
             'date': currentDate,
             'Total': total,
             'orderstatus': '',
+            'email': email,
             // 'name': displayStatusOrder().asStream(),
           };
           await cardCollection.add(newItem);
@@ -239,7 +265,7 @@ class CartProvider extends ChangeNotifier {
   }
 
 // //check out suit
-  void checkoutSuits(BuildContext context, String name) async {
+  void checkoutSuits(BuildContext context, String name, String email) async {
     isLoading = true;
     var today = DateTime.now();
 
@@ -249,7 +275,8 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
     if (items.isNotEmpty) {
       CollectionReference cardCollection =
-          FirebaseFirestore.instance.collection('cart_suit_orders');
+          FirebaseFirestore.instance.collection('Suits Order');
+
       User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser != null) {
         String userId = currentUser.uid;
@@ -265,6 +292,7 @@ class CartProvider extends ChangeNotifier {
             'date': currentDate,
             'Total': total,
             'orderstatus': '',
+            'email': email,
             // 'name': displayStatusOrder().asStream(),
           };
           await cardCollection.add(newItem);
@@ -330,6 +358,38 @@ class CartProvider extends ChangeNotifier {
       },
     );
   }
+
+  // // here is function to get docid
+  // String? documentid;
+  // Future<void> getcompltedorder(String name) async {
+  //   try {
+  //     CollectionReference collectionRef =
+  //         FirebaseFirestore.instance.collection(collectionName);
+  //     QuerySnapshot querySnapshot =
+  //         await collectionRef.where('orderstatus', isEqualTo: name).get();
+  //     for (var doc in querySnapshot.docs) {
+  //       documentid = doc.id;
+  //       print('Documnetn ID of Order: $documentid');
+  //       // print('Documentid waa : $documentid');
+  //       notifyListeners();
+  //     }
+  //   } on FirebaseAuthException catch (e) {
+  //     print('The erro waa: ${e.toString()}');
+  //   }
+  // }
+
+  // //update orderSate
+  // var collectionName = "cart_wash_orders";
+  // Future<void> updateorderstate() async {
+  //   try {
+  //     CollectionReference ref =
+  //         FirebaseFirestore.instance.collection(collectionName);
+
+  //     ref.doc(documentid).update({'orderstatus': 'Ongoing'});
+  //   } on FirebaseAuthException catch (e) {
+  //     print('The erro waa: ${e.toString()}');
+  //   }
+  // }
 }
 
 class ProductProvider extends ChangeNotifier {

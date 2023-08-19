@@ -19,8 +19,7 @@ class AddProduct extends StatefulWidget {
 // final firestor = FirebaseFirestore.instance.collection("productdb");
 
 class _AddProductState extends State<AddProduct> {
-  late String txtid = '',
-      txtclothid = '',
+  late String txtclothid = '',
       txtclothname = '',
       txtinitialprice = '',
       txtclothprice = '',
@@ -29,7 +28,7 @@ class _AddProductState extends State<AddProduct> {
   bool isloading = false;
   // imageurl = '';
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _id = TextEditingController();
+
   final TextEditingController _clothId = TextEditingController();
   final TextEditingController _clothName = TextEditingController();
   final TextEditingController _initialPrice = TextEditingController();
@@ -40,11 +39,10 @@ class _AddProductState extends State<AddProduct> {
 
   final databaseReference =
       // ignore: deprecated_member_use
-      FirebaseDatabase.instance.reference().child("prodcutdb");
-  var collectionName = "productdb";
+      FirebaseDatabase.instance.reference().child("laundry");
+  var collectionName = "laundry";
   // String _currentItemSelected = "productdb";
   void clearControlers() {
-    _id.clear();
     _clothId.clear();
     _clothName.clear();
     _initialPrice.clear();
@@ -115,32 +113,7 @@ class _AddProductState extends State<AddProduct> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    TextFormField(
-                      controller: _id,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.all(18),
-                        fillColor: Colors.black,
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Kinactivetextcolor, width: 1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                              color: Kinactivetextcolor, width: 1),
-                        ),
-                        hintText: "Enter Id",
-                      ),
-                      onSaved: (value) {
-                        txtid = value!;
-                      },
-                      validator: validateId,
-                    ),
+
                     const SizedBox(
                       height: 10,
                     ),
@@ -472,10 +445,10 @@ class _AddProductState extends State<AddProduct> {
                       isDense: false,
                       value: collectionName.isEmpty ? collectionName : null,
                       items: <String>[
-                        'productdb',
+                        'laundry',
                         'ironclothes',
                         'wash_and_irondb',
-                        'suitsdb',
+                        'suitorder'
                       ].map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
@@ -505,12 +478,11 @@ class _AddProductState extends State<AddProduct> {
                           if (_formKey.currentState!.validate()) {
                             try {
                               Map<String, dynamic> addProduct = {
-                                'id': int.parse(_id.text),
                                 'clothid': int.parse(_clothId.text),
                                 'clothName': _clothName.text,
                                 'initialPrice':
                                     double.parse(_initialPrice.text),
-                                'clothPirce': double.parse(_clothPrice.text),
+                                'clothPrice': double.parse(_clothPrice.text),
                                 'quantity': int.parse(_quanity.text),
                                 'imageUrl': productImages.imageURL.toString(),
                               };

@@ -42,7 +42,8 @@ class ProductCard extends StatelessWidget {
               child: Row(
                 children: [
                   Container(
-                    width: 120,
+                    width: 100,
+                    margin: EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: NetworkImage(product['imageUrl']),
@@ -56,14 +57,14 @@ class ProductCard extends StatelessWidget {
                     ),
                   ),
                   SizedBox(
-                    width: 10,
+                    width: 5,
                   ),
                   // const SizedBox(height: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        height: 11,
+                        height: 10,
                       ),
                       Text(
                         product['clothName'].toString(),
@@ -77,7 +78,7 @@ class ProductCard extends StatelessWidget {
                             fontSize: 22, color: Colors.green),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 15),
                     ],
                   ),
                   Spacer(),

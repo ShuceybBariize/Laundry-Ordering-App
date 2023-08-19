@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class transactionPaymentsStsff extends StatelessWidget {
-  const transactionPaymentsStsff({super.key});
+class TransactionPaymentsStsff extends StatelessWidget {
+  const TransactionPaymentsStsff({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +40,7 @@ class transactionPaymentsStsff extends StatelessWidget {
                 documents[index].data() as Map<String, dynamic>?;
             String referenceId = paymentData?['referenceId'];
             String invoiceId = paymentData?['invoiceId'];
+            String address = paymentData?['address'];
             double amount = paymentData?['amount']?.toDouble() ?? 0.0;
             String currency = paymentData?['currency'];
             String description = paymentData?['description'];
@@ -73,7 +74,12 @@ class transactionPaymentsStsff extends StatelessWidget {
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          'Payer Phone Number:',
+                          'customer\'s Phone Number:',
+                          style: GoogleFonts.inter(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          'Addres:',
                           style: GoogleFonts.inter(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
@@ -119,6 +125,14 @@ class transactionPaymentsStsff extends StatelessWidget {
                         ),
                         Text(
                           ' $payerPhoneNumber',
+                          style: GoogleFonts.inter(
+                              fontSize: 16, fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          ' $address',
                           style: GoogleFonts.inter(
                               fontSize: 16, fontWeight: FontWeight.w600),
                         ),

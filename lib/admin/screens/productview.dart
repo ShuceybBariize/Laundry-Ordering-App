@@ -73,316 +73,377 @@ class _AdminProductViewState extends State<AdminProductView> {
 
     return Consumer<CartProvider>(builder: (context, value, _) {
       return Scaffold(
-          appBar: AppBar(
-            title: Card(
-              color: Colors.blue,
-              surfaceTintColor: Colors.amber,
-              child: Container(
-                padding: EdgeInsets.only(top: 5, bottom: 5),
-                // margin: EdgeInsets.only(top: 10),
-                child: DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                      //<-- SEE HERE
-                      borderSide: BorderSide(color: Colors.white, width: 1),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      //<-- SEE HERE
-                      gapPadding: 1.0,
-                      borderSide: BorderSide(
-                        color: Colors.black,
-                        width: 1,
-                      ),
-                    ),
-                    labelText: 'Select the collection',
-                    labelStyle: TextStyle(
-                      fontSize: 15,
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
-                  ),
-                  dropdownColor: Colors.white,
-                  isExpanded: false,
-                  isDense: false,
-                  value: collectionName.isEmpty ? collectionName : null,
-                  items: <String>[
-                    'laundry',
-                    'ironOrders',
-                    'washIronOrder',
-                    'suitorder'
-                  ].map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(
-                        value,
-                        selectionColor: Colors.amber,
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (String? value) {
-                    setState(() {
-                      //  _currentItemSelected = value!;
-
-                      collectionName = value!;
-                    });
-                  },
-                ),
-              ),
+        appBar: AppBar(
+          title: Text('Product View'),
+          centerTitle: true,
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(
+              FontAwesomeIcons.arrowLeft,
+              color: Colors.white,
+              size: 21,
             ),
-            leading: IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: const Icon(
-                FontAwesomeIcons.arrowLeft,
-                color: Colors.black,
-                size: 21,
-              ),
-              // FontAwesomeIcons.arrowLeft,
-            ),
-            backgroundColor: Colors.white,
-            elevation: 0,
+            // FontAwesomeIcons.arrowLeft,
           ),
-          body: StreamBuilder<QuerySnapshot>(
+          backgroundColor: Colors.blue,
+          elevation: 0,
+        ),
+        body: Column(
+          children: [
+            StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection(collectionName)
                   .snapshots(),
               builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text("ERROR OCCURED"),
-                  );
+                if (!snapshot.hasData) {
+                  return Center(child: Text(""));
                 }
-                if (snapshot.hasData) {
-                  QuerySnapshot querySnapshot = snapshot.data!;
 
-                  List<QueryDocumentSnapshot> documents = querySnapshot.docs;
-                  List items = documents.map((e) => e.data() as Map).toList();
+                int documentCount = snapshot.data!.docs.length;
 
-                  return ListView.builder(
-                    padding: EdgeInsets.all(10),
-                    scrollDirection: Axis.vertical,
-                    itemCount: items.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Row(
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Row(
                         children: [
-                          // SizedBox(height: 20),
-                          Container(
-                            margin: EdgeInsets.only(
-                              top: 30,
-                            ),
-                            height: 120,
-                            width: 100,
-                            decoration: BoxDecoration(
-                                color: Colors.blue,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50))),
-                            child: CachedNetworkImage(
-                                fit: BoxFit.cover,
-                                imageUrl: items[index]['imageUrl'] ??
-                                    "https://t3.ftcdn.net/jpg/05/61/20/60/360_F_561206028_IwPcDNIHTRPa8r89L0SIXSx5JUEI32dU.jpg"),
-                          ),
                           SizedBox(
-                            width: 30,
+                            height: 10,
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                overflow: TextOverflow.ellipsis,
-                                items[index]['clothName'].toString(),
-                                style: GoogleFonts.poppins(
-                                    fontSize: 22, fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.center,
+                          Expanded(
+                            // width: 375,
+                            // height: 65,
+                            // margin: EdgeInsets.only(left: 10),
+                            child: Card(
+                              color: Colors.blue,
+                              surfaceTintColor: Colors.amber,
+                              child: DropdownButtonFormField<String>(
+                                elevation: 4,
+                                decoration: const InputDecoration(
+                                  enabledBorder: OutlineInputBorder(
+                                    //<-- SEE HERE
+                                    borderSide: BorderSide(
+                                      color: Colors.black,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    //<-- SEE HERE
+                                    //  gapPadding: 0.1,
+                                    borderSide: BorderSide(
+                                      color: Colors.black,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  labelText: 'Select The Collection name',
+                                  labelStyle: TextStyle(
+                                      fontSize: 18, color: Colors.black),
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                ),
+                                dropdownColor: Colors.white,
+                                isExpanded: true,
+                                isDense: true,
+                                value: collectionName.isEmpty
+                                    ? collectionName
+                                    : null,
+                                items: <String>[
+                                  'laundry',
+                                  'ironclothes',
+                                  'wash_and_irondb',
+                                  'suitorder'
+                                ].map<DropdownMenuItem<String>>((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Expanded(
+                                      child: Text(
+                                        value,
+                                        selectionColor: Colors.amber,
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (String? value) {
+                                  setState(() {
+                                    //  _currentItemSelected = value!;
+                                    collectionName = value!;
+                                  });
+                                },
                               ),
-                              const SizedBox(height: 6),
-                              Text(
-                                '\$${items[index]['initialPrice']}',
-                                style: GoogleFonts.poppins(
-                                    fontSize: 24, color: Kactivecolor),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 10),
-                            ],
+                            ),
                           ),
-                          Spacer(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              IconButton(
-                                  onPressed: () async {
-                                    getcustomerdocid(
-                                        items[index]['clothName'].toString());
-                                    if (items[index] != null) {
-                                      _clothnameController.text =
-                                          items[index]['clothName'];
-                                      _clothPriceController.text =
-                                          items[index]['clothPrice'].toString();
-                                      _initialPriceController.text =
-                                          items[index]['initialPrice']
-                                              .toString();
-                                    }
-                                    await showModalBottomSheet(
-                                      isScrollControlled: true,
-                                      context: context,
-                                      builder: (BuildContext ctx) {
-                                        return Padding(
-                                          padding: EdgeInsets.only(
-                                              top: 20,
-                                              right: 20,
-                                              left: 20,
-                                              bottom: MediaQuery.of(ctx)
-                                                      .viewInsets
-                                                      .bottom +
-                                                  20),
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              const Center(
-                                                child: Text(
-                                                  "Update the clothname",
-                                                  style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('The Total $collectionName are: $documentCount'),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection(collectionName)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text("ERROR OCCURED"),
+                    );
+                  }
+                  if (snapshot.hasData) {
+                    QuerySnapshot querySnapshot = snapshot.data!;
+
+                    List<QueryDocumentSnapshot> documents = querySnapshot.docs;
+                    List items = documents.map((e) => e.data() as Map).toList();
+
+                    return ListView.builder(
+                      padding: EdgeInsets.all(10),
+                      scrollDirection: Axis.vertical,
+                      itemCount: items.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Row(
+                          children: [
+                            // SizedBox(height: 20),
+                            Container(
+                              margin: EdgeInsets.only(
+                                top: 30,
+                              ),
+                              height: 120,
+                              width: 75,
+                              decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50))),
+                              child: CachedNetworkImage(
+                                  fit: BoxFit.cover,
+                                  imageUrl: items[index]['imageUrl'] ??
+                                      "https://t3.ftcdn.net/jpg/05/61/20/60/360_F_561206028_IwPcDNIHTRPa8r89L0SIXSx5JUEI32dU.jpg"),
+                            ),
+                            SizedBox(
+                              width: 30,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  overflow: TextOverflow.ellipsis,
+                                  items[index]['clothName'].toString(),
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  '\$${items[index]['initialPrice']}',
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 24, color: Kactivecolor),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 10),
+                              ],
+                            ),
+                            Spacer(),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                IconButton(
+                                    onPressed: () async {
+                                      getcustomerdocid(
+                                          items[index]['clothName'].toString());
+                                      if (items[index] != null) {
+                                        _clothnameController.text =
+                                            items[index]['clothName'];
+                                        _clothPriceController.text =
+                                            items[index]['clothPrice']
+                                                .toString();
+                                        _initialPriceController.text =
+                                            items[index]['initialPrice']
+                                                .toString();
+                                      }
+                                      await showModalBottomSheet(
+                                        isScrollControlled: true,
+                                        context: context,
+                                        builder: (BuildContext ctx) {
+                                          return Padding(
+                                            padding: EdgeInsets.only(
+                                                top: 20,
+                                                right: 20,
+                                                left: 20,
+                                                bottom: MediaQuery.of(ctx)
+                                                        .viewInsets
+                                                        .bottom +
+                                                    20),
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const Center(
+                                                  child: Text(
+                                                    "Update the clothname",
+                                                    style: TextStyle(
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
                                                 ),
-                                              ),
-                                              Form(
-                                                key: _formKey,
-                                                child: TextFormField(
+                                                Form(
+                                                  key: _formKey,
+                                                  child: TextFormField(
+                                                    controller:
+                                                        _clothnameController,
+                                                    decoration:
+                                                        const InputDecoration(
+                                                            labelText:
+                                                                'Cloth Name',
+                                                            hintText:
+                                                                'e.g: shirt'),
+                                                    onSaved: (value) {
+                                                      clothname = value!;
+                                                    },
+                                                    validator: validatename,
+                                                  ),
+                                                ),
+                                                TextFormField(
+                                                  keyboardType:
+                                                      TextInputType.number,
                                                   controller:
-                                                      _clothnameController,
+                                                      _initialPriceController,
                                                   decoration:
                                                       const InputDecoration(
                                                           labelText:
-                                                              'Cloth Name',
+                                                              'Initial Price',
                                                           hintText:
-                                                              'e.g: shirt'),
+                                                              'e.g: \$0.0'),
                                                   onSaved: (value) {
-                                                    clothname = value!;
+                                                    initialprice = double.parse(
+                                                        value!.toString());
                                                   },
-                                                  validator: validatename,
+                                                  validator:
+                                                      validateInitalPrice,
                                                 ),
-                                              ),
-                                              TextFormField(
-                                                keyboardType:
-                                                    TextInputType.number,
-                                                controller:
-                                                    _initialPriceController,
-                                                decoration:
-                                                    const InputDecoration(
-                                                        labelText:
-                                                            'Initial Price',
-                                                        hintText: 'e.g: \$0.0'),
-                                                onSaved: (value) {
-                                                  initialprice = double.parse(
-                                                      value!.toString());
-                                                },
-                                                validator: validateInitalPrice,
-                                              ),
-                                              TextFormField(
-                                                keyboardType:
-                                                    TextInputType.number,
-                                                controller:
-                                                    _clothPriceController,
-                                                decoration:
-                                                    const InputDecoration(
-                                                        labelText:
-                                                            'Cloth Price',
-                                                        hintText: 'e.g: \$0.0'),
-                                                onSaved: (value) {
-                                                  clothprice = double.parse(
-                                                      value!.toString());
-                                                },
-                                                validator: (value) {
-                                                  if (value!.isEmpty) {
-                                                    return 'Empty';
-                                                  }
-                                                  if (clothprice !=
-                                                      initialprice) {
-                                                    return 'Not Match';
-                                                  }
-                                                  return null;
-                                                },
-                                              ),
-                                              const SizedBox(
-                                                height: 20,
-                                              ),
-                                              ElevatedButton(
-                                                  onPressed: () async {
-                                                    final String name =
-                                                        _clothnameController
-                                                            .text;
-                                                    final double? initialPrice =
-                                                        double.tryParse(
-                                                            _clothPriceController
-                                                                .text);
-                                                    final double? clothPrice =
-                                                        double.tryParse(
-                                                            _clothPriceController
-                                                                .text);
-                                                    // final int? number =
-                                                    //     int.tryParse(_numberController.text);
-                                                    if (clothPrice != null) {
-                                                      await FirebaseFirestore
-                                                          .instance
-                                                          .collection(
-                                                              collectionName)
-                                                          .doc(documentid)
-                                                          .update({
-                                                        "clothName": name,
-                                                        "initialPrice":
-                                                            initialPrice,
-                                                        "clothPrice":
-                                                            clothPrice,
-                                                      });
-                                                      _clothnameController
-                                                          .text = '';
-                                                      _clothPriceController
-                                                          .text = '';
-                                                      _clothPriceController
-                                                          .text = '';
-
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    }
+                                                TextFormField(
+                                                  keyboardType:
+                                                      TextInputType.number,
+                                                  controller:
+                                                      _clothPriceController,
+                                                  decoration:
+                                                      const InputDecoration(
+                                                          labelText:
+                                                              'Cloth Price',
+                                                          hintText:
+                                                              'e.g: \$0.0'),
+                                                  onSaved: (value) {
+                                                    clothprice = double.parse(
+                                                        value!.toString());
                                                   },
-                                                  child: const Text("Update"))
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                  icon: Icon(
-                                    Icons.edit,
-                                    color: Kactivecolor,
-                                  )),
-                              IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      getcustomerdocid(
-                                          items[index]['clothName'].toString());
-                                      deleteProduct(documentid.toString());
-                                    });
-                                  },
-                                  icon: Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                  )),
-                            ],
-                          )
-                        ],
-                      );
-                    },
+                                                  validator: (value) {
+                                                    if (value!.isEmpty) {
+                                                      return 'Empty';
+                                                    }
+                                                    if (clothprice !=
+                                                        initialprice) {
+                                                      return 'Not Match';
+                                                    }
+                                                    return null;
+                                                  },
+                                                ),
+                                                const SizedBox(
+                                                  height: 20,
+                                                ),
+                                                ElevatedButton(
+                                                    onPressed: () async {
+                                                      final String name =
+                                                          _clothnameController
+                                                              .text;
+                                                      final double?
+                                                          initialPrice =
+                                                          double.tryParse(
+                                                              _clothPriceController
+                                                                  .text);
+                                                      final double? clothPrice =
+                                                          double.tryParse(
+                                                              _clothPriceController
+                                                                  .text);
+                                                      // final int? number =
+                                                      //     int.tryParse(_numberController.text);
+                                                      if (clothPrice != null) {
+                                                        await FirebaseFirestore
+                                                            .instance
+                                                            .collection(
+                                                                collectionName)
+                                                            .doc(documentid)
+                                                            .update({
+                                                          "clothName": name,
+                                                          "initialPrice":
+                                                              initialPrice,
+                                                          "clothPrice":
+                                                              clothPrice,
+                                                        });
+                                                        _clothnameController
+                                                            .text = '';
+                                                        _clothPriceController
+                                                            .text = '';
+                                                        _clothPriceController
+                                                            .text = '';
+
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      }
+                                                    },
+                                                    child: const Text("Update"))
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                    icon: Icon(
+                                      Icons.edit,
+                                      color: Kactivecolor,
+                                    )),
+                                IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        getcustomerdocid(items[index]
+                                                ['clothName']
+                                            .toString());
+                                        deleteProduct(documentid.toString());
+                                      });
+                                    },
+                                    icon: Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                    )),
+                              ],
+                            )
+                            //end row 1
+                          ],
+                        );
+                      },
+                    );
+                  }
+                  return const Center(
+                    child: CircularProgressIndicator(),
                   );
-                }
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }));
+                },
+              ),
+            ),
+          ],
+        ),
+      );
     });
   }
 }

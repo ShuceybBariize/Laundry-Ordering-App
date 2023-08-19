@@ -5,7 +5,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../../exports.dart';
-import 'adminverifcation.dart';
+import 'adminverifcation .dart';
+// import 'adminverifcation.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -45,56 +46,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _confirmpassword.clear();
   }
 
-  // Future<User?> signUp(
-  // {required String email,
-  // required String password,
-  // required String name,
-  // required String phone,
-  // required String role,
-  // required String image,
-  //     required BuildContext context}) async {
-  //   const CircularProgressIndicator();
-  //   if (_formKey.currentState!.validate()) {
-  //     await _auth
-  //         .createUserWithEmailAndPassword(email: email, password: password)
-  //         .then((value) =>
-  //             {postDetailsToFirestore(name, email, password, phone, image)})
-  //         // ignore: body_might_complete_normally_catch_error
-  //         .catchError((e) {
-  //       if (e.code == 'weak-password') {
-  //         print(e.toString());
-  //         var snackbar = SnackBar(
-  //             content:
-  //                 Text('The password provided is too weak.  ${e.toString()}'));
-  //         ScaffoldMessenger.of(context).showSnackBar(snackbar);
-  //       } else if (e.code == 'email-already-in-use') {
-  //         var snackbar = SnackBar(
-  //           content: Container(
-  //             padding: EdgeInsets.all(16),
-  //             decoration: BoxDecoration(
-  //               color: Color(0xffC72c41),
-  //               borderRadius: BorderRadius.all(Radius.circular(20)),
-  //             ),
-  //             child: Text(
-  //                 'The account already exists for that email..  ${e.toString()}'),
-  //           ),
-  //           behavior: SnackBarBehavior.floating,
-  //           backgroundColor: Colors.transparent,
-  //           elevation: 0,
-  //           duration: Duration(seconds: 2),
-  //         );
-  //         // SnackBar(
-  //         //     content: Text(
-  //         //         'The account already exists for that email..  ${e.toString()}'));
-
-  //         ScaffoldMessenger.of(context).showSnackBar(snackbar);
-  //       }
-  //     });
-  //   }
-  //   return null;
-  // }
-
-///// here is the signup method
   Future<void> signUp(
       {required String email,
       required String password,
@@ -103,20 +54,38 @@ class _SignUpScreenState extends State<SignUpScreen> {
       required String role,
       required String image,
       required BuildContext context}) async {
-    // const CircularProgressIndicator();
-
     try {
       isloading = true;
       setState(() {});
       if (_formKey.currentState!.validate()) {
         await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
+        // Send email verification to the user
+        if (auth.currentUser != null && !auth.currentUser!.emailVerified) {
+          await auth.currentUser!.sendEmailVerification();
+        }
+
         // Get the device token
         FirebaseMessaging messaging = FirebaseMessaging.instance;
         String? deviceToken = await messaging.getToken();
 
         postDetailsToFirestore(
             name, email, password, phone, image, role, deviceToken);
+
+        // Navigate to EmailVerificationScreen on successful signup
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (ctx) => EmailVerificationScreen(
+                    email: email,
+                    password: password,
+                    name: name,
+                    phone: phone,
+                    image: image,
+                    role: role,
+                    deviceToken: deviceToken,
+                  )),
+        );
       } else {
         var snackbar = const SnackBar(content: Text('something went wrong '));
         ScaffoldMessenger.of(context).showSnackBar(snackbar);
@@ -155,6 +124,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   postDetailsToFirestore(String email, String password, String name,
       String phone, String image, String role, String? deviceToken) async {
     // ignore: unused_local_variable
+    if (auth.currentUser != null && !auth.currentUser!.emailVerified) {
+      await auth.currentUser!.sendEmailVerification();
+    }
+    // ignore: unused_local_variable
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
     var user = _auth.currentUser;
     CollectionReference ref = FirebaseFirestore.instance.collection('users');
@@ -167,17 +140,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       'image': image,
       'deviceToken': deviceToken,
     });
-    // Navigator.pushReplacement(
-    //     context, MaterialPageRoute(builder: (context) => const LoginPage()));
   }
 
   FirebaseAuth auth = FirebaseAuth.instance;
-  // void _addUsers(String ID) {
-  //   databaseReference.child(ID).set({
-  //     'name': txtname,
-  //     'role': role,
-  //   });
-  // }
 
   var role = "Staff";
 
@@ -239,27 +204,65 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       TextFormField(
                         controller: _phone,
-                        keyboardType: TextInputType.number,
+                        keyboardType: TextInputType.phone,
                         decoration: InputDecoration(
-                          prefixIcon: const Icon(MdiIcons.account,
-                              color: Kactivecolor, size: 22),
+                          prefixText:
+                              '+252 ', // Add the Somalia dial code as a prefix
+                          prefixIcon: const Icon(
+                            MdiIcons.phone,
+                            color: Kactivecolor,
+                            size: 22,
+                          ),
                           contentPadding: const EdgeInsets.all(18),
                           fillColor: Colors.black,
                           enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                                color: Kinactivetextcolor, width: 1),
+                            borderSide:
+                                const BorderSide(color: Kactivecolor, width: 2),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                  color: Kinactivetextcolor, width: 1)),
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide:
+                                const BorderSide(color: Kactivecolor, width: 1),
+                          ),
                           hintText: "Phone",
                         ),
                         onSaved: (value) {
-                          txtphone = value!;
+                          // Remove whitespace and any non-numeric characters from the input
+                          final phoneNumber =
+                              value?.replaceAll(RegExp(r'\D'), '');
+
+                          if (phoneNumber != null &&
+                              phoneNumber.isNotEmpty &&
+                              !phoneNumber.startsWith('252')) {
+                            txtphone = '252$phoneNumber';
+                          } else {
+                            txtphone = phoneNumber ?? '';
+                          }
                         },
-                        validator: validatePhone,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a valid phone number';
+                          }
+
+                          // Remove whitespace and any non-numeric characters from the input
+                          final phoneNumber =
+                              value.replaceAll(RegExp(r'\D'), '');
+
+                          if (phoneNumber.startsWith('252')) {
+                            // Phone number with country code (+252) should be exactly 12 digits
+                            if (phoneNumber.length != 12) {
+                              return 'Invalid phone number. Please enter 12 digits including the country code.';
+                            }
+                          } else {
+                            // Phone number without country code should be exactly 9 digits
+                            if (phoneNumber.length != 9) {
+                              return 'Invalid phone number. Please enter 9 digits.';
+                            }
+                          }
+
+                          return null; // Return null to indicate that the input is valid
+                        },
                       ),
                       const SizedBox(
                         height: 10,
@@ -450,13 +453,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       );
                                       if (auth.currentUser != null) {
                                         // ignore: use_build_context_synchronously
-                                        Navigator.pushAndRemoveUntil(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (ctx) =>
-                                                  const AdminVerificationScreen(),
-                                            ),
-                                            (route) => false);
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (ctx) =>
+                                                const AdminVerificationScreen(),
+                                          ),
+                                          // (route) => false);
+                                        );
                                       }
                                       if (mounted) {
                                         setState(() {
@@ -481,59 +485,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                         ],
                       ),
-                      // ElevatedButton(
-                      //   style: ElevatedButton.styleFrom(
-                      //     minimumSize: const Size(390, 62),
-                      //     backgroundColor: Kactivecolor,
-                      //     elevation: 0,
-                      //     shape: const RoundedRectangleBorder(
-                      //       borderRadius: BorderRadius.all(
-                      //         Radius.circular(10),
-                      //       ),
-                      //     ),
-                      //   ),
-                      //   onPressed: () async {
-                      //     if (auth.currentUser != null &&
-                      //         _formKey.currentState!.validate()) {
-                      //       _formKey.currentState!.save();
-                      //       showProgress = true;
-                      //       await signUp(
-                      // email: _email.text.trim(),
-                      // password: _password.text.trim(),
-                      // name: txtname,
-                      // phone: txtphone,
-                      // role: role,
-                      // image: '',
-                      // context: context,
-                      //       );
-
-                      //       // ignore: use_build_context_synchronously
-                      //       Navigator.pushAndRemoveUntil(
-                      //           context,
-                      //           MaterialPageRoute(
-                      //             builder: (ctx) =>
-                      //                 const EmailVerificationScreen(),
-                      //           ),
-                      //           (route) => false);
-                      //     }
-                      //     setState(() {
-                      //       showProgress = false;
-                      //     });
-                      //   },
-                      //   child: isloading
-                      //       ? const CircularProgressIndicator(
-                      //           backgroundColor: Colors.white,
-                      //           color: Kactivecolor,
-                      //         )
-                      //       : Text(
-                      //           "Signup",
-                      //           style: GoogleFonts.inter(
-                      //             color: Colors.white,
-                      //             fontSize: 22,
-                      //             fontWeight: FontWeight.bold,
-                      //           ),
-                      //         ),
-                      // ),
                       const SizedBox(
                         height: 60,
                       ),
