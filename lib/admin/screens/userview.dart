@@ -9,6 +9,17 @@ class UserScreen extends StatefulWidget {
   State<UserScreen> createState() => _UserScreenState();
 }
 
+//
+
+// UserCardView(
+//                       imageURl: items[index]['image'].toString(),
+//                       user: items[index]['name'].toString(),
+//                       email: items[index]['email'].toString(),
+//                       phone: items[index]['phone'].toString(),
+//                       orderstatus: items[index]['orderstatus'].toString(),
+//                     ),
+
+//
 class _UserScreenState extends State<UserScreen> {
   String getInitials(String user) => user.isNotEmpty
       ? user.trim().split(RegExp(' +')).map((s) => s[0]).take(2).join()
@@ -65,7 +76,7 @@ class _UserScreenState extends State<UserScreen> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(title: const Text("Customer Users View")),
+        appBar: AppBar(title: Text("Customer Users View")),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -76,7 +87,7 @@ class _UserScreenState extends State<UserScreen> {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return const Center(child: Text(""));
+                  return Center(child: Text(""));
                 }
 
                 int documentCount = snapshot.data!.docs.length;
@@ -93,7 +104,7 @@ class _UserScreenState extends State<UserScreen> {
                             hintText: "searching....",
                             prefixIcon: Icon(Icons.search)),
                       )),
-                      const SizedBox(
+                      SizedBox(
                         height: 10,
                       ),
                       Row(
@@ -115,7 +126,7 @@ class _UserScreenState extends State<UserScreen> {
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
-                    return const Center(
+                    return Center(
                       child: Text("There is no customer"),
                     );
                   }
@@ -145,7 +156,7 @@ class _UserScreenState extends State<UserScreen> {
                               .startsWith(
                                   _searchController.text.toLowerCase())) {
                             return Container(
-                              margin: const EdgeInsets.all(1),
+                              margin: EdgeInsets.all(1),
                               child: Column(children: [
                                 // Text("the total customer user: $field"),
                                 UserCardView(
@@ -160,7 +171,7 @@ class _UserScreenState extends State<UserScreen> {
                           return null;
                         });
                   } else {
-                    return const Center(
+                    return Center(
                       child: Text(""),
                     );
                   }
@@ -169,6 +180,90 @@ class _UserScreenState extends State<UserScreen> {
             ),
           ],
         ),
+
+        //  StreamBuilder<QuerySnapshot>(
+        //   stream: FirebaseFirestore.instance
+        //       .collection("users")
+        //       .where('role', isEqualTo: 'customer')
+        //       .snapshots(),
+        //   builder: (context, snapshot) {
+        //     if (snapshot.hasError) {
+        //       return const Center(
+        //         child: Text("ERROR OCCURED"),
+        //       );
+        //     }
+        //     if (snapshot.hasData) {
+        //       QuerySnapshot querySnapshot = snapshot.data!;
+        //       List<QueryDocumentSnapshot> documents = querySnapshot.docs;
+        //       List<Map> items = documents.map((e) => e.data() as Map).toList();
+        //       final Set<int> uniqueFields = <int>{};
+        //       return ListView.builder(
+        //         itemCount: documents.length,
+        //         itemBuilder: (BuildContext context, int index) {
+        //           final field = documents.length;
+        //           if (!uniqueFields.contains(field)) {
+        //             uniqueFields.add(field);
+
+        //             if (_searchController.text.isEmpty) {
+        //               return Container(
+        //                 margin: EdgeInsets.all(10),
+        //                 child: Column(children: [
+        //                   Text("the total customer users: $field"),
+        //                   UserCardView(
+        //                     imageURl: items[index]['image'].toString(),
+        //                     user: items[index]['name'].toString(),
+        //                     email: items[index]['email'].toString(),
+        //                     phone: items[index]['phone'].toString(),
+        //                   ),
+        //                 ]),
+        //               );
+        //             }
+        //           } else {
+        //             return Container(
+        //               margin: EdgeInsets.all(1),
+        //               child: Column(children: [
+        //                 // Text("the total customer user: $field"),
+        //                 UserCardView(
+        //                   imageURl: items[index]['image'].toString(),
+        //                   user: items[index]['name'].toString(),
+        //                   email: items[index]['email'].toString(),
+        //                   phone: items[index]['phone'].toString(),
+        //                 ),
+        //               ]),
+        //             );
+        //           }
+
+        //           if (items[index]['name']
+        //               .toString()
+        //               .toLowerCase()
+        //               .startsWith(_searchController.text.toLowerCase())) {
+        //             // ignore: sized_box_for_whitespace
+        //             return Container(
+        //               width: 100,
+        //               child: UserCardView(
+        //                 imageURl: items[index]['image'].toString(),
+        //                 user: items[index]['name'].toString(),
+        //                 email: items[index]['email'].toString(),
+        //                 phone: items[index]['phone'].toString(),
+
+        //                 // onPressed: () {
+        //                 //   editField();
+        //                 // }
+        //               ),
+        //             );
+        //           } else {
+        //             return Container();
+        //           }
+        //         },
+        //       );
+        //     }
+        //     return const Center(
+        //       child: CircularProgressIndicator(),
+        //     );
+        //   },
+        // ),
+
+        //end
       ),
     );
   }
@@ -265,9 +360,19 @@ class UserCardView extends StatelessWidget {
               fit: BoxFit.cover,
             ),
           ),
+          // border: Border.all(color: Colors.black),
+          // borderRadius: BorderRadius.circular(12)),
+          // child: Image.network(imageURl.toString(), fit: BoxFit.cover),
         ),
         title: Text(user),
         subtitle: Text('$email\n$phone'),
+        // trailing: IconButton(
+        //   onPressed: onPressed,
+        //   icon: Icon(
+        //     Icons.settings,
+        //     color: Colors.grey[400],
+        //   ),
+        // ),
       ),
     );
   }

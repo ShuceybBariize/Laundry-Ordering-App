@@ -9,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
 import '../../exports.dart';
+import '../../provider.dart';
 
 class ProductView extends StatefulWidget {
   const ProductView({super.key});
@@ -18,7 +19,7 @@ class ProductView extends StatefulWidget {
 }
 
 class _ProductViewState extends State<ProductView> {
-  var collectionName = "laundry";
+  var collectionName = "productdb";
   // final CollectionReference _items =
   //     FirebaseFirestore.instance.collection('productdb');
   late double initialprice, clothprice;
@@ -105,10 +106,10 @@ class _ProductViewState extends State<ProductView> {
                   isDense: false,
                   value: collectionName.isEmpty ? collectionName : null,
                   items: <String>[
-                    'laundry',
+                    'productdb',
                     'ironclothes',
                     'wash_and_irondb',
-                    'suitorder'
+                    'suitsdb'
                   ].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,

@@ -1,44 +1,45 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:laundry_management_system/exports.dart';
 
-class CustomerEmailVerificationScreen extends StatefulWidget {
+import '../../exports.dart';
+
+class EmailVerificationScreen extends StatefulWidget {
   final String email;
   final String password;
   final String name;
   final String phone;
   final String image;
   final String role;
-  // final String? deviceToken;
+  final String? deviceToken;
 
-  const CustomerEmailVerificationScreen({
+  const EmailVerificationScreen({
     required this.email,
     required this.password,
     required this.name,
     required this.phone,
     required this.image,
     required this.role,
-    // required this.deviceToken,
+    required this.deviceToken,
     Key? key,
   }) : super(key: key);
 
   @override
-  State<CustomerEmailVerificationScreen> createState() =>
-      _CustomerEmailVerificationScreenState();
+  State<EmailVerificationScreen> createState() =>
+      _EmailVerificationScreenState();
 }
 
-class _CustomerEmailVerificationScreenState
-    extends State<CustomerEmailVerificationScreen> {
+class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   bool isEmailVerified = false;
   bool isloading = true;
 
   Timer? timer;
   FirebaseAuth auth = FirebaseAuth.instance;
-
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
+
     FirebaseAuth.instance.currentUser?.sendEmailVerification();
     timer =
         Timer.periodic(const Duration(seconds: 3), (_) => checkEmailVerified());
@@ -60,7 +61,7 @@ class _CustomerEmailVerificationScreenState
     });
 
     if (isEmailVerified) {
-      // Save user details to Firestore
+      // Post user details to Firestore
       await postDetailsToFirestore(
         widget.name,
         widget.email,
@@ -68,8 +69,9 @@ class _CustomerEmailVerificationScreenState
         widget.phone,
         widget.image,
         widget.role,
-        // widget.deviceToken,
+        widget.deviceToken,
       );
+      // Authenticate the user
       try {
         await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: widget.email,
@@ -87,8 +89,8 @@ class _CustomerEmailVerificationScreenState
       timer?.cancel();
       await Future.delayed(const Duration(seconds: 3));
       // ignore: use_build_context_synchronously
-      // Navigator.push(
-      //     context, MaterialPageRoute(builder: (_) => const LoginPage()));
+      Navigator.push(
+          context, MaterialPageRoute(builder: (_) => const LoginPage()));
       // ignore: use_build_context_synchronously
       Navigator.pushAndRemoveUntil(
           context,
@@ -108,9 +110,10 @@ class _CustomerEmailVerificationScreenState
     String phone,
     String image,
     String role,
-    // String? deviceToken,
+    String? deviceToken,
   ) async {
     try {
+      // ignore: unused_local_variable
       FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
       var user = FirebaseAuth.instance.currentUser;
       CollectionReference ref = FirebaseFirestore.instance.collection('users');
@@ -122,13 +125,9 @@ class _CustomerEmailVerificationScreenState
         'phone': phone,
         'role': role,
         'image': image,
-        // 'deviceToken': deviceToken,
+        'deviceToken': deviceToken,
       });
-
-      // Handle Firestore data saving success
-      debugPrint("User data saved to Firestore");
     } catch (e) {
-      // Handle Firestore data saving error
       debugPrint("Firestore data saving error: $e");
     }
   }
@@ -154,7 +153,7 @@ class _CustomerEmailVerificationScreenState
                 padding: const EdgeInsets.symmetric(horizontal: 32.0),
                 child: Center(
                   child: Text(
-                    'We have sent you an Email to ${widget.email}',
+                    'We have sent you a Email on  ${auth.currentUser?.email}',
                     textAlign: TextAlign.center,
                   ),
                 ),

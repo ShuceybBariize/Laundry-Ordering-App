@@ -13,6 +13,7 @@ class IronClothesLIst extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var mediaQuery = MediaQuery.of(context);
     return Consumer<CartProvider>(builder: (context, value, _) {
       return Scaffold(
           appBar: AppBar(
@@ -21,12 +22,6 @@ class IronClothesLIst extends StatelessWidget {
               IconButton(
                 onPressed: () => Navigator.push(context,
                     MaterialPageRoute(builder: (_) => CartIronScreen())),
-                // Navigator.pushAndRemoveUntil(
-                //     context,
-                //     MaterialPageRoute(
-                //       builder: (ctx) => CartScreen(),
-                //     ),
-                //     (route) => false),
                 icon: badges.Badge(
                   badgeContent: Text(
                     value.items.length.toString(),
@@ -80,7 +75,7 @@ class IronClothesLIst extends StatelessWidget {
                       children: [
                         Container(
                           margin: const EdgeInsets.all(8),
-                          height: 175,
+                          height: mediaQuery.size.height * 0.25,
                           width: double.infinity,
                           decoration: BoxDecoration(
                             boxShadow: const [
@@ -104,7 +99,7 @@ class IronClothesLIst extends StatelessWidget {
                         ),
                         Container(
                           // padding: const EdgeInsets.only(top: 10),
-                          width: double.infinity,
+                          width: mediaQuery.size.height * 0.95,
                           decoration: const BoxDecoration(
                               // color: Colors.grey[300],
                               borderRadius: BorderRadius.only(
@@ -139,7 +134,7 @@ class IronClothesLIst extends StatelessWidget {
                                   ),
                                 ),
                                 SizedBox(
-                                    height: 445,
+                                    height: 450,
                                     child: ListView.builder(
                                       scrollDirection: Axis.vertical,
                                       itemCount: items.length,

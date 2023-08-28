@@ -1,185 +1,3 @@
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:laundry_order_app/exports.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:intl/intl.dart';
-
-// class HistoryPage extends StatefulWidget {
-//   const HistoryPage({super.key});
-
-//   @override
-//   State<HistoryPage> createState() => _HistoryPageState();
-// }
-
-// class _HistoryPageState extends State<HistoryPage> {
-//   String uid = FirebaseAuth.instance.currentUser!.uid;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     FirebaseFirestore firestore = FirebaseFirestore.instance;
-//     Future<List<String>> getFieldValuesByEmail(String email) async {
-//       QuerySnapshot querySnapshot = await firestore
-//           .collection('users')
-//           .where('email', isEqualTo: email)
-//           .get();
-
-//       List<String> fieldValues = [];
-
-//       if (querySnapshot.docs.isNotEmpty) {
-//         for (DocumentSnapshot documentSnapshot in querySnapshot.docs) {
-//           dynamic fieldValue = documentSnapshot.get('orderstatus');
-//           fieldValues.add(fieldValue.toString());
-//         }
-//       }
-//       return fieldValues;
-//     }
-
-//     // String email = 'your_email@example.com';
-
-//     // ignore: unused_local_variable
-//     String? email = FirebaseAuth.instance.currentUser!.email;
-//     String? user = FirebaseAuth.instance.currentUser!.email;
-//     String value = '';
-//     Future<String> displayStatusOrder() async {
-//       await Future.delayed(Duration(seconds: 2));
-//       List<String> fieldValues = await getFieldValuesByEmail(user!);
-//       if (fieldValues.isNotEmpty) {
-//         print('Field Values:');
-//         for (String fieldValue in fieldValues) {
-//           print('the fieldvalue:  $fieldValue');
-//           value = fieldValue;
-//           print('the value: $value');
-//           return fieldValue;
-//         }
-//       } else {
-//         print('No matching documents found.');
-//       }
-//       return value;
-//     }
-
-//     var today = DateTime.now();
-
-//     var dateFormat = DateFormat('dd-MM-yyyy');
-
-//     String currentDate = dateFormat.format(today);
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text("History"),
-//         centerTitle: true,
-//       ),
-//       body: Center(
-//         child: FutureBuilder<String>(
-//           future: displayStatusOrder(),
-//           builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-//             if (snapshot.connectionState == ConnectionState.waiting) {
-//               return CircularProgressIndicator();
-//             } else if (snapshot.hasError) {
-//               return Text('Error: ${snapshot.error}');
-//             } else {
-//               return snapshot.data!.isEmpty
-//                   ? Container() // here this container will retain if orderstatus is empty
-//                   : Column(
-//                       children: [
-//                         Histrory_Laundry(
-//                           orderStatus: snapshot.data,
-//                           time: currentDate.toString(),
-//                         ),
-//                       ],
-//                     );
-
-//               // return Text('Result: ${snapshot.data}');
-//             }
-//           },
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// class Histrory_Laundry extends StatelessWidget {
-//   final String? orderStatus;
-//   final String? time;
-//   const Histrory_Laundry({
-//     super.key,
-//     required this.orderStatus,
-//     required this.time,
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Card(
-//       color: Colors.white,
-//       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-//       child: Padding(
-//         padding: const EdgeInsets.all(18),
-//         child: Column(
-//           children: [
-//             Row(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                 children: [
-//                   Column(
-//                     crossAxisAlignment: CrossAxisAlignment.start,
-//                     children: [
-//                       Text(
-//                         "Your order",
-//                         style: GoogleFonts.inter(
-//                           color: Colors.black,
-//                           fontWeight: FontWeight.bold,
-//                           // wordSpacing: 0.5,
-//                           fontSize: 22,
-//                         ),
-//                       ),
-//                       const SizedBox(
-//                         height: 20,
-//                       ),
-//                       Text(
-//                         time!,
-//                         style: GoogleFonts.inter(
-//                           color: Kinactivetextcolor,
-//                           fontSize: 18,
-//                         ),
-//                       )
-//                     ],
-//                   ),
-//                   Column(
-//                     children: [
-//                       Container(
-//                         height: 70,
-//                         width: 200,
-//                         decoration: BoxDecoration(
-//                             color: Colors.green,
-//                             borderRadius: BorderRadius.circular(30)),
-//                         child: Row(
-//                           mainAxisAlignment: MainAxisAlignment.center,
-//                           children: [
-//                             Text(
-//                               orderStatus!,
-//                               style: GoogleFonts.inter(
-//                                   color: Colors.white,
-//                                   fontSize: 17,
-//                                   fontWeight: FontWeight.w700),
-//                             ),
-//                           ],
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ]),
-//             const SizedBox(
-//               height: 10,
-//             ),
-//             const Divider(
-//               thickness: 1,
-//               height: 31,
-//               color: Colors.grey,
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -194,8 +12,48 @@ class HistoryPage extends StatefulWidget {
 
 class _HistoryPageState extends State<HistoryPage> {
   String uid = FirebaseAuth.instance.currentUser!.uid;
-
+  // List<String>   collNames = [
+  //   'cart_iron_orders',
+  //   'cart_wash_iron_orders',
+  //   'cart_wash_orders',
+  //   'cart_suit_orders'
+  // ];
   var collNames = "Washing Clothes Order";
+
+  // final List<String> collectionNames = [
+  //   'cart_iron_orders',
+  //   'cart_wash_iron_orders',
+  //   'cart_wash_orders',
+  //   'cart_suit_orders'
+  //   // Add more collection names as needed
+  // ];
+
+  // late StreamController<String> _collectionController;
+  // late Timer _timer;
+  // int _currentIndex = 0;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _collectionController = StreamController<String>();
+  //   _timer = Timer.periodic(Duration(milliseconds: 3000), (timer) {
+  //     updateCollectionName();
+  //   });
+  // }
+
+  // @override
+  // void dispose() {
+  //   _collectionController.close();
+  //   _timer.cancel();
+  //   super.dispose();
+  // }
+
+  // void updateCollectionName() {
+  //   final nextCollectionName = collectionNames[_currentIndex];
+  //   _collectionController.add(nextCollectionName);
+
+  //   _currentIndex = (_currentIndex + 1) % collectionNames.length;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -203,6 +61,12 @@ class _HistoryPageState extends State<HistoryPage> {
 
 // ignore: unused_local_variable
     const IconData check = IconData(0xe156, fontFamily: 'MaterialIcons');
+
+    // var today = DateTime.now();
+
+    // var dateFormat = DateFormat('dd-MM-yyyy');
+
+    // String currentDate = dateFormat.format(today);
 
     return Scaffold(
         appBar: AppBar(
@@ -221,6 +85,8 @@ class _HistoryPageState extends State<HistoryPage> {
                   return const Center(child: Text(''));
                 }
 
+                // int documentCount = snapshot.data!.docs.length;
+
                 return Padding(
                   padding: const EdgeInsets.all(5.0),
                   child: Row(
@@ -229,6 +95,9 @@ class _HistoryPageState extends State<HistoryPage> {
                         height: 10,
                       ),
                       Expanded(
+                        // width: 375,
+                        // height: 65,
+                        // margin: EdgeInsets.only(left: 10),
                         child: Card(
                           color: Colors.blue,
                           surfaceTintColor: Colors.amber,
@@ -384,7 +253,7 @@ class HistoryWiget extends StatelessWidget {
                     spreadRadius: -6,
                   )
                 ]),
-            height: 120,
+            height: 130,
             width: double.infinity,
             margin: const EdgeInsets.all(10),
             child: Column(
@@ -409,12 +278,7 @@ class HistoryWiget extends StatelessWidget {
                           ),
                         ),
                       ),
-                      title: Text(
-                        'Date: $date',
-                        style: const TextStyle(
-                          fontSize: 11.0,
-                        ),
-                      ),
+                      title: const Text('Your order'),
                       subtitle: Container(
                         color: Colors.green,
                         child: Row(
@@ -422,6 +286,11 @@ class HistoryWiget extends StatelessWidget {
                             const Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
+                                SizedBox(height: 3),
+                                Expanded(
+                                    child: Text(
+                                  'Date:',
+                                )),
                                 Expanded(
                                   child: Text('Price:'),
                                 ),
@@ -429,7 +298,11 @@ class HistoryWiget extends StatelessWidget {
                                 Expanded(child: Text('Quantity: ')),
                                 SizedBox(height: 3),
                                 Expanded(
-                                  child: Icon(Icons.check),
+                                  child: Icon(
+                                    Icons.check,
+                                    size: 30,
+                                    color: Colors.red,
+                                  ),
                                 ),
                               ],
                             ),
@@ -439,6 +312,9 @@ class HistoryWiget extends StatelessWidget {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
+                                const SizedBox(height: 3),
+                                Expanded(child: Text(date)),
+                                const SizedBox(height: 3),
                                 Expanded(
                                   child: Text(
                                       '\$${double.parse(clothPrice.toStringAsFixed(2))}'),
@@ -446,8 +322,8 @@ class HistoryWiget extends StatelessWidget {
                                 const SizedBox(height: 3),
                                 Expanded(child: Text('$quantity')),
                                 const SizedBox(height: 3),
-                                Expanded(
-                                  child: Text(orderstatus),
+                                const Expanded(
+                                  child: Text(''),
                                 ),
                               ],
                             ),
@@ -476,7 +352,7 @@ class HistoryWiget extends StatelessWidget {
         : Container(
             // color: Colors.amber,
             decoration: BoxDecoration(
-                color: Colors.green,
+                color: Colors.amber,
                 border: Border.all(color: Colors.amber),
                 borderRadius: BorderRadius.circular(5),
                 boxShadow: const [
@@ -486,13 +362,13 @@ class HistoryWiget extends StatelessWidget {
                     spreadRadius: -6,
                   )
                 ]),
-            height: 120,
+            height: 125,
             width: double.infinity,
             margin: const EdgeInsets.all(10),
             child: Column(
               children: [
                 Card(
-                  color: Colors.green,
+                  color: Colors.amber,
                   elevation: 0.0,
                   semanticContainer: true,
                   margin: const EdgeInsets.all(5),
@@ -511,48 +387,83 @@ class HistoryWiget extends StatelessWidget {
                           ),
                         ),
                       ),
-                      title: Text(
-                        'Date: $date',
-                        style: const TextStyle(
-                          fontSize: 11.0,
-                        ),
-                      ),
+                      title: const Text('Your order'),
                       subtitle: Container(
-                        color: Colors.green,
+                        color: Colors.amber,
                         child: Row(
                           children: [
                             const Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Expanded(
-                                  child: Text('Price:'),
+                                  child: Text(
+                                    'Date:',
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold),
+                                  ),
                                 ),
                                 SizedBox(height: 3),
-                                Expanded(child: Text('Quantity: ')),
+                                Expanded(
+                                  child: Text(
+                                    'Price:',
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                SizedBox(height: 3),
+                                Expanded(
+                                    child: Text(
+                                  'Quantity: ',
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold),
+                                )),
                                 SizedBox(height: 3),
                                 Expanded(
                                   child: Text(
                                     'OrderStatus:',
-                                    style: TextStyle(fontSize: 12),
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ),
                               ],
                             ),
                             const SizedBox(
-                              width: 1,
+                              width: 2,
                             ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Expanded(
                                   child: Text(
-                                      '\$${double.parse(clothPrice.toStringAsFixed(2))}'),
+                                    date,
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                    ),
+                                  ),
                                 ),
                                 const SizedBox(height: 3),
-                                Expanded(child: Text('$quantity')),
+                                Expanded(
+                                  child: Text(
+                                    '\$${double.parse(clothPrice.toStringAsFixed(2))}',
+                                    style: const TextStyle(fontSize: 13),
+                                  ),
+                                ),
                                 const SizedBox(height: 3),
                                 Expanded(
-                                  child: Text(orderstatus),
+                                    child: Text(
+                                  '$quantity',
+                                  style: const TextStyle(fontSize: 13),
+                                )),
+                                const SizedBox(height: 3),
+                                Expanded(
+                                  child: Text(
+                                    orderstatus,
+                                    style: const TextStyle(fontSize: 13),
+                                  ),
                                 ),
                               ],
                             ),

@@ -189,10 +189,6 @@ class _ContactPageState extends State<ContactPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          'Rating: $rating',
-                          style: TextStyle(fontSize: 18),
-                        ),
                         SizedBox(
                           height: 170,
                           width: double.infinity,

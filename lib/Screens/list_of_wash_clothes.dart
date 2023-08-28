@@ -60,8 +60,9 @@ class WashClothesList extends StatelessWidget {
             ),
           ),
           body: StreamBuilder<QuerySnapshot>(
-              stream:
-                  FirebaseFirestore.instance.collection("laundry").snapshots(),
+              stream: FirebaseFirestore.instance
+                  .collection("productdb")
+                  .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return Center(

@@ -16,7 +16,6 @@ export 'utility/search.dart';
 export 'utility/title_subtitle.dart';
 export 'utility/0nitems_list.dart';
 // export 'pages/cart.dart';
-export 'admin/screens/admin_verification_page.dart';
 export 'Screens/forgotpassward.dart';
 export 'Screens/history.dart';
 export 'Screens/home.dart';

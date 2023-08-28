@@ -160,7 +160,7 @@ class CartWashScreen extends StatelessWidget {
                             ),
                             children: [
                               TextSpan(
-                                text: "${value.calculateTotalPrice()}.",
+                                text: "${value.calculateTotalPrice()}",
                                 style: TextStyle(
                                   color:
                                       Theme.of(context).colorScheme.secondary,

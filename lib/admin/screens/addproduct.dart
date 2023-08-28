@@ -39,8 +39,8 @@ class _AddProductState extends State<AddProduct> {
 
   final databaseReference =
       // ignore: deprecated_member_use
-      FirebaseDatabase.instance.reference().child("laundry");
-  var collectionName = "laundry";
+      FirebaseDatabase.instance.reference().child("prodcutdb");
+  var collectionName = "productdb";
   // String _currentItemSelected = "productdb";
   void clearControlers() {
     _clothId.clear();
@@ -445,10 +445,10 @@ class _AddProductState extends State<AddProduct> {
                       isDense: false,
                       value: collectionName.isEmpty ? collectionName : null,
                       items: <String>[
-                        'laundry',
+                        'productdb',
                         'ironclothes',
                         'wash_and_irondb',
-                        'suitorder'
+                        'suitsdb',
                       ].map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,

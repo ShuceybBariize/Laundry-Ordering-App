@@ -301,7 +301,8 @@ class _OgoingOrdersState extends State<OgoingOrders> {
 
     final Map<String, dynamic> notification = {
       'body': 'Your order was Completed.',
-      'title': 'Order Completed',
+      'title': 'Happy Laundry Ordering',
+      'icon': 'logo',
       'sound': 'default',
     };
 

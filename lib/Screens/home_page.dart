@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, unused_local_variable
+
 import 'package:url_launcher/url_launcher.dart';
 // ignore: depend_on_referenced_packages
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -513,7 +515,7 @@ void openWhatsapp() async {
 void openGmail() {
   Uri uri = Uri(
     scheme: 'mailto',
-    path: 'shuceybcali99@gmail.com',
+    path: 'dalkey8955@gmail.com',
   );
   launchUrl(uri);
 }
@@ -521,7 +523,7 @@ void openGmail() {
 void openCall() {
   Uri uri = Uri(
     scheme: 'tel',
-    path: '+252617085436',
+    path: '+252618098110',
   );
   launchUrl(uri);
 }

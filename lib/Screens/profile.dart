@@ -71,41 +71,6 @@ class ImageProfile extends ChangeNotifier {
       print('No image selected');
     }
   }
-
-//  Future<CroppedFile?> _cropImage(File imageFile) async {
-//     final croppedFile = await ImageCropper().cropImage(
-//         sourcePath: imageFile.path,
-//         aspectRatioPresets: Platform.isAndroid
-//             ? [
-//                 CropAspectRatioPreset.square,
-//                 CropAspectRatioPreset.original,
-//                 CropAspectRatioPreset.ratio3x2,
-//                 CropAspectRatioPreset.ratio4x3,
-//                 CropAspectRatioPreset.ratio16x9
-//               ]
-//             : [
-//                 CropAspectRatioPreset.original,
-//                 CropAspectRatioPreset.square,
-//                 CropAspectRatioPreset.ratio16x9,
-//                 CropAspectRatioPreset.ratio3x2,
-//                 CropAspectRatioPreset.ratio5x3,
-//                 CropAspectRatioPreset.ratio4x3,
-//                 CropAspectRatioPreset.ratio7x5,
-//               ],
-//         uiSettings: [
-//           AndroidUiSettings(
-//               toolbarTitle: "Image Cropper",
-//               toolbarColor: Colors.orange,
-//               toolbarWidgetColor: Colors.white,
-//               initAspectRatio: CropAspectRatioPreset.original,
-//               lockAspectRatio: false),
-//           IOSUiSettings(
-//             title: "Image Corpper",
-//           )
-//         ]);
-
-//     return croppedFile;
-//   }
 }
 
 class ProfilePage extends StatelessWidget {
@@ -463,40 +428,3 @@ class ProfilePage extends StatelessWidget {
         ));
   }
 }
-
-// class ProfileModel {
-//   int? phone;
-//   String? name;
-
-//   ProfileModel({
-//     this.phone,
-//     this.name,
-//   });
-
-//   ProfileModel.fromJson(Map<String, dynamic> json) {
-//     phone = json['id'];
-//     name = json['name'];
-//   }
-
-//   Map<String, dynamic> toJson() {
-//     return {
-//       'id': phone,
-//       'name': name,
-//     };
-//   }
-// }
-
-// class StrogeMethods {
-//   final FirebaseStorage _storage = FirebaseStorage.instance;
-//   final FirebaseAuth _auth = FirebaseAuth.instance;
-
-//   //Adding image to firebase storage
-//   Future<String> uploadImageToStorage(String childName, Uint8List file) async {
-//     Reference ref =
-//         _storage.ref().child(childName).child(_auth.currentUser!.uid);
-//     UploadTask uploadTask = ref.putData(file);
-//     TaskSnapshot snapshot = await uploadTask;
-//     String downloadUrl = await snapshot.ref.getDownloadURL();
-//     return downloadUrl;
-//   }
-// }

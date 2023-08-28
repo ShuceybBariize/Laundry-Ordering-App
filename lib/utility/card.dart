@@ -17,6 +17,7 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var mediaQuery = MediaQuery.of(context);
     return Consumer<CartProvider>(builder: (context, value, _) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
@@ -33,8 +34,8 @@ class ProductCard extends StatelessWidget {
             // ),
             borderRadius: BorderRadius.circular(10),
             child: Container(
-              width: 150,
-              height: 120,
+              width: mediaQuery.size.width * 1,
+              height: 125,
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.blue, width: 0.5),
                 borderRadius: BorderRadius.circular(10),
@@ -42,7 +43,7 @@ class ProductCard extends StatelessWidget {
               child: Row(
                 children: [
                   Container(
-                    width: 100,
+                    width: mediaQuery.size.width * 0.2,
                     margin: EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       image: DecorationImage(
@@ -68,14 +69,14 @@ class ProductCard extends StatelessWidget {
                       ),
                       Text(
                         product['clothName'].toString(),
-                        style: GoogleFonts.poppins(fontSize: 22),
+                        style: GoogleFonts.poppins(fontSize: 20),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 6),
                       Text(
                         '\$${product['initialPrice']}',
                         style: GoogleFonts.poppins(
-                            fontSize: 22, color: Colors.green),
+                            fontSize: 20, color: Colors.green),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 15),
@@ -107,6 +108,7 @@ class ProductCard extends StatelessWidget {
                     child: Container(
                       height: 45,
                       width: 100,
+                      margin: EdgeInsets.only(right: 5),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(6),
                         color:

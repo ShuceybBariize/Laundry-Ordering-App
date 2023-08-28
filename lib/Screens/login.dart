@@ -3,12 +3,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:laundry_management_system/Screens/registration.dart';
 
 import '../exports.dart';
 import '../utility/middle_auth.dart';
-import 'forgotpassward.dart';
-import 'home.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -149,122 +146,6 @@ class _LoginPageState extends State<LoginPage> {
       );
     }
   }
-
-  // void _login(BuildContext context) async {
-  //   String email = _email.text.trim();
-  //   String password = _password.text.trim();
-
-  //   if (email.isEmpty || password.isEmpty) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text(
-  //           "Please fill in all fields.",
-  //           style: TextStyle(color: Colors.white),
-  //         ),
-  //         backgroundColor: Colors.red,
-  //       ),
-  //     );
-  //     return;
-  //   }
-
-  //   // Fetch the user document from the "users" collection based on the email
-  //   QuerySnapshot snapshot =
-  //       await _usersCollection.where('email', isEqualTo: email).limit(1).get();
-
-  //   // Check if the user with the provided email exists
-  //   if (snapshot.docs.isNotEmpty) {
-  //     DocumentSnapshot userDoc = snapshot.docs.first;
-  //     String storedPassword = userDoc['password'];
-
-  //     if (password == storedPassword) {
-  //       // Password matches, perform login
-  //       // ... Rest of your login logic ...
-
-  //       // If successful, navigate to the next screen or show success message
-  //     } else {
-  //       // Handle incorrect password
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //           content: Text(
-  //             "Wrong password.",
-  //             style: TextStyle(color: Colors.white),
-  //           ),
-  //           backgroundColor: Colors.red,
-  //         ),
-  //       );
-  //     }
-  //   } else {
-  //     // Handle user not found with the provided email
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text(
-  //           "Email is not registered.",
-  //           style: TextStyle(color: Colors.white),
-  //         ),
-  //         backgroundColor: Colors.red,
-  //       ),
-  //     );
-  //   }
-  // }
-
-  // void _login(BuildContext context) async {
-  //   String email = _email.text.trim();
-  //   String password = _password.text.trim();
-
-  //   // Fetch the user document from the "users" collection based on the email
-  //   QuerySnapshot snapshot =
-  //       await _usersCollection.where('email', isEqualTo: email).limit(1).get();
-
-  //   // Check if the user with the provided email exists
-  //   if (snapshot.docs.isNotEmpty) {
-  //     DocumentSnapshot userDoc = snapshot.docs.first;
-  //     String storedPassword = userDoc['password'];
-
-  //     // Compare the provided password with the stored password
-  //     if (password == storedPassword) {
-  //       // Password matches, perform login
-
-  //       UserCredential userCredential = await FirebaseAuth.instance
-  //           .signInWithEmailAndPassword(email: email, password: password);
-
-  //       String? deviceToken = await getDeviceToken();
-
-  //       // Update the device token in Firestore
-  //       _usersCollection.doc(userCredential.user!.uid).update({
-  //         'deviceToken': deviceToken,
-  //       });
-
-  //       if (email.isNotEmpty && password.isNotEmpty) {
-  //         setState(() {
-  //           isloading = true;
-  //         });
-
-  //         bool success =
-  //             (await _authService.signInWithEmailAndPassword(email, password));
-
-  //         setState(() {
-  //           isloading = false;
-  //         });
-
-  //         if (success) {
-  //           await _authService.setLoggedIn(true);
-  //           Navigator.pushReplacement(
-  //             context,
-  //             MaterialPageRoute(builder: (context) => HomePage()),
-  //           );
-  //         } else {
-  //           // Handle login failure
-  //         }
-  //       } else {
-  //         // Handle empty email or password
-  //       }
-  //     } else {
-  //       // Handle incorrect password
-  //     }
-  //   } else {
-  //     // Handle user not found with the provided email
-  //   }
-  // }
 
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
 

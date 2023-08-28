@@ -19,7 +19,7 @@ class AdminProductView extends StatefulWidget {
 }
 
 class _AdminProductViewState extends State<AdminProductView> {
-  var collectionName = "laundry";
+  var collectionName = "productdb";
   // final CollectionReference _items =
   //     FirebaseFirestore.instance.collection('productdb');
   late double initialprice, clothprice;
@@ -148,10 +148,10 @@ class _AdminProductViewState extends State<AdminProductView> {
                                     ? collectionName
                                     : null,
                                 items: <String>[
-                                  'laundry',
+                                  'productdb',
                                   'ironclothes',
                                   'wash_and_irondb',
-                                  'suitorder'
+                                  'suitsdb'
                                 ].map<DropdownMenuItem<String>>((String value) {
                                   return DropdownMenuItem<String>(
                                     value: value,
@@ -399,6 +399,7 @@ class _AdminProductViewState extends State<AdminProductView> {
                                                         _clothPriceController
                                                             .text = '';
 
+                                                        // ignore: use_build_context_synchronously
                                                         Navigator.of(context)
                                                             .pop();
                                                       }

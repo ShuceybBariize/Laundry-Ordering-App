@@ -5,7 +5,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../../exports.dart';
-import 'adminverifcation .dart';
+import 'email_verification_page.dart';
+
 // import 'adminverifcation.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -36,6 +37,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _confirmpassword = TextEditingController();
   bool isloading = false;
   final databaseReference =
+      // ignore: deprecated_member_use
       FirebaseDatabase.instance.reference().child("Users");
   final _auth = FirebaseAuth.instance;
   void _clear() {
@@ -73,6 +75,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             name, email, password, phone, image, role, deviceToken);
 
         // Navigate to EmailVerificationScreen on successful signup
+        // ignore: use_build_context_synchronously
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -456,8 +459,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (ctx) =>
-                                                const AdminVerificationScreen(),
+                                            builder: (ctx) => const LoginPage(),
                                           ),
                                           // (route) => false);
                                         );

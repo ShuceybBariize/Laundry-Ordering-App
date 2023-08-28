@@ -288,7 +288,8 @@ class _PendingOrderState extends State<PendingOrder> {
 
     final Map<String, dynamic> notification = {
       'body': 'Your order is under Ongoing Processs.',
-      'title': 'Order Ongoing',
+      'title': 'Happy Laundry Ordering',
+      'icon': 'logo',
       'sound': 'default',
     };
 

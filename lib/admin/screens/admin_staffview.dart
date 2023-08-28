@@ -9,6 +9,17 @@ class AdminStafsUserview extends StatefulWidget {
   State<AdminStafsUserview> createState() => _AdminStafsUserviewState();
 }
 
+//
+
+// UserCardView(
+//                       imageURl: items[index]['image'].toString(),
+//                       user: items[index]['name'].toString(),
+//                       email: items[index]['email'].toString(),
+//                       phone: items[index]['phone'].toString(),
+//                       orderstatus: items[index]['orderstatus'].toString(),
+//                     ),
+
+//
 class _AdminStafsUserviewState extends State<AdminStafsUserview> {
   String getInitials(String user) => user.isNotEmpty
       ? user.trim().split(RegExp(' +')).map((s) => s[0]).take(2).join()
@@ -65,96 +76,109 @@ class _AdminStafsUserviewState extends State<AdminStafsUserview> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(
-          title: Card(
-              child: TextField(
-            controller: _searchController,
-            onChanged: (value) => searchUsers(value),
-            decoration: const InputDecoration(
-                hintText: "searching....", prefixIcon: Icon(Icons.search)),
-          )),
-        ),
-        body: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection("users")
-              .where('role', whereIn: ['admin', 'staff']).snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return const Center(
-                child: Text("ERROR OCCURED"),
-              );
-            }
-            if (snapshot.hasData) {
-              QuerySnapshot querySnapshot = snapshot.data!;
-              List<QueryDocumentSnapshot> documents = querySnapshot.docs;
-              List<Map> items = documents.map((e) => e.data() as Map).toList();
-              final Set<int> uniqueFields = <int>{};
-              return ListView.builder(
-                itemCount: documents.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final field = documents.length;
-                  if (!uniqueFields.contains(field)) {
-                    uniqueFields.add(field);
+        appBar: AppBar(title: const Text("User and Admin View")),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('users')
+                  .where('role', whereIn: ['admin', 'staff']).snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const Center(child: Text(""));
+                }
 
-                    if (_searchController.text.isEmpty) {
-                      return Container(
-                        margin: EdgeInsets.all(10),
-                        child: Column(children: [
-                          Text("the total customer users: $field"),
-                          UserCardView(
-                            imageURl: items[index]['image'].toString(),
-                            user: items[index]['name'].toString(),
-                            email: items[index]['email'].toString(),
-                            phone: items[index]['phone'].toString(),
-                            orderstatus: items[index]['orderstatus'].toString(),
-                          ),
-                        ]),
-                      );
-                    }
-                  } else {
-                    return Container(
-                      margin: EdgeInsets.all(1),
-                      child: Column(children: [
-                        // Text("the total customer user: $field"),
-                        UserCardView(
-                          imageURl: items[index]['image'].toString(),
-                          user: items[index]['name'].toString(),
-                          email: items[index]['email'].toString(),
-                          phone: items[index]['phone'].toString(),
-                          orderstatus: items[index]['orderstatus'].toString(),
-                        ),
-                      ]),
+                int documentCount = snapshot.data!.docs.length;
+
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Card(
+                          child: TextField(
+                        controller: _searchController,
+                        onChanged: (value) => searchUsers(value),
+                        decoration: const InputDecoration(
+                            hintText: "searching....",
+                            prefixIcon: Icon(Icons.search)),
+                      )),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('The Total customers are: $documentCount'),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .where('role', whereIn: ['admin', 'staff']).snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(
+                      child: Text("There is no Users"),
                     );
                   }
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (context, index) {
+                          // DocumentSnapshot document = snapshot.data!.docs[index];
+                          QuerySnapshot querySnapshot = snapshot.data!;
+                          List<QueryDocumentSnapshot> documents =
+                              querySnapshot.docs;
+                          List<Map> items =
+                              documents.map((e) => e.data() as Map).toList();
+                          // getdocid(items[index]['email'].toString());
 
-                  if (items[index]['name']
-                      .toString()
-                      .toLowerCase()
-                      .startsWith(_searchController.text.toLowerCase())) {
-                    // ignore: sized_box_for_whitespace
-                    return Container(
-                      width: 100,
-                      child: UserCardView(
-                        imageURl: items[index]['image'].toString(),
-                        user: items[index]['name'].toString(),
-                        email: items[index]['email'].toString(),
-                        phone: items[index]['phone'].toString(),
-                        orderstatus: items[index]['orderstatus'].toString(),
-                        // onPressed: () {
-                        //   editField();
-                        // }
-                      ),
-                    );
+                          // Create your custom widget to display the document fields here
+                          if (_searchController.text.isEmpty) {
+                            return UserCardView(
+                              imageURl: items[index]['image'].toString(),
+                              user: items[index]['name'].toString(),
+                              email: items[index]['email'].toString(),
+                              phone: items[index]['phone'].toString(),
+                              role: items[index]['role'].toString(),
+                            );
+                          } else if (items[index]['name']
+                              .toString()
+                              .toLowerCase()
+                              .startsWith(
+                                  _searchController.text.toLowerCase())) {
+                            return Container(
+                              margin: const EdgeInsets.all(1),
+                              child: Column(children: [
+                                // Text("the total customer user: $field"),
+                                UserCardView(
+                                  imageURl: items[index]['image'].toString(),
+                                  user: items[index]['name'].toString(),
+                                  email: items[index]['email'].toString(),
+                                  phone: items[index]['phone'].toString(),
+                                  role: items[index]['role'].toString(),
+                                ),
+                              ]),
+                            );
+                          }
+                          return null;
+                        });
                   } else {
-                    return Container();
+                    return const Center(
+                      child: Text(""),
+                    );
                   }
                 },
-              );
-            }
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          },
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -214,7 +238,8 @@ class UserCardView extends StatelessWidget {
   final String user;
   final String email;
   final String phone;
-  final String? orderstatus;
+  final String role;
+
   final String imageURl;
   //final Function()? onPressed;
 
@@ -223,7 +248,8 @@ class UserCardView extends StatelessWidget {
     required this.user,
     required this.email,
     required this.phone,
-    this.orderstatus,
+    required this.role,
+
     //this.onPressed,
     required this.imageURl,
   });
@@ -252,19 +278,9 @@ class UserCardView extends StatelessWidget {
               fit: BoxFit.cover,
             ),
           ),
-          // border: Border.all(color: Colors.black),
-          // borderRadius: BorderRadius.circular(12)),
-          // child: Image.network(imageURl.toString(), fit: BoxFit.cover),
         ),
         title: Text(user),
-        subtitle: Text('$email\n$phone\n$orderstatus'),
-        // trailing: IconButton(
-        //   onPressed: onPressed,
-        //   icon: Icon(
-        //     Icons.settings,
-        //     color: Colors.grey[400],
-        //   ),
-        // ),
+        subtitle: Text('$email\n$phone\n$role'),
       ),
     );
   }

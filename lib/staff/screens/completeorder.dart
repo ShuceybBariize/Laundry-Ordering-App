@@ -306,7 +306,8 @@ class _CompleteOrdersState extends State<CompleteOrders> {
 
     final Map<String, dynamic> notification = {
       'body': 'Your order was Delivered.',
-      'title': 'Order Deliver',
+      'title': 'Happy Laundry Ordering',
+      'icon': 'logo',
       'sound': 'default',
     };
 

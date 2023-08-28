@@ -1,27 +1,21 @@
 import 'dart:math';
-// ignore: depend_on_referenced_packages
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
-// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
+import 'package:laundry_management_system/exports.dart';
+import 'package:laundry_management_system/provider.dart';
 
-// ignore: depend_on_referenced_packages
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'dart:io';
 
-// ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 // Import the material package for the context andj other UI widgets.
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-
-import '../exports.dart';
-import 'classtransactionInfo.dart';
-import 'marchentevcplus.dart';
 
 // Function to get all staff device tokens from Firestore
 Future<List<String>> getStaffDeviceTokens() async {
@@ -61,17 +55,18 @@ Future<void> sendNotificationsToStaff() async {
 
   // Step 2: Send notifications to each staff member
   String serverKey =
-      'AAAA0fQfPAY:APA91bF8azi0edbZtBNuX8R-qrLhctwRxJaGFSNz2Wi7gTBQ57eQgvWL4j_T8vAh9QBCszI6prkahxMfWDxMJfqZq3KeEShZD9CIP5Wwdgi4OJs0d9YtWk4t0O718wfdRR6KrzquhtyZ'; // Replace with your FCM server key
+      'AAAAs23xekk:APA91bESWPXzuhTzMkvbumu31NOHCl-Qn0r7dskr4REgUPo_Sc6cIkvhB2WK8HQYc9kXCKHEprmVDMBzDc6iM9ZjSRS3SKsFXnDnBboKH1eSDhyVgJklBj6_NMVl7ryZp7sKBIeAkkQN'; // Replace with your FCM server key
 
   final Map<String, dynamic> notification = {
-    'body': 'There is a new pending order.',
-    'title': 'New Order',
-    'sound': 'default',
+    'body': 'There is a new pending order.', // Notification message
+    'title': 'New Order', // Notification title
+    'sound': 'default', // Notification sound (optional)
   };
 
   final Map<String, dynamic> data = {
-    'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-    'payload': 'bending_order',
+    'click_action':
+        'FLUTTER_NOTIFICATION_CLICK', // Action when notification is clicked (optional)
+    'payload': 'bending_order', // Payload data (optional)
   };
 
   final Map<String, dynamic> fcmMessage = {
@@ -107,20 +102,20 @@ Future<void> sendNotificationsToStaff() async {
   }
 }
 
-class IronPaymentScreen extends StatefulWidget {
+class Payments extends StatefulWidget {
   final double totalCartValue;
   final int TotalItemCount;
-  const IronPaymentScreen({
+  const Payments({
     super.key,
     required this.totalCartValue,
     required this.TotalItemCount,
   });
 
   @override
-  State<IronPaymentScreen> createState() => _IronPaymentScreenState();
+  State<Payments> createState() => _PaymentsState();
 }
 
-class _IronPaymentScreenState extends State<IronPaymentScreen> {
+class _PaymentsState extends State<Payments> {
   Future<void> sendNotificationToAllStaff(
       List<String> staffDeviceTokens) async {
     // ... existing notification sending code ...
@@ -165,11 +160,10 @@ class _IronPaymentScreenState extends State<IronPaymentScreen> {
           String? accountNo = await getAccountNo();
           double totalAmount = value.calculateTotalPrice();
           if (accountNo != null) {
-            MerchantEvcPlus merchantEvcPlus = MerchantEvcPlus(
+            MerchantEvcPlus merchantEvcPlus = const MerchantEvcPlus(
               apiKey: 'API-675418888AHX',
               merchantUid: 'M0910291',
               apiUserId: '1000416',
-              address: _address.text,
             );
             String generateRandomId() {
               Random random = Random();
@@ -196,7 +190,6 @@ class _IronPaymentScreenState extends State<IronPaymentScreen> {
             );
 
             try {
-              // ignore: use_build_context_synchronously
               await merchantEvcPlus.makePayment(
                 transactionInfo: transactionInfo,
                 onSuccess: (TransactionInfo successTransactionInfo) {
@@ -206,27 +199,20 @@ class _IronPaymentScreenState extends State<IronPaymentScreen> {
                   print('Invoice ID: ${successTransactionInfo.invoiceId}');
                   print('Description: ${successTransactionInfo.description}');
 
-                  value.checkoutIron(context, "$Fieldname", "$email");
-                  // Navigator.pushAndRemoveUntil(
-                  //   context,
-                  //   MaterialPageRoute(builder: (_) => const HomePage()),
-                  //   (route) => false,
-                  // );
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const HomePage()));
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => const HomePage()),
+                    (route) => false,
+                  );
+                  value.checkwashOrder(context, "$Fieldname");
                 },
                 onFailure: (message) {
                   // Show AwesomeDialog with the error message
                   showAwesomeDialog(
                     context: context,
-                    title: 'Payment Failed',
-                    description: 'Payment was cancelled by the user',
+                    title: 'Payment Failed error',
+                    description: ' $message',
                   );
-                  // showAwesomeDialog(
-                  //   context: context,
-                  //   title: 'Payment Failed error',
-                  //   description: ' $message',
-                  // );
                   // Stop the processing of ModalProgressHUD
                   setState(() {
                     _isProcessingPayment = false;
@@ -269,7 +255,7 @@ class _IronPaymentScreenState extends State<IronPaymentScreen> {
   }) {
     AwesomeDialog(
       context: context,
-      dialogType: DialogType.warning,
+      dialogType: DialogType.ERROR,
       animType: AnimType.BOTTOMSLIDE,
       title: title,
       desc: description,
@@ -280,14 +266,12 @@ class _IronPaymentScreenState extends State<IronPaymentScreen> {
   @override
 
   // static const String id = 'CartScreen';
-
-  // ignore: override_on_non_overriding_member
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   Future<String?> getAccountNo() async {
     String? email = FirebaseAuth.instance.currentUser!.email;
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('users')
+        .collection('customers')
         .where('email', isEqualTo: email)
         .get();
 
@@ -317,7 +301,7 @@ class _IronPaymentScreenState extends State<IronPaymentScreen> {
 
   Future<List<String>> getFieldValuesByEmail(String email) async {
     QuerySnapshot querySnapshot = await firestore
-        .collection('users')
+        .collection('customers')
         .where('email', isEqualTo: email)
         .get();
 
@@ -354,7 +338,7 @@ class _IronPaymentScreenState extends State<IronPaymentScreen> {
 
   // Declare a TextEditingController to store the edited phone number
   TextEditingController phoneController = TextEditingController();
-  late String addresstxt = '';
+
   // Method to show a dialog with a form to edit the phone number
   void showPhoneDialog(BuildContext context) {
     showDialog(
@@ -393,7 +377,7 @@ class _IronPaymentScreenState extends State<IronPaymentScreen> {
   Future<void> updatePhoneNumber(String newPhoneNumber) async {
     String? email = FirebaseAuth.instance.currentUser!.email;
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('users')
+        .collection('customers')
         .where('email', isEqualTo: email)
         .get();
 
@@ -401,7 +385,7 @@ class _IronPaymentScreenState extends State<IronPaymentScreen> {
       DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
       String documentId = documentSnapshot.id;
       await FirebaseFirestore.instance
-          .collection('users')
+          .collection('customers')
           .doc(documentId)
           .update({'phone': newPhoneNumber});
       print('Phone number updated successfully');
@@ -414,12 +398,11 @@ class _IronPaymentScreenState extends State<IronPaymentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: non_constant_identifier_names, unused_local_variable
     Future<String> Fieldvalue = displayName();
     return Consumer<CartProvider>(
       builder: (context, value, _) => StreamBuilder<DocumentSnapshot>(
           stream: FirebaseFirestore.instance
-              .collection("users")
+              .collection("customers")
               .doc(currentUSer!.uid)
               .snapshots(),
           builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
@@ -497,7 +480,7 @@ class _IronPaymentScreenState extends State<IronPaymentScreen> {
                             ),
                             const Spacer(),
                             Text(
-                              "Ma Hubtaa Inad lambarkan Lacagta Kadireysid",
+                              "MA Hubtaa Inad lambarkan Lacagta Kadirosid",
                               style: GoogleFonts.inter(
                                   color: Kactivecolor,
                                   fontSize: 15,
@@ -574,7 +557,7 @@ class _IronPaymentScreenState extends State<IronPaymentScreen> {
                                     ),
                                   ),
                                   Text(
-                                    '${widget.TotalItemCount} ',
+                                    '${widget.TotalItemCount}',
                                     style: GoogleFonts.inter(
                                       fontSize: 19,
                                       fontWeight: FontWeight.bold,
@@ -620,7 +603,7 @@ class _IronPaymentScreenState extends State<IronPaymentScreen> {
                                     ),
                                   ),
                                   Text(
-                                    '\$${widget.totalCartValue.toString()} ',
+                                    '\$${widget.totalCartValue.toString()}',
                                     style: GoogleFonts.inter(
                                       fontSize: 19,
                                       fontWeight: FontWeight.bold,
@@ -651,4 +634,155 @@ class MyHttpOverrides extends HttpOverrides {
       ..badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
   }
+}
+
+class MerchantEvcPlus {
+  final String endPoint;
+  final String merchantUid;
+  final String apiUserId;
+  final String apiKey;
+
+  const MerchantEvcPlus({
+    this.endPoint = 'https://api.waafipay.net/asm',
+    required this.merchantUid,
+    required this.apiUserId,
+    required this.apiKey,
+  });
+
+  Future<void> makePayment({
+    required TransactionInfo transactionInfo,
+    Function(TransactionInfo)? onSuccess,
+    Function(String)? onFailure,
+    Function()? onPaymentCancelled,
+    BuildContext? context,
+  }) async {
+    HttpOverrides.global = MyHttpOverrides();
+
+    try {
+      http.Response response = await http.post(
+        Uri.parse(endPoint),
+        body: json.encode(
+          {
+            "schemaVersion": "1.0",
+            "requestId": "101111003",
+            "timestamp": "client_timestamp",
+            "channelName": "WEB",
+            "serviceName": "API_PURCHASE",
+            "serviceParams": {
+              "merchantUid": merchantUid,
+              "apiUserId": apiUserId,
+              "apiKey": apiKey,
+              "paymentMethod": "mwallet_account",
+              "payerInfo": {"accountNo": transactionInfo.payerPhoneNumber},
+              "transactionInfo": {
+                "referenceId": transactionInfo.referenceId,
+                "invoiceId": transactionInfo.invoiceId,
+                "amount": transactionInfo.amount.toString(),
+                "currency": transactionInfo.currency,
+                "description": transactionInfo.description
+              }
+            }
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data["responseMsg"] == 'RCS_SUCCESS') {
+          showAwesomeDialog(
+            context: context!,
+            title: 'Payment Success',
+            description: 'Payment was successful!',
+          );
+          onSuccess?.call(transactionInfo);
+
+          // Store the successful payment details in Firebase
+          try {
+            await FirebaseFirestore.instance
+                .collection('successful_payments')
+                .add({
+              'referenceId': transactionInfo.referenceId,
+              'invoiceId': transactionInfo.invoiceId,
+              'amount': transactionInfo.amount,
+              'currency': transactionInfo.currency,
+              'description': transactionInfo.description,
+              'payerPhoneNumber': transactionInfo.payerPhoneNumber,
+              'timestamp': FieldValue
+                  .serverTimestamp(), // Add a server timestamp for the current time
+            });
+          } catch (e) {
+            print('Error storing payment details in Firebase: $e');
+          }
+        } else {
+          String message = '';
+          var errMessage = data['responseMsg'].toString().split(':');
+          if (errMessage.length < 2) {
+            message = 'RCS_USER_IS_NOT_AUTHZ_TO_ACCESS_API';
+          } else {
+            message = errMessage[1].trim();
+          }
+
+          if (errMessage[0]
+              .contains('RCS_TRAN_FAILED_AT_ISSUER_SYSTEM (User Aborted')) {
+            // Payment was aborted by the user.
+            showAwesomeDialog(
+              context: context!,
+              title: 'Payment Cancelled',
+              description: 'Payment was cancelled by the user.',
+            );
+            onPaymentCancelled?.call();
+          } else {
+            print('Payment failed with error: $message');
+            // Payment failed due to other reasons.
+            // showAwesomeDialog(
+            //   context: context!,
+            //   title: 'Payment Failed',
+            //   description: ,
+            // );
+            onFailure?.call('Payment failed with error: $message');
+          }
+        }
+      } else {
+        onFailure?.call(response.body);
+      }
+    } on SocketException {
+      onFailure?.call('No Internet Connection');
+    } catch (e) {
+      print(e);
+      onFailure?.call(e.toString());
+    }
+  }
+
+  void showAwesomeDialog({
+    required BuildContext context,
+    required String title,
+    required String description,
+  }) {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.INFO,
+      animType: AnimType.LEFTSLIDE,
+      title: title,
+      desc: description,
+      btnOkOnPress: () {},
+    ).show();
+  }
+}
+
+class TransactionInfo {
+  final String referenceId;
+  final String invoiceId;
+  final double amount;
+  final String currency;
+  final String description;
+  final String payerPhoneNumber;
+
+  TransactionInfo({
+    required this.referenceId,
+    required this.invoiceId,
+    required this.amount,
+    required this.currency,
+    required this.description,
+    required this.payerPhoneNumber,
+  });
 }

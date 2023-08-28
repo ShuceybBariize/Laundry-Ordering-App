@@ -8,7 +8,8 @@ import 'package:firebase_database/firebase_database.dart';
 // import 'package:laundry_management_system/pages/customerverfication.dart';
 
 import '../exports.dart';
-import 'email_verification_page.dart';
+import 'customer_verification.dart';
+// import 'email_verification_page.dart';
 
 class SignUpUsers extends StatefulWidget {
   static String id = 'signUpUsers';
@@ -72,19 +73,6 @@ class _SignUpUsersState extends State<SignUpUsers> {
         await auth.currentUser!.sendEmailVerification();
 
         // ignore: use_build_context_synchronously
-        postDetailsToFirestore(name, email, password, phone, image, role);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (ctx) => CustomerEmailVerificationScreen(
-                    email: email,
-                    password: password,
-                    name: name,
-                    phone: phone,
-                    image: image,
-                    role: role,
-                  )),
-        );
 
         // await postDetailsToFirestore(
         //     name, email, password, phone, orderstatus, image);
@@ -138,13 +126,13 @@ class _SignUpUsersState extends State<SignUpUsers> {
       'password': txtpassword,
       'phone': txtphone,
       'orderstatus': orderstatus,
-      'role': role,
+      'role': 'customer',
       'image': image,
       // 'deviceToken': devi,
     });
+    // Navigator.pushReplacement(
+    //     context, MaterialPageRoute(builder: (context) => const LoginPage()));
   }
-
-  var role = "customer";
 
   @override
   Widget build(BuildContext context) {
@@ -400,10 +388,27 @@ class _SignUpUsersState extends State<SignUpUsers> {
                                   name: txtname,
                                   phone: txtphone,
                                   orderstatus: orderstatus,
-                                  role: role,
+                                  role: 'customer',
                                   image: image,
                                   context: context,
                                 );
+                                if (auth.currentUser != null) {
+                                  // ignore: use_build_context_synchronously
+                                  Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (ctx) =>
+                                            const CustomerEmailVerificationScreen(),
+                                      ),
+                                      (route) => false);
+                                }
+                                if (mounted) {
+                                  setState(() {
+                                    showProgress = false;
+                                  });
+                                }
+                                FocusScope.of(context)
+                                    .requestFocus(FocusNode());
                               }
                             },
                             child: showProgress

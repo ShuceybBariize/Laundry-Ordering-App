@@ -46,27 +46,15 @@ class _PendingViewState extends State<PendingView> {
   Widget build(BuildContext context) {
     // String? uid = docUser.id;
 
-// CustomerOrderWidget(
-//                         email: items[index]['email'],
-//                         customerName: items[index]['name'],
-//                         clothImage: items[index]['imageUrl'],
-//                         clothPrice: double.tryParse(
-//                                 items[index]['clothPrice'].toString()) ??
-//                             0,
-//                         clothName: items[index]['clothName'],
-//                         quantity: items[index]['quantity'],
-//                         date: items[index]['date'],
-//                         totalPrice: items[index]['Total'],
-//                       ); // If you don't wan
-
     return SafeArea(
       child: Consumer<CartProvider>(builder: (context, value, _) {
         return Scaffold(
           resizeToAvoidBottomInset: false,
-          appBar: AppBar(title: Text("Pending $collectionName")
+          appBar: AppBar(
+            title: Text("Pending $collectionName"), centerTitle: true,
 
-              //end
-              ),
+            //end
+          ),
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -211,10 +199,6 @@ class _PendingViewState extends State<PendingView> {
                             date: items[index]['date'],
                             totalPrice: items[index]['Total'],
                           );
-                          // ListTile(
-                          //   title: Text(document['title']),
-                          //   subtitle: Text(document['subtitle']),
-                          // );
                         },
                       );
                     } else {

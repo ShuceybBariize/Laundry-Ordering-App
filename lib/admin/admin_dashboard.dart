@@ -1,25 +1,33 @@
+// ignore_for_file: avoid_print, use_build_context_synchronously
+
+import 'dart:async';
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+
+// ignore: depend_on_referenced_packages
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:laundry_management_system/admin/screens/addproduct.dart';
-import 'package:laundry_management_system/admin/screens/completed_view.dart';
-import 'package:laundry_management_system/admin/screens/create_users.dart';
 import 'package:laundry_management_system/admin/screens/earning.dart';
-import 'package:laundry_management_system/admin/screens/pending_view.dart';
 import 'package:laundry_management_system/admin/screens/reportview.dart';
-import 'package:laundry_management_system/admin/screens/users.dart';
-import 'package:laundry_management_system/admin/widgets/custom_button.dart';
-import 'package:laundry_management_system/utility/menu_par.dart';
+
+// import 'package:laundry_order_app/satff/screens/staff_dashboard.dart';
 import 'package:permission_handler/permission_handler.dart';
+// ignore: depend_on_referenced_packages
 import 'package:provider/provider.dart';
 
 import '../exports.dart';
+import '../utility/menu_par.dart';
+import 'screens/completed_view.dart';
+import 'screens/create_users.dart';
 import 'screens/delivered_view.dart';
 import 'screens/ongoing_view.dart';
+import 'screens/pending_view.dart';
 import 'screens/productview.dart';
+import 'screens/users.dart';
+import 'widgets/custom_button.dart';
 
 class AdminUser extends ChangeNotifier {
   int _totolUsersAdmins = 0;
@@ -592,6 +600,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 onTap: () {
                                   showBottomSheet(
                                       context: context,
+                                      // ignore: avoid_types_as_parameter_names, non_constant_identifier_names
                                       builder: (Builder) {
                                         return Card(
                                           color: Colors.grey.shade100,
